@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Subject Areas",
   description:
-    "Explore the six academic disciplines in the G.A.T.E. Olympiad: Mathematics, Physics, Chemistry, Biology, Computer Science, and Economics.",
+    "Explore the five academic disciplines in the G.A.T.E. Olympiad: Mathematics, Physics, Chemistry, Biology, and Competitive Programming.",
 };
 
 const SUBJECTS = [
@@ -38,18 +38,11 @@ const SUBJECTS = [
     topics: ["Cell & Molecular Biology", "Genetics & Evolution", "Physiology", "Ecology", "Biochemistry"],
   },
   {
-    code: "CS",
-    name: "Computer Science",
+    code: "CP",
+    name: "Competitive Programming",
     description:
-      "Theoretical computer science including algorithms, data structures, computational complexity, discrete mathematics, and formal reasoning about programs.",
-    topics: ["Algorithms & Data Structures", "Computational Complexity", "Discrete Mathematics", "Graph Theory", "Formal Languages"],
-  },
-  {
-    code: "ECO",
-    name: "Economics",
-    description:
-      "Rigorous theoretical economics covering microeconomic theory, game theory, macroeconomic models, and quantitative economic reasoning.",
-    topics: ["Microeconomic Theory", "Game Theory", "Macroeconomics", "Welfare Economics", "Quantitative Methods"],
+      "Algorithmic problem solving under time pressure — designing efficient solutions across data structures, graph theory, dynamic programming, and combinatorics. Problems reward both correctness and performance.",
+    topics: ["Data Structures & Algorithms", "Dynamic Programming", "Graph Theory", "Combinatorics", "String Algorithms"],
   },
 ];
 
@@ -66,7 +59,7 @@ export default function SubjectsPage() {
             Subject Areas
           </h1>
           <p className="text-base font-light text-gate-white/55 leading-relaxed max-w-2xl mt-2">
-            G.A.T.E. spans six rigorous academic disciplines. Participants
+            G.A.T.E. spans five rigorous academic disciplines. Participants
             register in one subject area and are evaluated through theoretical
             examinations designed by leading academics.
           </p>

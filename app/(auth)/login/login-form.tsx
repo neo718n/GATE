@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
+import { signIn, authClient } from "@/lib/auth-client";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,14 @@ export function LoginForm() {
     });
 
     if (err) {
+      if (err.code === "EMAIL_NOT_VERIFIED") {
+        await authClient.emailOtp.sendVerificationOtp({
+          email,
+          type: "email-verification",
+        });
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       setError(err.message ?? "Sign in failed. Please try again.");
       setPending(false);
       return;

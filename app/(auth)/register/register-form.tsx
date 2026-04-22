@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signUp } from "@/lib/auth-client";
+import { signUp, authClient } from "@/lib/auth-client";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,7 @@ const SUBJECTS = [
   { value: "physics", label: "Physics" },
   { value: "chemistry", label: "Chemistry" },
   { value: "biology", label: "Biology" },
-  { value: "computer_science", label: "Computer Science" },
-  { value: "economics", label: "Economics" },
+  { value: "competitive_programming", label: "Competitive Programming" },
 ];
 
 export function RegisterForm() {
@@ -53,7 +52,12 @@ export function RegisterForm() {
       return;
     }
 
-    router.push("/participant");
+    await authClient.emailOtp.sendVerificationOtp({
+      email: form.email,
+      type: "email-verification",
+    });
+
+    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
   }
 
   return (

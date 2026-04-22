@@ -10,6 +10,9 @@ export async function getCurrentSession() {
 export async function requireSession() {
   const session = await getCurrentSession();
   if (!session) redirect("/login");
+  if (!session.user.emailVerified) {
+    redirect(`/verify-email?email=${encodeURIComponent(session.user.email)}`);
+  }
   return session;
 }
 

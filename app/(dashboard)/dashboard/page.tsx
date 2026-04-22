@@ -1,12 +1,9 @@
+﻿import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/authz";
+import { ROLE_HOME } from "@/lib/authz";
 
 export default async function DashboardPage() {
-  await requireSession();
-  return (
-    <main className="flex min-h-screen items-center justify-center bg-gate-900 p-8">
-      <p className="font-serif text-2xl text-gate-white/60">
-        Dashboard — Coming Soon
-      </p>
-    </main>
-  );
+  const session = await requireSession();
+  const role = ((session.user as { role?: string }).role ?? "participant") as keyof typeof ROLE_HOME;
+  redirect(ROLE_HOME[role] ?? "/participant");
 }
