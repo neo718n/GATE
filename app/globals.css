@@ -1,0 +1,114 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Brand palette — see GATE-BRAND.md */
+  --gate-900: #060f1c;
+  --gate-800: #0b1f3a;
+  --gate-700: #1a3560;
+  --gate-600: #2b5591;
+  --gate-gold: #c9993a;
+  --gate-gold-2: #e8c060;
+  --gate-gold-3: #f5e6c0;
+  --gate-white: #fafbfc;
+  --gate-mist: #f0f2f6;
+  --gate-fog: #e5e8ee;
+  --gate-gray: #8a9bb0;
+
+  /* Semantic tokens (light) */
+  --background: var(--gate-mist);
+  --foreground: var(--gate-800);
+  --card: var(--gate-white);
+  --card-foreground: var(--gate-800);
+  --popover: var(--gate-white);
+  --popover-foreground: var(--gate-800);
+  --primary: var(--gate-800);
+  --primary-foreground: var(--gate-white);
+  --secondary: var(--gate-700);
+  --secondary-foreground: var(--gate-white);
+  --muted: var(--gate-fog);
+  --muted-foreground: var(--gate-gray);
+  --accent: var(--gate-gold);
+  --accent-foreground: var(--gate-800);
+  --destructive: #b03030;
+  --destructive-foreground: var(--gate-white);
+  --border: var(--gate-fog);
+  --input: var(--gate-fog);
+  --ring: var(--gate-gold);
+  --radius: 0.125rem;
+}
+
+.dark {
+  --background: var(--gate-900);
+  --foreground: var(--gate-white);
+  --card: var(--gate-800);
+  --card-foreground: var(--gate-white);
+  --popover: var(--gate-800);
+  --popover-foreground: var(--gate-white);
+  --primary: var(--gate-gold);
+  --primary-foreground: var(--gate-800);
+  --secondary: var(--gate-700);
+  --secondary-foreground: var(--gate-white);
+  --muted: var(--gate-700);
+  --muted-foreground: var(--gate-gray);
+  --accent: var(--gate-gold);
+  --accent-foreground: var(--gate-800);
+  --destructive: #d14a4a;
+  --destructive-foreground: var(--gate-white);
+  --border: rgba(201, 153, 58, 0.2);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: var(--gate-gold);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Brand utilities — use as bg-gate-800, text-gate-gold, border-gate-fog, ... */
+  --color-gate-900: var(--gate-900);
+  --color-gate-800: var(--gate-800);
+  --color-gate-700: var(--gate-700);
+  --color-gate-600: var(--gate-600);
+  --color-gate-gold: var(--gate-gold);
+  --color-gate-gold-2: var(--gate-gold-2);
+  --color-gate-gold-3: var(--gate-gold-3);
+  --color-gate-white: var(--gate-white);
+  --color-gate-mist: var(--gate-mist);
+  --color-gate-fog: var(--gate-fog);
+  --color-gate-gray: var(--gate-gray);
+
+  --font-sans: var(--font-montserrat), system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-serif: var(--font-cormorant), Georgia, "Times New Roman", serif;
+
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
