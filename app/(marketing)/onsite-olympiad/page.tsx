@@ -19,7 +19,7 @@ const PROGRAM = [
 export default function OnsiteOlympiadPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Global Final</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Onsite Olympiad</h1>
@@ -27,7 +27,7 @@ export default function OnsiteOlympiadPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           <div className="flex flex-col gap-6">
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">The Global Academic Final</h2>
@@ -74,7 +74,7 @@ export default function OnsiteOlympiadPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1 flex flex-col gap-5">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Standards</span>

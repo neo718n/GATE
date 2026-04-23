@@ -50,7 +50,7 @@ const FAQS = [
 export default function AcademicInfoPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Academic Information</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Eligibility, Rules<br />& Frequently Asked Questions</h1>

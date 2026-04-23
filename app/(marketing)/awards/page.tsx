@@ -43,7 +43,7 @@ const CERTIFICATES = [
 export default function AwardsPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Recognition</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Awards &amp; Certificates</h1>
@@ -51,7 +51,7 @@ export default function AwardsPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-4">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Onsite Olympiad Awards</span>
@@ -98,7 +98,7 @@ export default function AwardsPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Certificate Standards</span>

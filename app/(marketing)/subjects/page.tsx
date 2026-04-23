@@ -57,7 +57,7 @@ export default function SubjectsPage() {
   return (
     <>
       {/* Header */}
-      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
             Academic Disciplines
@@ -74,7 +74,7 @@ export default function SubjectsPage() {
       </section>
 
       {/* Subjects Grid */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {SUBJECTS.map((subject) => (
             <div
@@ -113,7 +113,7 @@ export default function SubjectsPage() {
       </section>
 
       {/* Registration Note */}
-      <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
             Registration

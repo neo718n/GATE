@@ -73,7 +73,7 @@ export default function HomePage() {
       </section>
 
       {/* 2. ABOUT */}
-      <section className="py-28 px-6 border-t border-gate-fog/60">
+      <section className="py-28 px-6 bg-gate-white border-t border-gate-fog/60">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-5">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">About the Olympiad</span>
@@ -98,7 +98,7 @@ export default function HomePage() {
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Academic Disciplines</span>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-gate-800">Six Disciplines</h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-gate-fog">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-px bg-gate-fog">
             {SUBJECTS.map((s) => (
               <div key={s.code} className="flex flex-col items-center justify-center gap-3 bg-gate-white p-8 text-center hover:bg-gate-fog/50 transition-colors">
                 <span className="text-[10px] font-semibold tracking-[0.3em] text-gate-gold">{s.code}</span>
@@ -111,7 +111,7 @@ export default function HomePage() {
       </section>
 
       {/* 4. STRUCTURE */}
-      <section className="py-28 px-6">
+      <section className="py-28 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl flex flex-col gap-14">
           <div className="flex flex-col items-center gap-4 text-center">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Competition Structure</span>
@@ -170,7 +170,7 @@ export default function HomePage() {
       </section>
 
       {/* 6. AWARDS */}
-      <section className="py-28 px-6">
+      <section className="py-28 px-6 bg-gate-white">
         <div className="mx-auto max-w-5xl flex flex-col gap-14">
           <div className="flex flex-col items-center gap-4 text-center">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Recognition</span>
@@ -214,7 +214,7 @@ export default function HomePage() {
       </section>
 
       {/* 8. FAQ */}
-      <section className="py-28 px-6">
+      <section className="py-28 px-6 bg-gate-white">
         <div className="mx-auto max-w-4xl flex flex-col gap-12">
           <div className="flex flex-col items-center gap-4 text-center">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Academic Information</span>

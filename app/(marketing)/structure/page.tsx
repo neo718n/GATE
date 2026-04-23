@@ -49,7 +49,7 @@ export default function StructurePage() {
   return (
     <>
       {/* Header */}
-      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
             How It Works
@@ -66,7 +66,7 @@ export default function StructurePage() {
       </section>
 
       {/* Phases */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           {PHASES.map((item, i) => (
             <div
@@ -107,7 +107,7 @@ export default function StructurePage() {
       </section>
 
       {/* Timeline */}
-      <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-3">
             <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
@@ -139,7 +139,7 @@ export default function StructurePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-6 border-t border-gate-fog/60">
+      <section className="py-20 px-6 bg-gate-white border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="font-serif text-4xl font-light text-gate-800">
             Ready to Register?

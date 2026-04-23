@@ -23,7 +23,7 @@ const TYPES = [
 export default function PartnershipsPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Institutional Cooperation</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Partnerships</h1>
@@ -31,7 +31,7 @@ export default function PartnershipsPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Why Partner</span>
@@ -69,7 +69,7 @@ export default function PartnershipsPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6">
+      <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-5 gap-16">
           <div className="lg:col-span-2 flex flex-col gap-6">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Apply</span>

@@ -10,7 +10,7 @@ export default function ContactPage() {
   return (
     <>
       {/* Header */}
-      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
+      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
             Get in Touch
@@ -26,7 +26,7 @@ export default function ContactPage() {
       </section>
 
       {/* Content */}
-      <section className="py-20 px-6">
+      <section className="py-20 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-5 gap-16">
           {/* Info */}
           <div className="lg:col-span-2 flex flex-col gap-10">
