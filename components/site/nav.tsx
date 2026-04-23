@@ -36,8 +36,17 @@ export function SiteNav() {
         setMoreOpen(false);
       }
     }
-    if (moreOpen) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") setMoreOpen(false);
+    }
+    if (moreOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
   }, [moreOpen]);
 
   const isActive = (href: string) =>
@@ -69,7 +78,7 @@ export function SiteNav() {
             ))}
 
             {/* More dropdown */}
-            <div ref={moreRef} className="relative">
+            <div ref={moreRef} className="relative self-stretch flex items-center">
               <button
                 onClick={() => setMoreOpen((v) => !v)}
                 className={cn(
@@ -82,7 +91,7 @@ export function SiteNav() {
                 More <span className="text-[7px] leading-none">▾</span>
               </button>
               {moreOpen && (
-                <div className="absolute top-full right-0 w-52 border border-gate-gold/15 bg-gate-800 shadow-xl">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-60 border border-gate-gold/15 bg-gate-800 shadow-xl">
                   {MORE_LINKS.map((link) => (
                     <Link
                       key={link.href}

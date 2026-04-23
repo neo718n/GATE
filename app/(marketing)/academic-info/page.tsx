@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { FaqAccordion } from "@/components/site/faq-accordion";
 
 export const metadata: Metadata = {
   title: "Academic Information",
@@ -78,14 +79,7 @@ export default function AcademicInfoPage() {
               <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">{section.section}</span>
               <div className="h-px w-12 bg-gate-gold/30" />
             </div>
-            <div className="flex flex-col border border-border/40">
-              {section.items.map((item, i) => (
-                <div key={i} className={"p-8" + (i < section.items.length - 1 ? " border-b border-border/30" : "")}>
-                  <p className="text-sm font-semibold text-gate-white mb-3">{item.q}</p>
-                  <p className="text-sm font-light text-gate-white/55 leading-[1.9]">{item.a}</p>
-                </div>
-              ))}
-            </div>
+            <FaqAccordion items={section.items} />
           </div>
         </section>
       ))}

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { FaqAccordion } from "@/components/site/faq-accordion";
 
 const SUBJECTS = [
   { code: "MAT", name: "Mathematics" },
@@ -221,14 +222,7 @@ export default function HomePage() {
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Academic Information</span>
             <h2 className="font-serif text-4xl font-light text-gate-white">Frequently Asked Questions</h2>
           </div>
-          <div className="flex flex-col border border-border/50 bg-gate-800/10">
-            {FAQS.map((faq, i) => (
-              <div key={i} className={"px-8 py-7" + (i < FAQS.length - 1 ? " border-b border-border/40" : "")}>
-                <p className="text-sm font-semibold text-gate-white/90 mb-3">{faq.q}</p>
-                <p className="text-sm font-light text-gate-white/55 leading-[1.9]">{faq.a}</p>
-              </div>
-            ))}
-          </div>
+          <FaqAccordion items={FAQS} />
           <div className="flex justify-center"><Button variant="outline" size="md" asChild><Link href="/academic-info">Full Academic Information</Link></Button></div>
         </div>
       </section>
