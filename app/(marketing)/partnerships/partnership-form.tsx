@@ -32,7 +32,7 @@ export function PartnershipForm() {
     return (
       <div className="border border-gate-gold/30 bg-gate-gold/5 p-8 flex flex-col gap-3">
         <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-gate-gold">Application Received</p>
-        <p className="text-sm font-light text-gate-white/70 leading-[1.9]">
+        <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
           Thank you for your interest in partnering with G.A.T.E. Our team will review your application and contact you within 5–7 business days.
         </p>
       </div>
@@ -53,7 +53,7 @@ export function PartnershipForm() {
         </div>
         <div className="flex flex-col gap-2">
           <Label htmlFor="type">Organization Type</Label>
-          <select id="type" name="type" required className="flex h-10 w-full border border-border/50 bg-gate-900 px-3 py-2 text-sm font-light text-gate-white placeholder:text-gate-gray/50 focus:outline-none focus:ring-1 focus:ring-gate-gold/40">
+          <select id="type" name="type" required className="flex h-10 w-full border border-border/50 bg-gate-white px-3 py-2 text-sm font-light text-gate-800 placeholder:text-gate-gray/50 focus:outline-none focus:ring-1 focus:ring-gate-gold/40">
             <option value="">Select type</option>
             {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
@@ -94,7 +94,7 @@ export function PartnershipForm() {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="cooperationType">Partnership Type Interest</Label>
-        <select id="cooperationType" name="cooperationType" className="flex h-10 w-full border border-border/50 bg-gate-900 px-3 py-2 text-sm font-light text-gate-white placeholder:text-gate-gray/50 focus:outline-none focus:ring-1 focus:ring-gate-gold/40">
+        <select id="cooperationType" name="cooperationType" className="flex h-10 w-full border border-border/50 bg-gate-white px-3 py-2 text-sm font-light text-gate-800 placeholder:text-gate-gray/50 focus:outline-none focus:ring-1 focus:ring-gate-gold/40">
           <option value="">Select (optional)</option>
           {COOP_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>

@@ -18,7 +18,7 @@ export function ContactForm() {
         <span className="text-[9px] font-semibold uppercase tracking-[0.35em] text-gate-gold">
           Message Sent
         </span>
-        <p className="text-sm font-light text-gate-white/70">
+        <p className="text-sm font-light text-gate-800/65">
           Thank you for reaching out. We will get back to you as soon as
           possible.
         </p>

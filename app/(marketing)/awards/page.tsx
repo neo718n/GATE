@@ -43,11 +43,11 @@ const CERTIFICATES = [
 export default function AwardsPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-border/30 bg-gate-800/10">
+      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Recognition</span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-white">Awards &amp; Certificates</h1>
-          <p className="text-base font-light text-gate-white/45 mt-2 max-w-2xl">Academic achievement formally recognized — medals, distinctions, and verifiable certificates for all participants.</p>
+          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Awards &amp; Certificates</h1>
+          <p className="text-base font-light text-gate-800/45 mt-2 max-w-2xl">Academic achievement formally recognized — medals, distinctions, and verifiable certificates for all participants.</p>
         </div>
       </section>
 
@@ -55,11 +55,11 @@ export default function AwardsPage() {
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-4">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Onsite Olympiad Awards</span>
-            <h2 className="font-serif text-4xl font-light text-gate-white">Medal Hierarchy</h2>
+            <h2 className="font-serif text-4xl font-light text-gate-800">Medal Hierarchy</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {MEDALS.map((medal) => (
-              <div key={medal.tier} className="flex gap-6 border border-border/40 p-8">
+              <div key={medal.tier} className="flex gap-6 border border-gate-fog p-8">
                 <div className="flex flex-col items-center gap-2 shrink-0">
                   <div className="w-12 h-12 rounded-full border-2 flex items-center justify-center" style={{ borderColor: medal.hex }}>
                     <div className="w-5 h-5 rounded-full" style={{ background: medal.hex, opacity: 0.75 }} />
@@ -67,10 +67,10 @@ export default function AwardsPage() {
                 </div>
                 <div className="flex flex-col gap-3">
                   <div>
-                    <h3 className="text-base font-semibold tracking-[0.05em] text-gate-white">{medal.tier}</h3>
+                    <h3 className="text-base font-semibold tracking-[0.05em] text-gate-800">{medal.tier}</h3>
                     <p className="text-[10px] font-light text-gate-gold/60 mt-1">{medal.eligibility}</p>
                   </div>
-                  <p className="text-sm font-light text-gate-white/55 leading-[1.9]">{medal.desc}</p>
+                  <p className="text-sm font-light text-gate-800/55 leading-[1.9]">{medal.desc}</p>
                 </div>
               </div>
             ))}
@@ -78,20 +78,20 @@ export default function AwardsPage() {
         </div>
       </section>
 
-      <section className="py-24 px-6 bg-gate-800/15 border-y border-border/30">
+      <section className="py-24 px-6 bg-gate-fog/40 border-y border-gate-fog/60">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-4">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Certificates</span>
-            <h2 className="font-serif text-4xl font-light text-gate-white">For Every Stage</h2>
+            <h2 className="font-serif text-4xl font-light text-gate-800">For Every Stage</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {CERTIFICATES.map((cert) => (
-              <div key={cert.title} className="flex flex-col gap-4 border border-border/40 p-8">
+              <div key={cert.title} className="flex flex-col gap-4 border border-gate-fog p-8">
                 <div className="flex flex-col gap-0">
                   <div className="h-px w-12 bg-gate-gold/40 mb-4" />
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-gate-white">{cert.title}</h3>
+                  <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-gate-800">{cert.title}</h3>
                 </div>
-                <p className="text-sm font-light text-gate-white/55 leading-[1.9]">{cert.desc}</p>
+                <p className="text-sm font-light text-gate-800/55 leading-[1.9]">{cert.desc}</p>
               </div>
             ))}
           </div>
@@ -102,27 +102,27 @@ export default function AwardsPage() {
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Certificate Standards</span>
-            <h2 className="font-serif text-4xl font-light text-gate-white leading-tight">Verifiable and Internationally Recognized</h2>
-            <div className="flex flex-col gap-4 text-sm font-light text-gate-white/60 leading-[1.9]">
+            <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Verifiable and Internationally Recognized</h2>
+            <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
               <p>All G.A.T.E. certificates are formally issued documents suitable for inclusion in academic portfolios, university applications, and professional CVs.</p>
               <p>Each certificate includes a unique verification code, participant details, discipline, award level, and official G.A.T.E. seal.</p>
             </div>
           </div>
           <div className="flex flex-col gap-0">
             {["Unique certificate verification code per recipient","Includes participant name, discipline, and academic year","Official G.A.T.E. seal and authorized signature","Available in both digital and printable format","Suitable for university applications and scholarship programs"].map((pt) => (
-              <div key={pt} className="flex items-start gap-4 py-4 border-b border-border/25 last:border-0">
+              <div key={pt} className="flex items-start gap-4 py-4 border-b border-gate-fog/70 last:border-0">
                 <span className="mt-2 h-px w-5 shrink-0 bg-gate-gold/50" />
-                <span className="text-sm font-light text-gate-white/65 leading-relaxed">{pt}</span>
+                <span className="text-sm font-light text-gate-800/65 leading-relaxed">{pt}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 px-6 bg-gate-800/15 border-t border-border/30">
+      <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
-          <h2 className="font-serif text-4xl font-light text-gate-white">Begin Your Path to Recognition</h2>
-          <p className="text-sm font-light text-gate-white/55 leading-[1.9]">Apply for the G.A.T.E. Olympiad. Every participant receives a certificate. The top performers earn medals at the Global Final in Hangzhou.</p>
+          <h2 className="font-serif text-4xl font-light text-gate-800">Begin Your Path to Recognition</h2>
+          <p className="text-sm font-light text-gate-800/55 leading-[1.9]">Apply for the G.A.T.E. Olympiad. Every participant receives a certificate. The top performers earn medals at the Global Final in Hangzhou.</p>
           <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
         </div>
       </section>

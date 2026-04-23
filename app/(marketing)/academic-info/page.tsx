@@ -50,14 +50,14 @@ const FAQS = [
 export default function AcademicInfoPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-border/30 bg-gate-800/10">
+      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Academic Information</span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-white">Eligibility, Rules<br />& Frequently Asked Questions</h1>
+          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Eligibility, Rules<br />& Frequently Asked Questions</h1>
         </div>
       </section>
 
-      <section className="py-12 px-6 bg-gate-800/15 border-b border-border/30">
+      <section className="py-12 px-6 bg-gate-fog/40 border-b border-gate-fog/60">
         <div className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30">
           {[
             { label: "Eligibility", href: "#eligibility" },
@@ -65,7 +65,7 @@ export default function AcademicInfoPage() {
             { label: "Exam Format", href: "#examination-format" },
             { label: "Results & Integrity", href: "#results-integrity" },
           ].map((item) => (
-            <a key={item.label} href={item.href} className="flex items-center justify-center bg-gate-900 px-6 py-4 text-[9px] font-bold uppercase tracking-[0.3em] text-gate-gray hover:text-gate-gold transition-colors">
+            <a key={item.label} href={item.href} className="flex items-center justify-center bg-gate-white px-6 py-4 text-[9px] font-bold uppercase tracking-[0.3em] text-gate-gray hover:text-gate-gold transition-colors">
               {item.label}
             </a>
           ))}
@@ -73,7 +73,7 @@ export default function AcademicInfoPage() {
       </section>
 
       {FAQS.map((section) => (
-        <section key={section.section} id={section.section.toLowerCase().replace(/\s+/g, "-").replace(/[&]/g, "").replace(/--/g, "-")} className="py-24 px-6 border-b border-border/30">
+        <section key={section.section} id={section.section.toLowerCase().replace(/\s+/g, "-").replace(/[&]/g, "").replace(/--/g, "-")} className="py-24 px-6 border-b border-gate-fog/60">
           <div className="mx-auto max-w-4xl flex flex-col gap-10">
             <div className="flex flex-col gap-2">
               <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">{section.section}</span>
@@ -84,10 +84,10 @@ export default function AcademicInfoPage() {
         </section>
       ))}
 
-      <section className="py-20 px-6 bg-gate-800/15">
+      <section className="py-20 px-6 bg-gate-fog/40">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
-          <h2 className="font-serif text-4xl font-light text-gate-white">Still have questions?</h2>
-          <p className="text-sm font-light text-gate-white/55 leading-[1.9]">Our academic team is available to assist with any questions regarding eligibility, registration, or examination procedures.</p>
+          <h2 className="font-serif text-4xl font-light text-gate-800">Still have questions?</h2>
+          <p className="text-sm font-light text-gate-800/55 leading-[1.9]">Our academic team is available to assist with any questions regarding eligibility, registration, or examination procedures.</p>
           <div className="flex gap-4">
             <Button variant="outline" size="md" asChild><Link href="/contact">Contact Us</Link></Button>
             <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>

@@ -49,15 +49,15 @@ export default function StructurePage() {
   return (
     <>
       {/* Header */}
-      <section className="py-20 px-6 border-b border-border/30 bg-gate-800/10">
+      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/20">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
             How It Works
           </span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-white">
+          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">
             Competition Structure
           </h1>
-          <p className="text-base font-light text-gate-white/55 leading-relaxed max-w-2xl mt-2">
+          <p className="text-base font-light text-gate-800/55 leading-relaxed max-w-2xl mt-2">
             G.A.T.E. operates across two distinct phases — an open online
             preliminary accessible to students everywhere, followed by a
             prestigious in-person final hosted at Xidian University, Hangzhou.
@@ -71,7 +71,7 @@ export default function StructurePage() {
           {PHASES.map((item, i) => (
             <div
               key={item.phase}
-              className="grid grid-cols-1 lg:grid-cols-5 gap-10 border border-border/40 bg-gate-800/15 p-10"
+              className="grid grid-cols-1 lg:grid-cols-5 gap-10 border border-gate-fog bg-gate-fog/40 p-10"
             >
               <div className="lg:col-span-2 flex flex-col gap-5">
                 <div className="flex items-center gap-4">
@@ -82,10 +82,10 @@ export default function StructurePage() {
                     {item.phase}
                   </span>
                 </div>
-                <h2 className="font-serif text-3xl font-light text-gate-white">
+                <h2 className="font-serif text-3xl font-light text-gate-800">
                   {item.label}
                 </h2>
-                <p className="text-sm font-light text-gate-white/55 leading-relaxed">
+                <p className="text-sm font-light text-gate-800/55 leading-relaxed">
                   {item.description}
                 </p>
               </div>
@@ -95,7 +95,7 @@ export default function StructurePage() {
                     <span className="shrink-0 w-40 text-[9px] font-semibold uppercase tracking-[0.3em] text-gate-gray pt-0.5">
                       {d.label}
                     </span>
-                    <span className="text-sm font-light text-gate-white/70">
+                    <span className="text-sm font-light text-gate-800/70">
                       {d.value}
                     </span>
                   </div>
@@ -107,13 +107,13 @@ export default function StructurePage() {
       </section>
 
       {/* Timeline */}
-      <section className="py-20 px-6 border-t border-border/30 bg-gate-800/10">
+      <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/20">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-3">
             <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
               Timeline
             </span>
-            <h2 className="font-serif text-4xl font-light text-gate-white">
+            <h2 className="font-serif text-4xl font-light text-gate-800">
               Competition Calendar
             </h2>
           </div>
@@ -122,13 +122,13 @@ export default function StructurePage() {
             {TIMELINE.map((item, i) => (
               <div key={i} className="flex gap-6 py-6">
                 <div className="relative flex h-10 w-10 shrink-0 items-center justify-center">
-                  <div className="h-3 w-3 rounded-full border border-gate-gold bg-gate-900" />
+                  <div className="h-3 w-3 rounded-full border border-gate-gold bg-gate-white" />
                 </div>
                 <div className="flex flex-col gap-1 pt-1.5">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
                     {item.period}
                   </span>
-                  <span className="text-sm font-light text-gate-white/55">
+                  <span className="text-sm font-light text-gate-800/55">
                     {item.detail}
                   </span>
                 </div>
@@ -139,12 +139,12 @@ export default function StructurePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-6 border-t border-border/30">
+      <section className="py-20 px-6 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
-          <h2 className="font-serif text-4xl font-light text-gate-white">
+          <h2 className="font-serif text-4xl font-light text-gate-800">
             Ready to Register?
           </h2>
-          <p className="text-sm font-light text-gate-white/55">
+          <p className="text-sm font-light text-gate-800/55">
             Create your account and complete your application to participate in
             the next G.A.T.E. Olympiad cycle.
           </p>

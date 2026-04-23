@@ -53,11 +53,11 @@ export function SiteNav() {
     pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-gate-gold/15 bg-gate-800/97 backdrop-blur-md">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-gate-fog bg-gate-white/95 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link href="/" onClick={() => setOpen(false)}>
-            <Logo size="xs" variant="dark" showTagline={false} />
+            <Logo size="xs" variant="light" showTagline={false} />
           </Link>
 
           {/* Desktop nav */}
@@ -70,7 +70,7 @@ export function SiteNav() {
                   "text-[9px] font-semibold uppercase tracking-[0.3em] transition-colors",
                   isActive(link.href)
                     ? "text-gate-gold"
-                    : "text-gate-gray hover:text-gate-gold",
+                    : "text-gate-800/55 hover:text-gate-gold",
                 )}
               >
                 {link.label}
@@ -85,23 +85,23 @@ export function SiteNav() {
                   "flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.3em] transition-colors",
                   MORE_LINKS.some((l) => isActive(l.href))
                     ? "text-gate-gold"
-                    : "text-gate-gray hover:text-gate-gold",
+                    : "text-gate-800/55 hover:text-gate-gold",
                 )}
               >
                 More <span className="text-[7px] leading-none">▾</span>
               </button>
               {moreOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 w-60 border border-gate-gold/15 bg-gate-800 shadow-xl">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 w-60 border border-gate-fog bg-gate-white shadow-lg">
                   {MORE_LINKS.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
                       onClick={() => setMoreOpen(false)}
                       className={cn(
-                        "block border-b border-gate-gold/10 px-5 py-3.5 text-[9px] font-semibold uppercase tracking-[0.25em] transition-colors last:border-0",
+                        "block border-b border-gate-fog/60 px-5 py-3.5 text-[9px] font-semibold uppercase tracking-[0.25em] transition-colors last:border-0",
                         isActive(link.href)
-                          ? "bg-gate-700/30 text-gate-gold"
-                          : "text-gate-gray hover:bg-gate-700/20 hover:text-gate-gold",
+                          ? "bg-gate-fog text-gate-gold"
+                          : "text-gate-800/55 hover:bg-gate-fog/60 hover:text-gate-gold",
                       )}
                     >
                       {link.label}
@@ -113,7 +113,7 @@ export function SiteNav() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild className="text-gate-white/55 hover:text-gate-white">
+            <Button variant="ghost" size="sm" asChild className="text-gate-800/50 hover:text-gate-800">
               <Link href="/login">Sign In</Link>
             </Button>
             <Button variant="gold" size="sm" asChild>
@@ -129,19 +129,19 @@ export function SiteNav() {
           >
             <span
               className={cn(
-                "block h-px w-6 bg-gate-white transition-transform duration-300",
+                "block h-px w-6 bg-gate-800 transition-transform duration-300",
                 open && "translate-y-2.5 rotate-45",
               )}
             />
             <span
               className={cn(
-                "block h-px w-6 bg-gate-white transition-opacity duration-300",
+                "block h-px w-6 bg-gate-800 transition-opacity duration-300",
                 open && "opacity-0",
               )}
             />
             <span
               className={cn(
-                "block h-px w-6 bg-gate-white transition-transform duration-300",
+                "block h-px w-6 bg-gate-800 transition-transform duration-300",
                 open && "-translate-y-2.5 -rotate-45",
               )}
             />
@@ -151,7 +151,7 @@ export function SiteNav() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="lg:hidden border-t border-gate-gold/15 bg-gate-900">
+        <div className="lg:hidden border-t border-gate-fog bg-gate-white">
           <div className="mx-auto max-w-7xl px-6 py-6 flex flex-col gap-5">
             {ALL_LINKS.map((link) => (
               <Link
@@ -160,13 +160,13 @@ export function SiteNav() {
                 onClick={() => setOpen(false)}
                 className={cn(
                   "text-[9px] font-semibold uppercase tracking-[0.3em] transition-colors",
-                  isActive(link.href) ? "text-gate-gold" : "text-gate-white/65",
+                  isActive(link.href) ? "text-gate-gold" : "text-gate-800/65",
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-3 pt-3 border-t border-gate-gold/15">
+            <div className="flex flex-col gap-3 pt-3 border-t border-gate-fog">
               <Button variant="outline" size="sm" asChild>
                 <Link href="/login" onClick={() => setOpen(false)}>
                   Sign In
