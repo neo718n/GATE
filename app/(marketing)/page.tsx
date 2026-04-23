@@ -65,7 +65,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild><Link href="/register">Apply Now</Link></Button>
-            <Button variant="outline" size="lg" asChild><Link href="/structure">Explore Structure</Link></Button>
+            <Button variant="outline" size="lg" asChild className="text-gate-white/70 border-gate-white/25 hover:border-gate-white/60 hover:text-gate-white"><Link href="/structure">Explore Structure</Link></Button>
           </div>
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-40">
@@ -241,7 +241,7 @@ export default function HomePage() {
           <p className="text-sm font-light text-gate-white/55 leading-[1.9] max-w-lg">Applications are open. Register your interest, select your discipline, and begin your path toward the Global Final at Xidian University, Hangzhou.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild><Link href="/register">Apply Now</Link></Button>
-            <Button variant="ghost" size="lg" asChild><Link href="/contact">Get in Touch</Link></Button>
+            <Button variant="outline" size="lg" asChild className="text-gate-white/70 border-gate-white/25 hover:border-gate-white/60 hover:text-gate-white"><Link href="/contact">Get in Touch</Link></Button>
           </div>
         </div>
       </section>

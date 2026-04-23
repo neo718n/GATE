@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
@@ -27,7 +27,18 @@ const ALL_LINKS = [...PRIMARY_LINKS, ...MORE_LINKS];
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setMoreOpen(false);
+      }
+    }
+    if (moreOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [moreOpen]);
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
@@ -58,11 +69,7 @@ export function SiteNav() {
             ))}
 
             {/* More dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => setMoreOpen(true)}
-              onMouseLeave={() => setMoreOpen(false)}
-            >
+            <div ref={moreRef} className="relative">
               <button
                 onClick={() => setMoreOpen((v) => !v)}
                 className={cn(
@@ -75,7 +82,7 @@ export function SiteNav() {
                 More <span className="text-[7px] leading-none">▾</span>
               </button>
               {moreOpen && (
-                <div className="absolute top-full right-0 mt-3 w-52 border border-gate-gold/15 bg-gate-800 shadow-xl">
+                <div className="absolute top-full right-0 w-52 border border-gate-gold/15 bg-gate-800 shadow-xl">
                   {MORE_LINKS.map((link) => (
                     <Link
                       key={link.href}
@@ -97,7 +104,7 @@ export function SiteNav() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="ghost" size="sm" asChild className="text-gate-white/55 hover:text-gate-white">
               <Link href="/login">Sign In</Link>
             </Button>
             <Button variant="gold" size="sm" asChild>
