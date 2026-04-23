@@ -27,6 +27,28 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
+  openGraph: {
+    type: "website",
+    siteName: "G.A.T.E. Olympiad",
+    title: "G.A.T.E. Olympiad",
+    description:
+      "Global Academic & Theoretical Excellence Olympiad — an international academic competition with a Global Onsite Olympiad hosted at Xidian University, Hangzhou Campus.",
+    images: [
+      {
+        url: "/brand/GATE-Logo-Primary-Dark@2x.png",
+        width: 1800,
+        height: 460,
+        alt: "G.A.T.E. Olympiad",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "G.A.T.E. Olympiad",
+    description:
+      "Global Academic & Theoretical Excellence Olympiad — an international academic competition.",
+    images: ["/brand/GATE-Logo-Primary-Dark@2x.png"],
+  },
 };
 
 export default function RootLayout({

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="130" viewBox="0 0 700 130">
+  <!-- GATE-Wordmark-Dark -->
+  <rect width="700" height="130" fill="#0B1F3A"/>
+  <text font-family="Montserrat,Arial,sans-serif" font-size="88" font-weight="900">
+    <tspan x="32" y="100" fill="#FAFBFC" letter-spacing="18">G</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan><tspan fill="#FAFBFC" letter-spacing="18">A</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan><tspan fill="#FAFBFC" letter-spacing="18">T</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan><tspan fill="#FAFBFC" letter-spacing="18">E</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan>
+  </text>
+</svg>
