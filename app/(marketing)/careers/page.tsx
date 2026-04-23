@@ -3,7 +3,7 @@ import { CareerForm } from "./career-form";
 
 export const metadata: Metadata = {
   title: "Careers",
-  description: "Open positions at G.A.T.E. Olympiad — join the team building a global academic competition.",
+  description: "Open positions at G.A.T.E. Assessment — join the team building a global academic competition.",
 };
 
 const POSITIONS = [
@@ -35,16 +35,16 @@ export default function CareersPage() {
     <>
       <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Join the Team</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Join the Team</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Careers</h1>
-          <p className="text-base font-light text-gate-800/45 mt-2 max-w-2xl">Work with a global team building the infrastructure for international academic excellence.</p>
+          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Work with a global team building the infrastructure for international academic excellence.</p>
         </div>
       </section>
 
       <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
-            <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">About Working at G.A.T.E.</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">About Working at G.A.T.E.</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Build Something That Matters</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
               <p>G.A.T.E. is a small, focused team building a rigorous international academic platform. Every role here has direct impact on how thousands of students around the world access and experience academic competition at the highest level.</p>
@@ -59,8 +59,8 @@ export default function CareersPage() {
               { title: "International Scope", body: "You will work with participants, coordinators, and partners from across the world." },
             ].map((item) => (
               <div key={item.title} className="flex flex-col gap-2 border border-gate-fog p-5">
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.25em] text-gate-800">{item.title}</h3>
-                <p className="text-xs font-light text-gate-800/50 leading-[1.8]">{item.body}</p>
+                <h3 className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800">{item.title}</h3>
+                <p className="text-xs font-light text-gate-800/65 leading-[1.8]">{item.body}</p>
               </div>
             ))}
           </div>
@@ -69,7 +69,7 @@ export default function CareersPage() {
 
       <section className="py-24 px-6 bg-gate-fog/40 border-y border-gate-fog/60">
         <div className="mx-auto max-w-7xl flex flex-col gap-4 mb-12">
-          <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Open Positions</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Open Positions</span>
           <h2 className="font-serif text-4xl font-light text-gate-800">Current Openings</h2>
         </div>
         <div className="mx-auto max-w-7xl flex flex-col gap-8">
@@ -78,8 +78,8 @@ export default function CareersPage() {
               <div className="border-b border-gate-fog/60 px-8 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h3 className="font-serif text-2xl font-light text-gate-800">{pos.title}</h3>
                 <div className="flex gap-3">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-gate-gold/70 border border-gate-gold/25 px-3 py-1.5">{pos.type}</span>
-                  <span className="text-[9px] font-bold uppercase tracking-[0.25em] text-gate-gray border border-gate-fog px-3 py-1.5">{pos.location}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold border border-gate-gold/25 px-3 py-1.5">{pos.type}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gray border border-gate-fog px-3 py-1.5">{pos.location}</span>
                 </div>
               </div>
               <div className="px-8 py-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -87,10 +87,10 @@ export default function CareersPage() {
                   <p className="text-sm font-light text-gate-800/60 leading-[1.9]">{pos.desc}</p>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gate-gray">Requirements</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray">Requirements</p>
                   <ul className="flex flex-col gap-2">
                     {pos.requirements.map((r) => (
-                      <li key={r} className="flex items-start gap-3 text-sm font-light text-gate-800/55">
+                      <li key={r} className="flex items-start gap-3 text-sm font-light text-gate-800/65">
                         <span className="mt-2 h-px w-4 shrink-0 bg-gate-gold/40" />{r}
                       </li>
                     ))}
@@ -105,7 +105,7 @@ export default function CareersPage() {
       <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-5 gap-16">
           <div className="lg:col-span-2 flex flex-col gap-6">
-            <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Apply</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Apply</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Submit Your Application</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
               <p>Select the position you are applying for and submit your application below. CV submission will be available after your initial application is reviewed.</p>
@@ -115,10 +115,10 @@ export default function CareersPage() {
           <div className="lg:col-span-3">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-[9px] font-bold uppercase tracking-[0.3em] text-gate-gray">Applying for</label>
+                <label className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray">Applying for</label>
                 <div className="flex flex-wrap gap-2">
                   {POSITIONS.map((pos) => (
-                    <span key={pos.title} className="text-[9px] font-bold uppercase tracking-[0.2em] border border-gate-gold/30 text-gate-gold/70 px-3 py-1.5">{pos.title}</span>
+                    <span key={pos.title} className="text-[10px] font-semibold uppercase tracking-[0.2em] border border-gate-gold/30 text-gate-gold px-3 py-1.5">{pos.title}</span>
                   ))}
                 </div>
               </div>
@@ -130,3 +130,4 @@ export default function CareersPage() {
     </>
   );
 }
+

@@ -7,9 +7,13 @@ export default async function CoordinatorDashboard() {
 
   return (
     <div className="flex flex-col gap-10 max-w-5xl">
-      <div className="flex flex-col gap-2">
-        <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-gate-gold">Coordinator Portal</span>
-        <h1 className="font-serif text-4xl font-light text-gate-white">Coordinator Dashboard</h1>
+      <div className="flex flex-col gap-1.5">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+          Coordinator Portal
+        </span>
+        <h1 className="font-serif text-4xl font-light text-gate-800">
+          Coordinator Dashboard
+        </h1>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -19,23 +23,57 @@ export default async function CoordinatorDashboard() {
           { label: "Confirmed", value: "—" },
           { label: "Round II Qualified", value: "—" },
         ].map((stat) => (
-          <div key={stat.label} className="border border-border/40 bg-gate-800/20 p-6 flex flex-col gap-2">
-            <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gate-gray">{stat.label}</p>
-            <p className="text-2xl font-serif font-light text-gate-white">{stat.value}</p>
+          <div
+            key={stat.label}
+            className="border border-gate-fog bg-white p-6 flex flex-col gap-3 shadow-sm"
+          >
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/60">
+              {stat.label}
+            </p>
+            <p className="text-3xl font-serif font-light text-gate-800">
+              {stat.value}
+            </p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {[
-          { title: "My Participants", desc: "View and manage all participants assigned to you. Verify registrations, check document status, and update participant records.", href: "/coordinator/participants", action: "View Participants" },
-          { title: "Status Tracking", desc: "Track participant registration status, verification progress, and payment confirmation across your assigned group.", href: "/coordinator/status", action: "View Status" },
-          { title: "Communication", desc: "Send and receive messages to and from assigned participants. Share updates on registration deadlines and examination information.", href: "/coordinator/messages", action: "Messages" },
-          { title: "Reports", desc: "Generate regional participation reports for submission to the G.A.T.E. administration. Track metrics for your assigned group.", href: "/coordinator/reports", action: "View Reports" },
+          {
+            title: "My Participants",
+            desc: "View and manage all participants assigned to you. Verify registrations, check document status, and update participant records.",
+            href: "/coordinator/participants",
+            action: "View Participants",
+          },
+          {
+            title: "Status Tracking",
+            desc: "Track participant registration status, verification progress, and payment confirmation across your assigned group.",
+            href: "/coordinator/status",
+            action: "View Status",
+          },
+          {
+            title: "Communication",
+            desc: "Send and receive messages to and from assigned participants. Share updates on registration deadlines and examination information.",
+            href: "/coordinator/messages",
+            action: "Messages",
+          },
+          {
+            title: "Reports",
+            desc: "Generate regional participation reports for submission to the G.A.T.E. administration. Track metrics for your assigned group.",
+            href: "/coordinator/reports",
+            action: "View Reports",
+          },
         ].map((item) => (
-          <div key={item.title} className="border border-border/40 p-6 flex flex-col gap-4">
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.3em] text-gate-white">{item.title}</h2>
-            <p className="text-sm font-light text-gate-white/55 leading-[1.8] flex-1">{item.desc}</p>
+          <div
+            key={item.title}
+            className="border border-gate-fog bg-white p-6 flex flex-col gap-4 shadow-sm"
+          >
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gate-800">
+              {item.title}
+            </h2>
+            <p className="text-sm font-light text-gate-800/60 leading-[1.8] flex-1">
+              {item.desc}
+            </p>
             <Button variant="outline" size="sm" asChild className="w-fit">
               <Link href={item.href}>{item.action}</Link>
             </Button>
@@ -45,3 +83,4 @@ export default async function CoordinatorDashboard() {
     </div>
   );
 }
+

@@ -1,8 +1,13 @@
 ﻿import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { requireSession } from "@/lib/authz";
+import { DashboardSidebar } from "@/components/dashboard-sidebar";
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await requireSession();
   const role = (session.user as { role?: string }).role ?? "participant";
 
@@ -10,7 +15,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     super_admin: [
       { href: "/admin", label: "Overview" },
       { href: "/admin/users", label: "Users & Roles" },
-      { href: "/admin/cycles", label: "Olympiad Cycles" },
+      { href: "/admin/cycles", label: "Assessment Cycles" },
       { href: "/admin/subjects", label: "Subjects & Exams" },
       { href: "/admin/partners", label: "Partner Applications" },
       { href: "/admin/careers", label: "Career Applications" },
@@ -45,36 +50,32 @@ export default async function DashboardLayout({ children }: { children: React.Re
   };
 
   const links = navMap[role] ?? navMap.participant;
-  const roleLabel = role.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const roleLabel = role
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
 
   return (
-    <div className="flex min-h-screen bg-gate-900">
+    <div className="flex min-h-screen bg-gate-mist">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-56 flex-col border-r border-gate-gold/10 bg-gate-800/50 shrink-0">
-        <div className="px-5 py-5 border-b border-gate-gold/10">
+      <aside className="hidden md:flex w-56 flex-col border-r border-gate-fog bg-white shrink-0">
+        <div className="px-5 py-5 border-b border-gate-fog">
           <Link href="/">
-            <Logo size="xs" variant="dark" showTagline={false} />
+            <Logo size="xs" variant="light" showTagline={false} />
           </Link>
         </div>
-        <div className="px-4 py-4 border-b border-gate-gold/10">
-          <p className="text-[8px] font-bold uppercase tracking-[0.35em] text-gate-gold/60">{roleLabel}</p>
-          <p className="text-xs font-light text-gate-white/60 mt-1 truncate">{session.user.email}</p>
+        <div className="px-5 py-4 border-b border-gate-fog">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
+            {roleLabel}
+          </p>
+          <p className="text-xs font-light text-gate-800/50 mt-1 truncate">
+            {session.user.email}
+          </p>
         </div>
-        <nav className="flex flex-col gap-1 p-3 flex-1">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-gray hover:text-gate-white hover:bg-gate-700/30 transition-colors"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-gate-gold/10">
+        <DashboardSidebar links={links} />
+        <div className="p-4 border-t border-gate-fog">
           <Link
             href="/api/auth/sign-out"
-            className="block px-3 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-gray hover:text-red-400 transition-colors"
+            className="block px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 hover:text-red-500 transition-colors border-l-2 border-transparent"
           >
             Sign Out
           </Link>
@@ -84,12 +85,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
-        <header className="md:hidden flex items-center justify-between px-5 py-4 border-b border-gate-gold/10 bg-gate-800/50">
-          <Link href="/"><Logo size="xs" variant="dark" showTagline={false} /></Link>
-          <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-gate-gold/70">{roleLabel}</p>
+        <header className="md:hidden flex items-center justify-between px-5 py-4 border-b border-gate-fog bg-white">
+          <Link href="/">
+            <Logo size="xs" variant="light" showTagline={false} />
+          </Link>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
+            {roleLabel}
+          </p>
         </header>
         <main className="flex-1 p-6 md:p-10">{children}</main>
       </div>
     </div>
   );
 }
+

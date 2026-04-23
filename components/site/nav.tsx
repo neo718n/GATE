@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 const PRIMARY_LINKS = [
   { href: "/about", label: "About" },
   { href: "/structure", label: "Structure" },
-  { href: "/onsite-olympiad", label: "Onsite" },
+  { href: "/onsite-assessment", label: "Onsite" },
   { href: "/subjects", label: "Subjects" },
   { href: "/partnerships", label: "Partnerships" },
 ];
@@ -67,10 +67,10 @@ export function SiteNav() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-[9px] font-semibold uppercase tracking-[0.3em] transition-colors",
+                  "text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors",
                   isActive(link.href)
                     ? "text-gate-gold"
-                    : "text-gate-800/55 hover:text-gate-gold",
+                    : "text-gate-800/65 hover:text-gate-800",
                 )}
               >
                 {link.label}
@@ -82,13 +82,13 @@ export function SiteNav() {
               <button
                 onClick={() => setMoreOpen((v) => !v)}
                 className={cn(
-                  "flex items-center gap-1 text-[9px] font-semibold uppercase tracking-[0.3em] transition-colors",
+                  "flex items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors",
                   MORE_LINKS.some((l) => isActive(l.href))
                     ? "text-gate-gold"
-                    : "text-gate-800/55 hover:text-gate-gold",
+                    : "text-gate-800/65 hover:text-gate-800",
                 )}
               >
-                More <span className="text-[7px] leading-none">▾</span>
+                More <span className="text-[8px] leading-none">▾</span>
               </button>
               {moreOpen && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 w-60 border border-gate-fog bg-gate-white shadow-lg">
@@ -98,10 +98,10 @@ export function SiteNav() {
                       href={link.href}
                       onClick={() => setMoreOpen(false)}
                       className={cn(
-                        "block border-b border-gate-fog/60 px-5 py-3.5 text-[9px] font-semibold uppercase tracking-[0.25em] transition-colors last:border-0",
+                        "block border-b border-gate-fog/60 px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] transition-colors last:border-0",
                         isActive(link.href)
                           ? "bg-gate-fog text-gate-gold"
-                          : "text-gate-800/55 hover:bg-gate-fog/60 hover:text-gate-gold",
+                          : "text-gate-800/65 hover:bg-gate-fog/60 hover:text-gate-800",
                       )}
                     >
                       {link.label}
@@ -159,8 +159,8 @@ export function SiteNav() {
                 href={link.href}
                 onClick={() => setOpen(false)}
                 className={cn(
-                  "text-[9px] font-semibold uppercase tracking-[0.3em] transition-colors",
-                  isActive(link.href) ? "text-gate-gold" : "text-gate-800/65",
+                  "text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors",
+                  isActive(link.href) ? "text-gate-gold" : "text-gate-800/70",
                 )}
               >
                 {link.label}

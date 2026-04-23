@@ -13,7 +13,7 @@ const buttonVariants = cva(
         gold:
           "bg-gate-gold text-gate-800 hover:bg-gate-gold-2 border border-transparent",
         outline:
-          "bg-transparent text-current border border-current/30 hover:border-current",
+          "bg-transparent text-current border border-current/40 hover:border-current hover:bg-current/5",
         ghost:
           "bg-transparent text-current hover:bg-current/5",
       },

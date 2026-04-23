@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useActionState } from "react";
 import { Label } from "@/components/ui/label";
@@ -15,7 +15,7 @@ export function ContactForm() {
   if (state.success) {
     return (
       <div className="flex flex-col items-start gap-4 border border-gate-gold/30 bg-gate-gold/5 p-8">
-        <span className="text-[9px] font-semibold uppercase tracking-[0.35em] text-gate-gold">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Message Sent
         </span>
         <p className="text-sm font-light text-gate-800/65">
@@ -97,3 +97,4 @@ export function ContactForm() {
     </form>
   );
 }
+

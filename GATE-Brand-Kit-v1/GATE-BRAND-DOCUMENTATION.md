@@ -1,4 +1,4 @@
-# G.A.T.E. Olympiad — Official Brand Identity
+# G.A.T.E. Assessment — Official Brand Identity
 ## For AI Assistants & Developers (Claude Code Reference)
 
 > **This document is the single source of truth for all G.A.T.E. brand decisions.**
@@ -9,8 +9,8 @@
 ## 0. Quick Cheat-Sheet
 
 ```
-Name:        G.A.T.E. Olympiad   ← ALWAYS with dots. Never "GATE".
-Full name:   Global Academic & Theoretical Excellence Olympiad
+Name:        G.A.T.E. Assessment   ← ALWAYS with dots. Never "GATE".
+Full name:   Global Academic & Theoretical Excellence Assessment
 Font:        Montserrat 900 (logo) / Montserrat 300–700 (text)
 Primary bg:  #0B1F3A  (Deep Academic Blue)
 Accent:      #C9993A  (Prestige Gold) — dots & lines ONLY, never fill
@@ -25,9 +25,9 @@ Logo file:   Always SVG. Never JPG for logo.
 
 | Correct | Incorrect |
 |---------|-----------|
-| G.A.T.E. Olympiad | GATE Olympiad |
+| G.A.T.E. Assessment | GATE Assessment |
 | G.A.T.E. | GATE |
-| Global Academic & Theoretical Excellence Olympiad | Global Academic and Theoretical Excellence Olympiad |
+| Global Academic & Theoretical Excellence Assessment | Global Academic and Theoretical Excellence Assessment |
 
 - **Always** write `G.A.T.E.` with dots after every letter
 - **Always** capitalise every letter: G, A, T, E
@@ -175,7 +175,7 @@ Display:  Cormorant Garamond (for large headers, serif moments)
 <div class="gate-logo">
   <div class="gate-wm">G<span class="dot">.</span>A<span class="dot">.</span>T<span class="dot">.</span>E<span class="dot">.</span></div>
   <div class="gate-rule"></div>
-  <div class="gate-tagline">Global Academic &amp; Theoretical Excellence Olympiad</div>
+  <div class="gate-tagline">Global Academic &amp; Theoretical Excellence Assessment</div>
 </div>
 
 <style>
@@ -323,7 +323,7 @@ Never place other elements (text, images, borders) inside this zone.
       </div>
       <div style="height:1px;background:linear-gradient(90deg,#C9993A,transparent);width:130px;margin:5px 0;"></div>
       <div style="font-size:7px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:#8A9BB0;">
-        Global Academic &amp; Theoretical Excellence Olympiad
+        Global Academic &amp; Theoretical Excellence Assessment
       </div>
       <div style="margin-top:10px;font-size:12px;font-weight:600;color:#0B1F3A;">{NAME}</div>
       <div style="font-size:10px;font-weight:300;color:#8A9BB0;margin-top:2px;">{TITLE} · {CITY}</div>
@@ -360,7 +360,7 @@ Never place other elements (text, images, borders) inside this zone.
     </div>
     <div style="height:1px;background:linear-gradient(90deg,transparent,#C9993A,transparent);margin:10px auto;width:60%;"></div>
     <div style="font-size:7px;font-weight:300;letter-spacing:4px;text-transform:uppercase;color:#8A9BB0;">
-      Global Academic &amp; Theoretical Excellence Olympiad
+      Global Academic &amp; Theoretical Excellence Assessment
     </div>
   </div>
   
@@ -374,7 +374,7 @@ Never place other elements (text, images, borders) inside this zone.
     <p style="font-size:7.5px;font-weight:400;letter-spacing:2px;text-transform:uppercase;
       color:#8A9BB0;line-height:2.2;">
       has achieved <strong style="color:#C9993A;">{MEDAL} Medal</strong> in the<br>
-      Global Academic &amp; Theoretical Excellence Olympiad<br>
+      Global Academic &amp; Theoretical Excellence Assessment<br>
       {SUBJECT} · {YEAR} · Beijing, China
     </p>
   </div>
@@ -389,10 +389,10 @@ Never place other elements (text, images, borders) inside this zone.
     <div style="font-weight:900;font-size:16px;letter-spacing:5px;color:#FAFBFC;">
       G<span style="color:#C9993A;">.</span>A<span style="color:#C9993A;">.</span>T<span style="color:#C9993A;">.</span>E<span style="color:#C9993A;">.</span>
     </div>
-    <div style="font-size:6px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:#8A9BB0;margin-top:3px;">Olympiad</div>
+    <div style="font-size:6px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:#8A9BB0;margin-top:3px;">Assessment</div>
   </div>
   <div style="font-size:8px;font-weight:300;letter-spacing:1.5px;color:rgba(138,155,176,0.6);text-align:right;">
-    Beijing, China<br>gateolympiad.com
+    Beijing, China<br>gateassessment.com
   </div>
 </div>
 <!-- Gold accent line -->
@@ -568,7 +568,7 @@ A: Background `#FAFBFC`, text `#0B1F3A`, gold accents `#C9993A`, use Cormorant G
 **Q: User wants to add the logo to a dark blue presentation slide.**
 A: Use PRIMARY DARK variant on `#0B1F3A` background, or PRIMARY LIGHT on a white text box.
 
-**Q: User wants a social media post for the olympiad.**
+**Q: User wants a social media post for the assessment.**
 A: Dark gradient background `#0B1F3A → #1A3560`, white wordmark with gold dots, gold rule line, white tagline at 50% opacity.
 
 **Q: User asks to make the logo "more colourful" or "add more colours".**
@@ -585,5 +585,5 @@ A: Cormorant Garamond, Italic, weight 400, colour `#0B1F3A`. Size 24–32pt depe
 
 ---
 
-*G.A.T.E. Olympiad Brand Identity · The Intellectual Monogram · v1.0 · 2025*
+*G.A.T.E. Assessment Brand Identity · The Intellectual Monogram · v1.0 · 2025*
 *This document supersedes all previous brand guidelines.*

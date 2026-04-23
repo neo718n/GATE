@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Subject Areas",
   description:
-    "Explore the six academic disciplines in the G.A.T.E. Olympiad: Mathematics, Physics, Chemistry, Biology, Competitive Programming, and English.",
+    "Explore the six academic disciplines in the G.A.T.E. Assessment: Mathematics, Physics, Chemistry, Biology, Competitive Programming, and English.",
 };
 
 const SUBJECTS = [
@@ -59,13 +59,13 @@ export default function SubjectsPage() {
       {/* Header */}
       <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             Academic Disciplines
           </span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">
             Subject Areas
           </h1>
-          <p className="text-base font-light text-gate-800/55 leading-relaxed max-w-2xl mt-2">
+          <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-2xl mt-2">
             G.A.T.E. spans six rigorous academic disciplines. Participants
             register in one subject area and are evaluated through theoretical
             examinations designed by leading academics.
@@ -83,7 +83,7 @@ export default function SubjectsPage() {
             >
               <div className="flex items-start justify-between">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold tracking-[0.35em] text-gate-gold/70">
+                  <span className="text-[10px] font-semibold tracking-[0.3em] text-gate-gold">
                     {subject.code}
                   </span>
                   <h2 className="font-serif text-2xl font-light text-gate-800">
@@ -91,16 +91,16 @@ export default function SubjectsPage() {
                   </h2>
                 </div>
               </div>
-              <p className="text-sm font-light text-gate-800/55 leading-relaxed flex-1">
+              <p className="text-sm font-light text-gate-800/65 leading-relaxed flex-1">
                 {subject.description}
               </p>
               <div className="flex flex-col gap-3 pt-4 border-t border-gate-fog/60">
-                <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-gate-gray">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray">
                   Key Topics
                 </span>
                 <ul className="flex flex-col gap-2">
                   {subject.topics.map((topic) => (
-                    <li key={topic} className="flex items-center gap-2 text-xs font-light text-gate-800/50">
+                    <li key={topic} className="flex items-center gap-2 text-xs font-light text-gate-800/65">
                       <span className="h-px w-4 bg-gate-gold/40 shrink-0" />
                       {topic}
                     </li>
@@ -115,13 +115,13 @@ export default function SubjectsPage() {
       {/* Registration Note */}
       <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             Registration
           </span>
           <h2 className="font-serif text-4xl font-light text-gate-800">
             Choose Your Discipline
           </h2>
-          <p className="text-sm font-light text-gate-800/55 leading-relaxed">
+          <p className="text-sm font-light text-gate-800/65 leading-relaxed">
             Each participant registers in a single subject area for the
             Preliminary Round. Your subject selection is made during the
             application process and cannot be changed after submission.
@@ -139,3 +139,4 @@ export default function SubjectsPage() {
     </>
   );
 }
+

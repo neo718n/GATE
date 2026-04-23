@@ -66,8 +66,8 @@ export function RegisterForm() {
         <h1 className="font-serif text-3xl font-light text-gate-white">
           Apply Now
         </h1>
-        <p className="text-sm font-light text-gate-white/45">
-          Create your G.A.T.E. Olympiad account
+        <p className="text-sm font-light text-gate-white/70">
+          Create your G.A.T.E. Assessment account
         </p>
       </div>
 
@@ -145,7 +145,7 @@ export function RegisterForm() {
         {pending ? "Creating account…" : "Create Account"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-white/40">
+      <p className="text-center text-xs font-light text-gate-white/60">
         Already have an account?{" "}
         <Link href="/login" className="text-gate-gold hover:underline">
           Sign In

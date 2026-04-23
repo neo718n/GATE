@@ -12,7 +12,7 @@ export default function AuthLayout({
       <div className="hidden lg:flex lg:w-1/2 xl:w-2/5 flex-col items-center justify-center p-16 border-r border-border/30 bg-gate-800/20">
         <div className="flex flex-col items-center gap-10 max-w-sm text-center">
           <Logo size="lg" variant="dark" showTagline />
-          <p className="text-sm font-light text-gate-white/45 leading-relaxed">
+          <p className="text-sm font-light text-gate-white/70 leading-relaxed">
             An international academic competition uniting exceptional students
             worldwide, culminating at Xidian University, Hangzhou.
           </p>

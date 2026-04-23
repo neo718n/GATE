@@ -19,34 +19,34 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: "G.A.T.E. Olympiad",
-    template: "%s · G.A.T.E. Olympiad",
+    default: "G.A.T.E. Assessment",
+    template: "%s · G.A.T.E. Assessment",
   },
   description:
-    "Global Academic & Theoretical Excellence Olympiad — an international academic competition with a Global Onsite Olympiad hosted at Xidian University, Hangzhou Campus.",
+    "Global Academic & Theoretical Excellence Assessment — an international academic competition with a Global Onsite Assessment hosted at Xidian University, Hangzhou Campus.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
   openGraph: {
     type: "website",
-    siteName: "G.A.T.E. Olympiad",
-    title: "G.A.T.E. Olympiad",
+    siteName: "G.A.T.E. Assessment",
+    title: "G.A.T.E. Assessment",
     description:
-      "Global Academic & Theoretical Excellence Olympiad — an international academic competition with a Global Onsite Olympiad hosted at Xidian University, Hangzhou Campus.",
+      "Global Academic & Theoretical Excellence Assessment — an international academic competition with a Global Onsite Assessment hosted at Xidian University, Hangzhou Campus.",
     images: [
       {
         url: "/brand/GATE-Logo-Primary-Dark@2x.png",
         width: 1800,
         height: 460,
-        alt: "G.A.T.E. Olympiad",
+        alt: "G.A.T.E. Assessment",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "G.A.T.E. Olympiad",
+    title: "G.A.T.E. Assessment",
     description:
-      "Global Academic & Theoretical Excellence Olympiad — an international academic competition.",
+      "Global Academic & Theoretical Excellence Assessment — an international academic competition.",
     images: ["/brand/GATE-Logo-Primary-Dark@2x.png"],
   },
 };

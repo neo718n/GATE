@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -54,7 +54,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
         <h1 className="font-serif text-3xl font-light text-gate-white">
           Verify Your Email
         </h1>
-        <p className="text-sm font-light text-gate-white/45">
+        <p className="text-sm font-light text-gate-white/70">
           A 6-digit code was sent to{" "}
           <span className="text-gate-white/70">{email}</span>
         </p>
@@ -91,7 +91,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
         {pending ? "Verifying…" : "Verify Email"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-white/40">
+      <p className="text-center text-xs font-light text-gate-white/60">
         Didn&apos;t receive the code?{" "}
         <button
           type="button"
@@ -105,3 +105,4 @@ export function VerifyEmailForm({ email }: { email: string }) {
     </form>
   );
 }
+

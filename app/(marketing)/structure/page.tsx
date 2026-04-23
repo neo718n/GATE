@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Competition Structure",
   description:
-    "Learn about the G.A.T.E. Olympiad two-phase structure: an online preliminary round followed by the global onsite final at Xidian University, Hangzhou.",
+    "Learn about the G.A.T.E. Assessment two-phase structure: an online preliminary round followed by the global onsite final at Xidian University, Hangzhou.",
 };
 
 const PHASES = [
@@ -24,9 +24,9 @@ const PHASES = [
   },
   {
     phase: "Phase II",
-    label: "Global Onsite Olympiad",
+    label: "Global Onsite Assessment",
     description:
-      "Finalists are invited to compete in person at the Xidian University Hangzhou Campus, China. The onsite olympiad features more advanced theoretical problems, collaboration events, and a formal awards ceremony.",
+      "Finalists are invited to compete in person at the Xidian University Hangzhou Campus, China. The onsite assessment features more advanced theoretical problems, collaboration events, and a formal awards ceremony.",
     details: [
       { label: "Location", value: "Xidian University · Hangzhou Campus · China" },
       { label: "Format", value: "Onsite theoretical examination + awards ceremony" },
@@ -41,7 +41,7 @@ const TIMELINE = [
   { period: "Registration Opens", detail: "Applications open to participants worldwide" },
   { period: "Preliminary Round", detail: "Online examination across all subject areas" },
   { period: "Results Announced", detail: "Phase I results published; finalists notified" },
-  { period: "Global Onsite Olympiad", detail: "Finals at Xidian University, Hangzhou Campus" },
+  { period: "Global Onsite Assessment", detail: "Finals at Xidian University, Hangzhou Campus" },
   { period: "Awards Ceremony", detail: "Medal presentation and closing celebration" },
 ];
 
@@ -51,13 +51,13 @@ export default function StructurePage() {
       {/* Header */}
       <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             How It Works
           </span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">
             Competition Structure
           </h1>
-          <p className="text-base font-light text-gate-800/55 leading-relaxed max-w-2xl mt-2">
+          <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-2xl mt-2">
             G.A.T.E. operates across two distinct phases — an open online
             preliminary accessible to students everywhere, followed by a
             prestigious in-person final hosted at Xidian University, Hangzhou.
@@ -78,21 +78,21 @@ export default function StructurePage() {
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center border border-gate-gold/50 text-[11px] font-semibold tracking-widest text-gate-gold">
                     {i + 1}
                   </span>
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.35em] text-gate-gold/70">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
                     {item.phase}
                   </span>
                 </div>
                 <h2 className="font-serif text-3xl font-light text-gate-800">
                   {item.label}
                 </h2>
-                <p className="text-sm font-light text-gate-800/55 leading-relaxed">
+                <p className="text-sm font-light text-gate-800/65 leading-relaxed">
                   {item.description}
                 </p>
               </div>
               <div className="lg:col-span-3 flex flex-col divide-y divide-border/30">
                 {item.details.map((d) => (
                   <div key={d.label} className="flex flex-col sm:flex-row sm:items-start gap-2 py-4 first:pt-0 last:pb-0">
-                    <span className="shrink-0 w-40 text-[9px] font-semibold uppercase tracking-[0.3em] text-gate-gray pt-0.5">
+                    <span className="shrink-0 w-40 text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray pt-0.5">
                       {d.label}
                     </span>
                     <span className="text-sm font-light text-gate-800/70">
@@ -110,7 +110,7 @@ export default function StructurePage() {
       <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-3">
-            <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
               Timeline
             </span>
             <h2 className="font-serif text-4xl font-light text-gate-800">
@@ -128,7 +128,7 @@ export default function StructurePage() {
                   <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
                     {item.period}
                   </span>
-                  <span className="text-sm font-light text-gate-800/55">
+                  <span className="text-sm font-light text-gate-800/65">
                     {item.detail}
                   </span>
                 </div>
@@ -144,9 +144,9 @@ export default function StructurePage() {
           <h2 className="font-serif text-4xl font-light text-gate-800">
             Ready to Register?
           </h2>
-          <p className="text-sm font-light text-gate-800/55">
+          <p className="text-sm font-light text-gate-800/65">
             Create your account and complete your application to participate in
-            the next G.A.T.E. Olympiad cycle.
+            the next G.A.T.E. Assessment cycle.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Button variant="gold" size="lg" asChild>
@@ -161,3 +161,4 @@ export default function StructurePage() {
     </>
   );
 }
+

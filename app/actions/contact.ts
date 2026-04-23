@@ -41,7 +41,7 @@ export async function submitContact(
 
   const { error } = await resend.emails.send({
     from: DEFAULT_FROM,
-    to: process.env.RESEND_FROM_EMAIL ?? "contact@gate-olympiad.org",
+    to: process.env.RESEND_FROM_EMAIL ?? "contact@gate-assessment.org",
     replyTo: email,
     subject: `Contact: ${subject}`,
     text: `Name: ${name}\nEmail: ${email}\n\n${message}`,

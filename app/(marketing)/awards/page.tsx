@@ -4,14 +4,14 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Awards & Certificates",
-  description: "G.A.T.E. Olympiad medals, distinctions, and certificates — Gold, Silver, Bronze, Honorable Mention.",
+  description: "G.A.T.E. Assessment medals, distinctions, and certificates — Gold, Silver, Bronze, Honorable Mention.",
 };
 
 const MEDALS = [
   {
     tier: "Gold Medal",
     hex: "#C9993A",
-    eligibility: "Top performers at the Global Onsite Olympiad",
+    eligibility: "Top performers at the Global Onsite Assessment",
     desc: "Awarded to participants who achieve the highest scores at the onsite final. The Gold Medal represents the pinnacle of academic achievement in G.A.T.E.",
   },
   {
@@ -45,16 +45,16 @@ export default function AwardsPage() {
     <>
       <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Recognition</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Recognition</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Awards &amp; Certificates</h1>
-          <p className="text-base font-light text-gate-800/45 mt-2 max-w-2xl">Academic achievement formally recognized — medals, distinctions, and verifiable certificates for all participants.</p>
+          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Academic achievement formally recognized — medals, distinctions, and verifiable certificates for all participants.</p>
         </div>
       </section>
 
       <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-4">
-            <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Onsite Olympiad Awards</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Onsite Assessment Awards</span>
             <h2 className="font-serif text-4xl font-light text-gate-800">Medal Hierarchy</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -68,9 +68,9 @@ export default function AwardsPage() {
                 <div className="flex flex-col gap-3">
                   <div>
                     <h3 className="text-base font-semibold tracking-[0.05em] text-gate-800">{medal.tier}</h3>
-                    <p className="text-[10px] font-light text-gate-gold/60 mt-1">{medal.eligibility}</p>
+                    <p className="text-[10px] font-light text-gate-gold mt-1">{medal.eligibility}</p>
                   </div>
-                  <p className="text-sm font-light text-gate-800/55 leading-[1.9]">{medal.desc}</p>
+                  <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{medal.desc}</p>
                 </div>
               </div>
             ))}
@@ -81,7 +81,7 @@ export default function AwardsPage() {
       <section className="py-24 px-6 bg-gate-fog/40 border-y border-gate-fog/60">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-4">
-            <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Certificates</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Certificates</span>
             <h2 className="font-serif text-4xl font-light text-gate-800">For Every Stage</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -89,9 +89,9 @@ export default function AwardsPage() {
               <div key={cert.title} className="flex flex-col gap-4 border border-gate-fog p-8">
                 <div className="flex flex-col gap-0">
                   <div className="h-px w-12 bg-gate-gold/40 mb-4" />
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.25em] text-gate-800">{cert.title}</h3>
+                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">{cert.title}</h3>
                 </div>
-                <p className="text-sm font-light text-gate-800/55 leading-[1.9]">{cert.desc}</p>
+                <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{cert.desc}</p>
               </div>
             ))}
           </div>
@@ -101,7 +101,7 @@ export default function AwardsPage() {
       <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
-            <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Certificate Standards</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Certificate Standards</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Verifiable and Internationally Recognized</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
               <p>All G.A.T.E. certificates are formally issued documents suitable for inclusion in academic portfolios, university applications, and professional CVs.</p>
@@ -122,10 +122,11 @@ export default function AwardsPage() {
       <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="font-serif text-4xl font-light text-gate-800">Begin Your Path to Recognition</h2>
-          <p className="text-sm font-light text-gate-800/55 leading-[1.9]">Apply for the G.A.T.E. Olympiad. Every participant receives a certificate. The top performers earn medals at the Global Final in Hangzhou.</p>
+          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. The top performers earn medals at the Global Final in Hangzhou.</p>
           <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
         </div>
       </section>
     </>
   );
 }
+

@@ -52,8 +52,8 @@ export function LoginForm() {
         <h1 className="font-serif text-3xl font-light text-gate-white">
           Sign In
         </h1>
-        <p className="text-sm font-light text-gate-white/45">
-          Access your G.A.T.E. Olympiad account
+        <p className="text-sm font-light text-gate-white/70">
+          Access your G.A.T.E. Assessment account
         </p>
       </div>
 
@@ -93,7 +93,7 @@ export function LoginForm() {
         {pending ? "Signing in…" : "Sign In"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-white/40">
+      <p className="text-center text-xs font-light text-gate-white/60">
         No account?{" "}
         <Link href="/register" className="text-gate-gold hover:underline">
           Apply Now

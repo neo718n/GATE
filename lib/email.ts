@@ -8,4 +8,4 @@ export const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const DEFAULT_FROM =
   process.env.RESEND_FROM_EMAIL ??
-  "G.A.T.E. Olympiad <onboarding@resend.dev>";
+  "G.A.T.E. Assessment <onboarding@resend.dev>";

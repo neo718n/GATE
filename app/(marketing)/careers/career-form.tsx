@@ -15,7 +15,7 @@ export function CareerForm({ positionTitle }: { positionTitle: string }) {
   if (state.success) {
     return (
       <div className="border border-gate-gold/30 bg-gate-gold/5 p-8 flex flex-col gap-3">
-        <p className="text-[9px] font-bold uppercase tracking-[0.4em] text-gate-gold">Application Received</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Application Received</p>
         <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
           Thank you for applying to G.A.T.E. Our HR team will review your application and be in touch within 7–10 business days.
         </p>
@@ -68,3 +68,4 @@ export function CareerForm({ positionTitle }: { positionTitle: string }) {
     </form>
   );
 }
+

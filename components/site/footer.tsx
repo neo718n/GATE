@@ -5,7 +5,7 @@ const OLYMPIAD_LINKS = [
   { href: "/about", label: "About G.A.T.E." },
   { href: "/structure", label: "Competition Structure" },
   { href: "/subjects", label: "Subjects" },
-  { href: "/onsite-olympiad", label: "Global Final" },
+  { href: "/onsite-assessment", label: "Global Final" },
   { href: "/awards", label: "Awards & Certificates" },
 ];
 
@@ -66,7 +66,7 @@ export function SiteFooter() {
         <div className="pt-16 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-gate-fog/60">
           <div className="flex flex-col gap-5">
             <Logo size="sm" variant="light" showTagline={false} />
-            <p className="text-xs font-light text-gate-800/40 max-w-xs leading-[1.9]">
+            <p className="text-sm font-light text-gate-800/55 max-w-xs leading-[1.9]">
               An international academic competition across five disciplines —
               from a global online preliminary to an invitation-only final at
               Xidian University, Hangzhou.
@@ -75,10 +75,10 @@ export function SiteFooter() {
 
           <div className="flex flex-col gap-4">
             <a
-              href="mailto:info@gate-olympiad.com"
-              className="text-xs font-light text-gate-800/45 hover:text-gate-800/70 transition-colors tracking-[0.05em]"
+              href="mailto:info@gate-assessment.org"
+              className="text-sm font-light text-gate-800/65 hover:text-gate-800 transition-colors"
             >
-              info@gate-olympiad.com
+              info@gate-assessment.org
             </a>
             <div className="flex items-center gap-5">
               {SOCIAL_LINKS.map((s) => (
@@ -100,15 +100,15 @@ export function SiteFooter() {
         {/* Links grid */}
         <div className="py-12 grid grid-cols-2 md:grid-cols-3 gap-10">
           <div className="flex flex-col gap-5">
-            <span className="text-[8px] font-bold uppercase tracking-[0.45em] text-gate-gold/70">
-              Olympiad
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800/50">
+              Assessment
             </span>
             <ul className="flex flex-col gap-3.5">
               {OLYMPIAD_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-light text-gate-800/40 hover:text-gate-800/65 transition-colors"
+                    className="text-sm font-light text-gate-800/60 hover:text-gate-800 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -118,7 +118,7 @@ export function SiteFooter() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <span className="text-[8px] font-bold uppercase tracking-[0.45em] text-gate-gold/70">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800/50">
               Participate
             </span>
             <ul className="flex flex-col gap-3.5">
@@ -126,7 +126,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-light text-gate-800/40 hover:text-gate-800/65 transition-colors"
+                    className="text-sm font-light text-gate-800/60 hover:text-gate-800 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -136,7 +136,7 @@ export function SiteFooter() {
           </div>
 
           <div className="flex flex-col gap-5">
-            <span className="text-[8px] font-bold uppercase tracking-[0.45em] text-gate-gold/70">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800/50">
               Legal
             </span>
             <ul className="flex flex-col gap-3.5">
@@ -144,7 +144,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-light text-gate-800/40 hover:text-gate-800/65 transition-colors"
+                    className="text-sm font-light text-gate-800/60 hover:text-gate-800 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -156,11 +156,11 @@ export function SiteFooter() {
 
         {/* Bottom bar */}
         <div className="py-6 border-t border-gate-fog/50 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-[9px] font-light tracking-[0.15em] text-gate-800/25">
-            © G.A.T.E. Olympiad 2026
+          <p className="text-[10px] font-light tracking-[0.12em] text-gate-800/40">
+            © G.A.T.E. Assessment 2026
           </p>
-          <p className="text-[9px] font-light tracking-[0.1em] text-gate-800/25">
-            Global Academic &amp; Theoretical Excellence Olympiad
+          <p className="text-[10px] font-light tracking-[0.08em] text-gate-800/35">
+            Global Academic &amp; Theoretical Excellence Assessment
           </p>
         </div>
 
