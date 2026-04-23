@@ -12,7 +12,7 @@ const SIZES: Record<
   sm: { wm: "text-xl", rule: "w-32", tag: "text-[7px]", gap: "gap-2", showTag: true },
   md: { wm: "text-3xl", rule: "w-48", tag: "text-[8px]", gap: "gap-2.5", showTag: true },
   lg: { wm: "text-5xl", rule: "w-72", tag: "text-[9px]", gap: "gap-3", showTag: true },
-  xl: { wm: "text-7xl md:text-8xl", rule: "w-full", tag: "text-[10px] md:text-xs", gap: "gap-4", showTag: true },
+  xl: { wm: "text-5xl sm:text-7xl md:text-8xl", rule: "w-full", tag: "text-[8px] sm:text-[10px] md:text-xs", gap: "gap-4", showTag: true },
 };
 
 const RULE_COLORS: Record<Variant, string> = {

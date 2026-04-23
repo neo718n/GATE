@@ -53,7 +53,7 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_110%,rgba(201,153,58,0.18),transparent)]" />
         {/* Subtle top vignette */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(11,31,58,0.8),transparent)]" />
-        <div className="relative z-10 flex flex-col items-center gap-8 max-w-4xl">
+        <div className="relative z-10 flex flex-col items-center gap-8 max-w-4xl w-full">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-gate-gold/50" />
             <p className="text-[9px] font-bold uppercase tracking-[0.5em] text-gate-gold">International Academic Olympiad</p>
