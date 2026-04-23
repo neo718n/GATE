@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Subject Areas",
   description:
-    "Explore the five academic disciplines in the G.A.T.E. Olympiad: Mathematics, Physics, Chemistry, Biology, and Competitive Programming.",
+    "Explore the six academic disciplines in the G.A.T.E. Olympiad: Mathematics, Physics, Chemistry, Biology, Competitive Programming, and English.",
 };
 
 const SUBJECTS = [
@@ -44,6 +44,13 @@ const SUBJECTS = [
       "Algorithmic problem solving under time pressure — designing efficient solutions across data structures, graph theory, dynamic programming, and combinatorics. Problems reward both correctness and performance.",
     topics: ["Data Structures & Algorithms", "Dynamic Programming", "Graph Theory", "Combinatorics", "String Algorithms"],
   },
+  {
+    code: "ENG",
+    name: "English",
+    description:
+      "Academic English proficiency encompassing reading comprehension, analytical writing, and linguistic reasoning. Participants demonstrate command of language structure, argumentation, and critical interpretation of texts.",
+    topics: ["Reading Comprehension", "Academic Writing", "Grammar & Linguistics", "Critical Analysis", "Vocabulary & Usage"],
+  },
 ];
 
 export default function SubjectsPage() {
@@ -59,7 +66,7 @@ export default function SubjectsPage() {
             Subject Areas
           </h1>
           <p className="text-base font-light text-gate-800/55 leading-relaxed max-w-2xl mt-2">
-            G.A.T.E. spans five rigorous academic disciplines. Participants
+            G.A.T.E. spans six rigorous academic disciplines. Participants
             register in one subject area and are evaluated through theoretical
             examinations designed by leading academics.
           </p>

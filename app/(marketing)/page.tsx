@@ -9,6 +9,7 @@ const SUBJECTS = [
   { code: "CHM", name: "Chemistry" },
   { code: "BIO", name: "Biology" },
   { code: "CP", name: "Competitive Programming" },
+  { code: "ENG", name: "English" },
 ];
 
 const PHASES = [
@@ -31,7 +32,7 @@ const AWARDS = [
 
 const STATS = [
   { value: "50+", label: "Participating Countries" },
-  { value: "5", label: "Academic Disciplines" },
+  { value: "6", label: "Academic Disciplines" },
   { value: "2", label: "Competition Rounds" },
   { value: "Xidian", label: "University Partner" },
 ];
@@ -48,23 +49,22 @@ export default function HomePage() {
     <>
       {/* 1. HERO */}
       <section className="relative flex min-h-[calc(100vh-56px)] flex-col items-center justify-center px-6 text-center overflow-hidden">
-        <div className="absolute inset-0 bg-gate-900" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_110%,rgba(201,153,58,0.18),transparent)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_0%,rgba(11,31,58,0.8),transparent)]" />
+        <div className="absolute inset-0 bg-gate-mist" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_50%_110%,rgba(201,153,58,0.12),transparent)]" />
         <div className="relative z-10 flex flex-col items-center gap-8 max-w-4xl w-full">
           <div className="flex items-center gap-3">
             <div className="h-px w-8 bg-gate-gold/50" />
             <p className="text-[9px] font-bold uppercase tracking-[0.5em] text-gate-gold">International Academic Olympiad</p>
             <div className="h-px w-8 bg-gate-gold/50" />
           </div>
-          <Logo size="xl" variant="dark" showTagline />
-          <p className="text-base md:text-lg font-light text-gate-white/70 leading-relaxed max-w-2xl mt-2">
-            A rigorous international competition across five academic disciplines — from an open global Preliminary Round to an invitation-only onsite final at{" "}
-            <span className="text-gate-white/90">Xidian University, Hangzhou Campus, China.</span>
+          <Logo size="xl" variant="light" showTagline />
+          <p className="text-base md:text-lg font-light text-gate-800/60 leading-relaxed max-w-2xl mt-2">
+            A rigorous international competition across six academic disciplines — from an open global Preliminary Round to an invitation-only onsite final at{" "}
+            <span className="text-gate-800/85">Xidian University, Hangzhou Campus, China.</span>
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild><Link href="/register">Apply Now</Link></Button>
-            <Button variant="outline" size="lg" asChild className="text-gate-white/70 border-gate-white/25 hover:border-gate-white/60 hover:text-gate-white"><Link href="/structure">Explore Structure</Link></Button>
+            <Button variant="outline" size="lg" asChild><Link href="/structure">Explore Structure</Link></Button>
           </div>
         </div>
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-40">
@@ -96,9 +96,9 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col items-center gap-4 text-center">
             <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Academic Disciplines</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-light text-gate-800">Five Disciplines</h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-light text-gate-800">Six Disciplines</h2>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-px bg-gate-fog">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-px bg-gate-fog">
             {SUBJECTS.map((s) => (
               <div key={s.code} className="flex flex-col items-center justify-center gap-3 bg-gate-white p-8 text-center hover:bg-gate-fog/50 transition-colors">
                 <span className="text-[10px] font-semibold tracking-[0.3em] text-gate-gold">{s.code}</span>
@@ -226,14 +226,14 @@ export default function HomePage() {
       </section>
 
       {/* 9. CTA */}
-      <section className="py-28 px-6 bg-gate-800 border-t border-gate-gold/10">
+      <section className="py-28 px-6 bg-gate-fog/50 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-8 text-center">
           <span className="text-[9px] font-bold uppercase tracking-[0.45em] text-gate-gold">Begin Your Journey</span>
-          <h2 className="font-serif text-5xl md:text-6xl font-light text-gate-white leading-tight">Ready to Compete<br />on a Global Stage?</h2>
-          <p className="text-sm font-light text-gate-white/55 leading-[1.9] max-w-lg">Applications are open. Register your interest, select your discipline, and begin your path toward the Global Final at Xidian University, Hangzhou.</p>
+          <h2 className="font-serif text-5xl md:text-6xl font-light text-gate-800 leading-tight">Ready to Compete<br />on a Global Stage?</h2>
+          <p className="text-sm font-light text-gate-800/55 leading-[1.9] max-w-lg">Applications are open. Register your interest, select your discipline, and begin your path toward the Global Final at Xidian University, Hangzhou.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild><Link href="/register">Apply Now</Link></Button>
-            <Button variant="outline" size="lg" asChild className="text-gate-white/70 border-gate-white/25 hover:border-gate-white/60 hover:text-gate-white"><Link href="/contact">Get in Touch</Link></Button>
+            <Button variant="outline" size="lg" asChild><Link href="/contact">Get in Touch</Link></Button>
           </div>
         </div>
       </section>

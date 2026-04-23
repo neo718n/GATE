@@ -59,14 +59,14 @@ const SOCIAL_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-gate-900 border-t border-gate-gold/15">
+    <footer className="bg-gate-white border-t border-gate-fog">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
 
         {/* Brand row */}
-        <div className="pt-16 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-gate-gold/10">
+        <div className="pt-16 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-gate-fog/60">
           <div className="flex flex-col gap-5">
-            <Logo size="sm" variant="dark" showTagline={false} />
-            <p className="text-xs font-light text-gate-white/35 max-w-xs leading-[1.9]">
+            <Logo size="sm" variant="light" showTagline={false} />
+            <p className="text-xs font-light text-gate-800/40 max-w-xs leading-[1.9]">
               An international academic competition across five disciplines —
               from a global online preliminary to an invitation-only final at
               Xidian University, Hangzhou.
@@ -76,7 +76,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-4">
             <a
               href="mailto:info@gate-olympiad.com"
-              className="text-xs font-light text-gate-white/40 hover:text-gate-white/65 transition-colors tracking-[0.05em]"
+              className="text-xs font-light text-gate-800/45 hover:text-gate-800/70 transition-colors tracking-[0.05em]"
             >
               info@gate-olympiad.com
             </a>
@@ -88,7 +88,7 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="text-gate-white/30 hover:text-gate-white/65 transition-colors"
+                  className="text-gate-800/30 hover:text-gate-800/65 transition-colors"
                 >
                   {s.icon}
                 </a>
@@ -108,7 +108,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-light text-gate-white/35 hover:text-gate-white/65 transition-colors"
+                    className="text-xs font-light text-gate-800/40 hover:text-gate-800/65 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -126,7 +126,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-light text-gate-white/35 hover:text-gate-white/65 transition-colors"
+                    className="text-xs font-light text-gate-800/40 hover:text-gate-800/65 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -144,7 +144,7 @@ export function SiteFooter() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-xs font-light text-gate-white/35 hover:text-gate-white/65 transition-colors"
+                    className="text-xs font-light text-gate-800/40 hover:text-gate-800/65 transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -155,11 +155,11 @@ export function SiteFooter() {
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 border-t border-gate-gold/8 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-[9px] font-light tracking-[0.15em] text-gate-white/20">
+        <div className="py-6 border-t border-gate-fog/50 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-[9px] font-light tracking-[0.15em] text-gate-800/25">
             © G.A.T.E. Olympiad 2026
           </p>
-          <p className="text-[9px] font-light tracking-[0.1em] text-gate-white/20">
+          <p className="text-[9px] font-light tracking-[0.1em] text-gate-800/25">
             Global Academic &amp; Theoretical Excellence Olympiad
           </p>
         </div>
