@@ -31,25 +31,30 @@ export function RegisterForm() {
     setError(null);
     setPending(true);
 
-    const { error: err } = await signUp.email({
-      email: form.email,
-      password: form.password,
-      name: `${form.firstName} ${form.lastName}`.trim(),
-      callbackURL: "/participant",
-    });
+    try {
+      const { error: err } = await signUp.email({
+        email: form.email,
+        password: form.password,
+        name: `${form.firstName} ${form.lastName}`.trim(),
+        callbackURL: "/participant",
+      });
 
-    if (err) {
-      setError(err.message ?? "Registration failed. Please try again.");
+      if (err) {
+        setError(err.message ?? "Registration failed. Please try again.");
+        setPending(false);
+        return;
+      }
+
+      await authClient.emailOtp.sendVerificationOtp({
+        email: form.email,
+        type: "email-verification",
+      });
+
+      router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
+    } catch {
+      setError("Something went wrong. Please try again.");
       setPending(false);
-      return;
     }
-
-    await authClient.emailOtp.sendVerificationOtp({
-      email: form.email,
-      type: "email-verification",
-    });
-
-    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
   }
 
   return (

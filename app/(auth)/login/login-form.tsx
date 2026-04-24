@@ -31,33 +31,38 @@ export function LoginForm() {
     setError(null);
     setPending(true);
 
-    const { error: err, data } = await signIn.email({
-      email,
-      password,
-      callbackURL: from ?? "/participant",
-    });
+    try {
+      const { error: err, data } = await signIn.email({
+        email,
+        password,
+        callbackURL: from ?? "/participant",
+      });
 
-    if (err) {
-      if (err.code === "EMAIL_NOT_VERIFIED") {
-        await authClient.emailOtp.sendVerificationOtp({
-          email,
-          type: "email-verification",
-        });
-        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      if (err) {
+        if (err.code === "EMAIL_NOT_VERIFIED") {
+          await authClient.emailOtp.sendVerificationOtp({
+            email,
+            type: "email-verification",
+          });
+          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+          return;
+        }
+        setError(err.message ?? "Sign in failed. Please try again.");
+        setPending(false);
         return;
       }
-      setError(err.message ?? "Sign in failed. Please try again.");
+
+      if (from) {
+        router.push(from);
+        return;
+      }
+
+      const role = (data as any)?.user?.role ?? "participant";
+      router.push(ROLE_HOME[role] ?? "/participant");
+    } catch {
+      setError("Something went wrong. Please try again.");
       setPending(false);
-      return;
     }
-
-    if (from) {
-      router.push(from);
-      return;
-    }
-
-    const role = (data as any)?.user?.role ?? "participant";
-    router.push(ROLE_HOME[role] ?? "/participant");
   }
 
   return (
