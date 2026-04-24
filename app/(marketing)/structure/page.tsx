@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Competition Structure",
+  title: "Assessment Structure",
   description:
     "Learn about the G.A.T.E. Assessment two-phase structure: an online preliminary round followed by the global onsite final at Xidian University, Hangzhou.",
 };
@@ -18,7 +18,7 @@ const PHASES = [
       { label: "Format", value: "Theoretical examination — written problems" },
       { label: "Mode", value: "Online, remotely proctored" },
       { label: "Eligibility", value: "Open to all qualifying students worldwide" },
-      { label: "Subjects", value: "Mathematics, Physics, Chemistry, Biology, Computer Science, Economics" },
+      { label: "Subjects", value: "Mathematics, Physics, Chemistry, Biology, Competitive Programming, English" },
       { label: "Outcome", value: "Top scorers per subject advance to the Global Final" },
     ],
   },
@@ -55,7 +55,7 @@ export default function StructurePage() {
             How It Works
           </span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">
-            Competition Structure
+            Assessment Structure
           </h1>
           <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-2xl mt-2">
             G.A.T.E. operates across two distinct phases — an open online
@@ -114,7 +114,7 @@ export default function StructurePage() {
               Timeline
             </span>
             <h2 className="font-serif text-4xl font-light text-gate-800">
-              Competition Calendar
+              Assessment Calendar
             </h2>
           </div>
           <div className="relative flex flex-col gap-0">

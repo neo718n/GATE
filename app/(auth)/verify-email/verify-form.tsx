@@ -1,108 +1,160 @@
-﻿"use client";
+"use client";
 
-import { useState } from "react";
+import { useState, useRef, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function VerifyEmailForm({ email }: { email: string }) {
   const router = useRouter();
-  const [otp, setOtp] = useState("");
+  const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
-  const [resendPending, setResendPending] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [resendDone, setResendDone] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const refs = useRef<(HTMLInputElement | null)[]>([]);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function verify(code: string) {
     setError(null);
     setPending(true);
-
-    const { error: err } = await authClient.emailOtp.verifyEmail({
-      email,
-      otp,
-    });
-
+    const { error: err } = await authClient.emailOtp.verifyEmail({ email, otp: code });
     if (err) {
       setError(err.message ?? "Invalid code. Please try again.");
       setPending(false);
+      setDigits(Array(6).fill(""));
+      setTimeout(() => refs.current[0]?.focus(), 0);
       return;
     }
-
-    router.push("/participant");
+    setVerified(true);
+    setTimeout(() => router.push("/participant"), 1400);
   }
 
-  async function handleResend() {
-    setResendPending(true);
-    setResendSuccess(false);
+  function onDigit(i: number, val: string) {
+    const d = val.replace(/\D/g, "").slice(-1);
+    const next = digits.map((v, idx) => (idx === i ? d : v));
+    setDigits(next);
+    if (d && i < 5) refs.current[i + 1]?.focus();
+    if (d && next.every(Boolean)) verify(next.join(""));
+  }
+
+  function onKey(i: number, e: React.KeyboardEvent) {
+    if (e.key === "Backspace" && !digits[i] && i > 0) {
+      refs.current[i - 1]?.focus();
+    }
+  }
+
+  function onPaste(e: React.ClipboardEvent) {
+    e.preventDefault();
+    const raw = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const next = Array(6).fill("").map((_, i) => raw[i] ?? "");
+    setDigits(next);
+    refs.current[Math.min(raw.length, 5)]?.focus();
+    if (raw.length === 6) verify(raw);
+  }
+
+  async function resend() {
     setError(null);
+    setResendDone(false);
+    const { error: err } = await authClient.emailOtp.sendVerificationOtp({ email, type: "email-verification" });
+    if (err) {
+      setError(err.message ?? "Failed to send code. Please try again.");
+      return;
+    }
+    setResendDone(true);
+    setCountdown(60);
+    const iv = setInterval(() => {
+      setCountdown((c) => {
+        if (c <= 1) { clearInterval(iv); return 0; }
+        return c - 1;
+      });
+    }, 1000);
+  }
 
-    await authClient.emailOtp.sendVerificationOtp({
-      email,
-      type: "email-verification",
-    });
-
-    setResendPending(false);
-    setResendSuccess(true);
+  if (verified) {
+    return (
+      <div className="flex flex-col items-center gap-6 text-center py-8">
+        <div className="flex h-16 w-16 items-center justify-center border border-gate-gold/40 bg-gate-gold/5">
+          <svg className="h-7 w-7 text-gate-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+        <div className="flex flex-col gap-1">
+          <h2 className="font-serif text-2xl font-light text-gate-800">Email Verified</h2>
+          <p className="text-sm font-light text-gate-800/65">Redirecting to your dashboard…</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1 mb-2">
-        <h1 className="font-serif text-3xl font-light text-gate-white">
-          Verify Your Email
-        </h1>
-        <p className="text-sm font-light text-gate-white/70">
-          A 6-digit code was sent to{" "}
-          <span className="text-gate-white/70">{email}</span>
+    <div className="flex flex-col gap-7">
+      <div className="flex flex-col gap-1">
+        <h1 className="font-serif text-3xl font-light text-gate-800">Verify Your Email</h1>
+        <p className="text-sm font-light text-gate-800/55 mt-1 leading-relaxed">
+          Enter the 6-digit code sent to{" "}
+          <span className="font-medium text-gate-800">{email}</span>
         </p>
       </div>
 
       {error && (
-        <p className="text-xs text-red-400 border border-red-400/30 bg-red-400/5 px-4 py-3">
+        <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
           {error}
         </p>
       )}
 
-      {resendSuccess && (
-        <p className="text-xs text-gate-gold/80 border border-gate-gold/20 bg-gate-gold/5 px-4 py-3">
+      {resendDone && !error && (
+        <p className="text-xs text-gate-gold border border-gate-gold/20 bg-gate-gold/5 px-4 py-3">
           A new code has been sent to your email.
         </p>
       )}
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="otp">Verification Code</Label>
-        <Input
-          id="otp"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          placeholder="000000"
-          autoComplete="one-time-code"
-          inputMode="numeric"
-          maxLength={6}
-          required
-          className="text-center tracking-[0.4em] text-lg"
-        />
+      <div className="flex flex-col gap-3">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray">
+          Verification Code
+        </span>
+        <div className="flex items-center gap-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Fragment key={i}>
+              {i === 3 && (
+                <span className="text-gate-fog shrink-0 select-none px-0.5">—</span>
+              )}
+              <input
+                ref={(el) => { refs.current[i] = el; }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                value={digits[i]}
+                onChange={(e) => onDigit(i, e.target.value)}
+                onKeyDown={(e) => onKey(i, e)}
+                onPaste={i === 0 ? onPaste : undefined}
+                disabled={pending}
+                className="w-11 h-14 text-center text-xl font-light text-gate-800 border border-gate-fog bg-gate-white focus:outline-none focus:border-gate-gold transition-colors disabled:opacity-40 shrink-0"
+              />
+            </Fragment>
+          ))}
+        </div>
       </div>
 
-      <Button type="submit" variant="gold" size="md" disabled={pending || otp.length < 6} className="mt-1">
+      <Button
+        variant="gold"
+        size="md"
+        disabled={pending || !digits.every(Boolean)}
+        onClick={() => verify(digits.join(""))}
+      >
         {pending ? "Verifying…" : "Verify Email"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-white/60">
+      <p className="text-center text-xs font-light text-gate-800/55">
         Didn&apos;t receive the code?{" "}
-        <button
-          type="button"
-          onClick={handleResend}
-          disabled={resendPending}
-          className="text-gate-gold hover:underline disabled:opacity-50"
-        >
-          {resendPending ? "Sending…" : "Resend"}
-        </button>
+        {countdown > 0 ? (
+          <span className="text-gate-gray">Resend in {countdown}s</span>
+        ) : (
+          <button type="button" onClick={resend} className="text-gate-gold hover:underline">
+            {resendDone ? "Resend again" : "Resend"}
+          </button>
+        )}
       </p>
-    </form>
+    </div>
   );
 }
-

@@ -3,7 +3,7 @@ import { CareerForm } from "./career-form";
 
 export const metadata: Metadata = {
   title: "Careers",
-  description: "Open positions at G.A.T.E. Assessment — join the team building a global academic competition.",
+  description: "Open positions at G.A.T.E. Assessment — join the team building a global academic assessment program.",
 };
 
 const POSITIONS = [
@@ -26,7 +26,7 @@ const POSITIONS = [
     type: "Part-Time / Remote",
     location: "Remote",
     desc: "Support the G.A.T.E. operations team with participant data management, communication scheduling, platform support, and administrative tasks during registration and examination cycles.",
-    requirements: ["Organized and detail-oriented","Comfortable working with spreadsheets, data entry, and task management tools","Responsive and reliable during peak periods","Prior experience in academic or competition administration is a plus"],
+    requirements: ["Organized and detail-oriented","Comfortable working with spreadsheets, data entry, and task management tools","Responsive and reliable during peak periods","Prior experience in academic or assessment program administration is a plus"],
   },
 ];
 
@@ -47,7 +47,7 @@ export default function CareersPage() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">About Working at G.A.T.E.</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Build Something That Matters</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
-              <p>G.A.T.E. is a small, focused team building a rigorous international academic platform. Every role here has direct impact on how thousands of students around the world access and experience academic competition at the highest level.</p>
+              <p>G.A.T.E. is a small, focused team building a rigorous international academic platform. Every role here has direct impact on how thousands of students around the world access and experience academic excellence at the highest level.</p>
               <p>We work remotely across multiple time zones. We value clarity, reliability, and genuine care for academic integrity above all.</p>
             </div>
           </div>

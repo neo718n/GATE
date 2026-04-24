@@ -16,6 +16,12 @@ export async function requireSession() {
   return session;
 }
 
+export async function requireStaffSession() {
+  const session = await getCurrentSession();
+  if (!session) redirect("/staff");
+  return session;
+}
+
 export async function requireRole(allowed: Role | Role[]) {
   const session = await requireSession();
   const allowedList = Array.isArray(allowed) ? allowed : [allowed];

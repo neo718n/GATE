@@ -8,14 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-const SUBJECTS = [
-  { value: "mathematics", label: "Mathematics" },
-  { value: "physics", label: "Physics" },
-  { value: "chemistry", label: "Chemistry" },
-  { value: "biology", label: "Biology" },
-  { value: "competitive_programming", label: "Competitive Programming" },
-];
-
 export function RegisterForm() {
   const router = useRouter();
 
@@ -63,16 +55,16 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div className="flex flex-col gap-1 mb-2">
-        <h1 className="font-serif text-3xl font-light text-gate-white">
+        <h1 className="font-serif text-3xl font-light text-gate-800">
           Apply Now
         </h1>
-        <p className="text-sm font-light text-gate-white/70">
+        <p className="text-sm font-light text-gate-800/65">
           Create your G.A.T.E. Assessment account
         </p>
       </div>
 
       {error && (
-        <p className="text-xs text-red-400 border border-red-400/30 bg-red-400/5 px-4 py-3">
+        <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
           {error}
         </p>
       )}
@@ -145,7 +137,7 @@ export function RegisterForm() {
         {pending ? "Creating account…" : "Create Account"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-white/60">
+      <p className="text-center text-xs font-light text-gate-800/60">
         Already have an account?{" "}
         <Link href="/login" className="text-gate-gold hover:underline">
           Sign In

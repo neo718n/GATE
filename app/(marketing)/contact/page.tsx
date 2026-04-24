@@ -19,7 +19,7 @@ export default function ContactPage() {
             Contact Us
           </h1>
           <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-xl mt-2">
-            Questions about registration, the competition format, or
+            Questions about registration, the assessment format, or
             partnerships? We&apos;re happy to help.
           </p>
         </div>

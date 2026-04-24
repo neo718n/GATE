@@ -27,7 +27,7 @@ export default function PartnershipsPage() {
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Institutional Cooperation</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Partnerships</h1>
-          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Partner with G.A.T.E. to extend the Assessment's reach and bring world-class academic competition to your students and community.</p>
+          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Partner with G.A.T.E. to extend the Assessment's reach and bring world-class academic assessment program to your students and community.</p>
         </div>
       </section>
 

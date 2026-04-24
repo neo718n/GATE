@@ -8,6 +8,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+const ROLE_HOME: Record<string, string> = {
+  super_admin: "/admin",
+  admin: "/admin",
+  coordinator: "/coordinator",
+  partner_contact: "/partner",
+  participant: "/participant",
+};
+
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,7 +34,7 @@ export function LoginForm() {
     const { error: err, data } = await signIn.email({
       email,
       password,
-      callbackURL: from ?? "/dashboard",
+      callbackURL: from ?? "/participant",
     });
 
     if (err) {
@@ -43,22 +51,28 @@ export function LoginForm() {
       return;
     }
 
-    router.push(from ?? "/dashboard");
+    if (from) {
+      router.push(from);
+      return;
+    }
+
+    const role = (data as any)?.user?.role ?? "participant";
+    router.push(ROLE_HOME[role] ?? "/participant");
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div className="flex flex-col gap-1 mb-2">
-        <h1 className="font-serif text-3xl font-light text-gate-white">
+        <h1 className="font-serif text-3xl font-light text-gate-800">
           Sign In
         </h1>
-        <p className="text-sm font-light text-gate-white/70">
+        <p className="text-sm font-light text-gate-800/65">
           Access your G.A.T.E. Assessment account
         </p>
       </div>
 
       {error && (
-        <p className="text-xs text-red-400 border border-red-400/30 bg-red-400/5 px-4 py-3">
+        <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
           {error}
         </p>
       )}
@@ -93,7 +107,7 @@ export function LoginForm() {
         {pending ? "Signing in…" : "Sign In"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-white/60">
+      <p className="text-center text-xs font-light text-gate-800/60">
         No account?{" "}
         <Link href="/register" className="text-gate-gold hover:underline">
           Apply Now

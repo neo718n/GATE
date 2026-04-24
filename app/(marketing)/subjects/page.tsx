@@ -131,7 +131,7 @@ export default function SubjectsPage() {
               <Link href="/register">Apply Now</Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
-              <Link href="/structure">View Competition Structure</Link>
+              <Link href="/structure">View Assessment Structure</Link>
             </Button>
           </div>
         </div>

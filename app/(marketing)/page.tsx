@@ -33,7 +33,7 @@ const AWARDS = [
 const STATS = [
   { value: "50+", label: "Participating Countries" },
   { value: "6", label: "Academic Disciplines" },
-  { value: "2", label: "Competition Rounds" },
+  { value: "2", label: "Assessment Rounds" },
   { value: "Xidian", label: "University Partner" },
 ];
 
@@ -59,7 +59,7 @@ export default function HomePage() {
           </div>
           <Logo size="xl" variant="light" showTagline />
           <p className="text-base md:text-lg font-light text-gate-800/60 leading-relaxed max-w-2xl mt-2">
-            A rigorous international competition across six academic disciplines — from an open global Preliminary Round to an invitation-only onsite final at{" "}
+            A rigorous international academic assessment across six disciplines — from an open global Preliminary Round to an invitation-only onsite final at{" "}
             <span className="text-gate-800/85">Xidian University, Hangzhou Campus, China.</span>
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
@@ -83,9 +83,9 @@ export default function HomePage() {
             <div className="h-px w-16 bg-gate-gold/40" />
           </div>
           <div className="flex flex-col gap-5 text-sm font-light text-gate-800/60 leading-[1.9]">
-            <p>G.A.T.E. is an international competition designed to identify and recognize exceptional intellectual talent across the sciences, mathematics, and technology.</p>
+            <p>G.A.T.E. is an international assessment program designed to identify and recognize exceptional intellectual talent across the sciences, mathematics, and technology.</p>
             <p>Structured in two stages, it begins with an open online Preliminary Round accessible to students worldwide, followed by an invitation-only Global Final at Xidian University, Hangzhou Campus.</p>
-            <p>Beyond competition, G.A.T.E. builds a lasting international community of scholars and institutions committed to the highest standards of theoretical excellence.</p>
+            <p>Beyond the assessment, G.A.T.E. builds a lasting international community of scholars and institutions committed to the highest standards of theoretical excellence.</p>
             <div className="pt-2"><Button variant="outline" size="sm" asChild><Link href="/about">Read More About G.A.T.E.</Link></Button></div>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function HomePage() {
       <section className="py-28 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl flex flex-col gap-14">
           <div className="flex flex-col items-center gap-4 text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Competition Structure</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Assessment Structure</span>
             <h2 className="font-serif text-4xl md:text-5xl font-light text-gate-800">Two Rounds, One Path</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

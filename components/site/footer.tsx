@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 
-const OLYMPIAD_LINKS = [
+const ASSESSMENT_LINKS = [
   { href: "/about", label: "About G.A.T.E." },
-  { href: "/structure", label: "Competition Structure" },
+  { href: "/structure", label: "Assessment Structure" },
   { href: "/subjects", label: "Subjects" },
   { href: "/onsite-assessment", label: "Global Final" },
   { href: "/awards", label: "Awards & Certificates" },
@@ -67,7 +67,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-5">
             <Logo size="sm" variant="light" showTagline={false} />
             <p className="text-sm font-light text-gate-800/55 max-w-xs leading-[1.9]">
-              An international academic competition across five disciplines —
+              An international academic assessment across six disciplines —
               from a global online preliminary to an invitation-only final at
               Xidian University, Hangzhou.
             </p>
@@ -104,7 +104,7 @@ export function SiteFooter() {
               Assessment
             </span>
             <ul className="flex flex-col gap-3.5">
-              {OLYMPIAD_LINKS.map((link) => (
+              {ASSESSMENT_LINKS.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
