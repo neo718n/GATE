@@ -68,9 +68,8 @@ export default function ContactPage() {
                 Venue
               </span>
               <div className="flex flex-col gap-1 text-sm font-light text-gate-800/65">
-                <span>Xidian University</span>
-                <span>Hangzhou Campus</span>
-                <span>Hangzhou, Zhejiang, China</span>
+                <span>Global Onsite Final venue</span>
+                <span>announced per edition</span>
               </div>
             </div>
           </div>

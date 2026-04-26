@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Onsite Assessment",
-  description: "The G.A.T.E. Global Final at Xidian University, Hangzhou Campus — 7-day academic program.",
+  description: "The G.A.T.E. Global Onsite Final — a 7-day invitation-only academic program for top-qualifying participants.",
 };
 
 const PROGRAM = [
   { day: "Day 1", title: "Arrival & Orientation", desc: "Participant registration, venue orientation, opening ceremony, and introduction to the international academic committee." },
   { day: "Day 2", title: "Academic Workshops", desc: "Subject-specific preparatory sessions led by academic supervisors. Introduction to examination format and conduct procedures." },
   { day: "Day 3–4", title: "Main Examinations", desc: "Core competitive examinations conducted in university halls under full academic supervision and international jury oversight." },
-  { day: "Day 5", title: "Academic Activities", desc: "University campus tours, faculty lectures, and academic exchange with Xidian University researchers and graduate students." },
-  { day: "Day 6", title: "Cultural Program", desc: "Guided cultural experience in Hangzhou — one of China's most historically significant and academically rich cities." },
+  { day: "Day 5", title: "Academic Activities", desc: "University campus tours, faculty lectures, and academic exchange with host institution researchers and graduate students." },
+  { day: "Day 6", title: "Cultural Program", desc: "Guided cultural experience in the host city — an opportunity to explore the local academic and cultural landscape." },
   { day: "Day 7", title: "Award Ceremony & Closing", desc: "Official awards ceremony, medal and certificate presentation, closing address, and participant departure." },
 ];
 
@@ -23,7 +23,7 @@ export default function OnsiteAssessmentPage() {
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Global Final</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Onsite Assessment</h1>
-          <p className="text-base font-light text-gate-800/70 mt-2">Xidian University, Hangzhou Campus, China</p>
+          <p className="text-base font-light text-gate-800/70 mt-2">Host venue announced per edition</p>
         </div>
       </section>
 
@@ -32,14 +32,14 @@ export default function OnsiteAssessmentPage() {
           <div className="flex flex-col gap-6">
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">The Global Academic Final</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
-              <p>Participants who qualify through the Preliminary Round are invited to the Global Onsite Assessment — a 7-day academic program held at Xidian University, Hangzhou Campus, one of China's leading research and technology universities.</p>
+              <p>Participants who qualify through the Preliminary Round are invited to the Global Onsite Assessment — a 7-day academic program held at a leading international host institution, announced per edition.</p>
               <p>The onsite program combines competitive examination with academic exposure, cultural exchange, and international scholarly interaction. It represents the pinnacle of the G.A.T.E. Assessment experience.</p>
             </div>
           </div>
           <div className="flex flex-col gap-0">
             {[
-              { label: "Host Institution", value: "Xidian University" },
-              { label: "Campus", value: "Hangzhou Campus, Zhejiang, China" },
+              { label: "Host Institution", value: "Announced per edition" },
+              { label: "Location", value: "Announced per edition" },
               { label: "Duration", value: "7 Days" },
               { label: "Format", value: "In-person — University Examination Halls" },
               { label: "Supervision", value: "International Academic Jury" },
@@ -99,7 +99,7 @@ export default function OnsiteAssessmentPage() {
       <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="font-serif text-4xl font-light text-gate-800">Qualify for the Global Final</h2>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Begin with the Preliminary Round. Top qualifying participants receive an invitation to the onsite final at Xidian University, Hangzhou.</p>
+          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Begin with the Preliminary Round. Top qualifying participants receive an invitation to the invitation-only Global Onsite Final.</p>
           <div className="flex gap-4">
             <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
             <Button variant="outline" size="md" asChild><Link href="/structure">View Structure</Link></Button>

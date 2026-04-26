@@ -31,7 +31,7 @@ const FAQS = [
     section: "Examination Format",
     items: [
       { q: "What format does Round I take?", a: "Round I is a theory-based written examination conducted online. It consists of structured problems requiring written solutions, proofs, and analytical reasoning. Duration varies by subject." },
-      { q: "What format does Round II take?", a: "Round II is conducted in-person at Xidian University, Hangzhou. It uses university examination conditions — supervised, timed, written. The format is comparable to international assessment standards." },
+      { q: "What format does Round II take?", a: "Round II is conducted in-person at the edition's designated host venue. It uses university examination conditions — supervised, timed, written. The format is comparable to international assessment standards." },
       { q: "Are calculators or reference materials allowed?", a: "No. Examinations at both stages are conducted without calculators or reference materials. This is a theoretical assessment; solutions must be derived from first principles." },
       { q: "In what language are the examinations?", a: "Examinations are available in English. Additional language versions may be provided for specific regions — confirmed during the registration cycle." },
     ],

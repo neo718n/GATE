@@ -18,8 +18,8 @@ const PHASES = [
     points: ["Open to students worldwide — no geographic restriction","Theory-based academic assessment per discipline","Objective evaluation by independent reviewers","Results determine onsite Assessment eligibility"],
   },
   {
-    num: "II", phase: "Round II", title: "Global Onsite Assessment", subtitle: "Xidian University, Hangzhou",
-    points: ["Invitation-only based on Round I qualifying score","Conducted at Xidian University examination halls","Supervised by international academic jury","Official medals and certificates awarded"],
+    num: "II", phase: "Round II", title: "Global Onsite Assessment", subtitle: "Invitation-only · Global Final",
+    points: ["Invitation-only based on Round I qualifying score","Conducted at the edition's designated host venue","Supervised by international academic jury","Official medals and certificates awarded"],
   },
 ];
 
@@ -34,13 +34,13 @@ const STATS = [
   { value: "50+", label: "Participating Countries" },
   { value: "6", label: "Academic Disciplines" },
   { value: "2", label: "Assessment Rounds" },
-  { value: "Xidian", label: "University Partner" },
+  { value: "6", label: "Subject Areas" },
 ];
 
 const FAQS = [
   { q: "Who is eligible to participate?", a: "Students currently enrolled in secondary or pre-university education are eligible. G.A.T.E. is open to participants worldwide — there are no nationality restrictions." },
   { q: "How is Round I conducted?", a: "The Preliminary Round is conducted online under verified conditions. Participants complete a theory-based assessment in their chosen discipline remotely." },
-  { q: "What are the criteria for Round II qualification?", a: "Participants who achieve a qualifying score in Round I receive an official invitation to the Global Onsite Assessment at Xidian University." },
+  { q: "What are the criteria for Round II qualification?", a: "Participants who achieve a qualifying score in Round I receive an official invitation to the Global Onsite Assessment. The host venue for each edition is announced in advance." },
   { q: "Are certificates awarded to all participants?", a: "Yes. All participants who complete the Preliminary Round receive a Certificate of Participation. Medals and Honorable Mention distinctions are awarded at the onsite final." },
 ];
 
@@ -60,7 +60,7 @@ export default function HomePage() {
           <Logo size="xl" variant="light" showTagline />
           <p className="text-base md:text-lg font-light text-gate-800/60 leading-relaxed max-w-2xl mt-2">
             A rigorous international academic assessment across six disciplines — from an open global Preliminary Round to an invitation-only onsite final at{" "}
-            <span className="text-gate-800/85">Xidian University, Hangzhou Campus, China.</span>
+            <span className="text-gate-800/85">the edition's host venue, announced per cycle.</span>
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild><Link href="/register">Apply Now</Link></Button>
@@ -84,7 +84,7 @@ export default function HomePage() {
           </div>
           <div className="flex flex-col gap-5 text-sm font-light text-gate-800/60 leading-[1.9]">
             <p>G.A.T.E. is an international assessment program designed to identify and recognize exceptional intellectual talent across the sciences, mathematics, and technology.</p>
-            <p>Structured in two stages, it begins with an open online Preliminary Round accessible to students worldwide, followed by an invitation-only Global Final at Xidian University, Hangzhou Campus.</p>
+            <p>Structured in two stages, it begins with an open online Preliminary Round accessible to students worldwide, followed by an invitation-only Global Final at the edition's designated host venue.</p>
             <p>Beyond the assessment, G.A.T.E. builds a lasting international community of scholars and institutions committed to the highest standards of theoretical excellence.</p>
             <div className="pt-2"><Button variant="outline" size="sm" asChild><Link href="/about">Read More About G.A.T.E.</Link></Button></div>
           </div>
@@ -147,14 +147,14 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="flex flex-col gap-6">
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Global Final</span>
-            <h2 className="font-serif text-4xl md:text-5xl font-light text-gate-800 leading-tight">Xidian University<br /><span className="text-gate-800/70">Hangzhou Campus</span></h2>
+            <h2 className="font-serif text-4xl md:text-5xl font-light text-gate-800 leading-tight">Global Onsite Final<br /><span className="text-gate-800/70">Host Venue Per Edition</span></h2>
             <div className="h-px w-16 bg-gate-gold/40" />
-            <p className="text-sm font-light text-gate-800/60 leading-[1.9]">Qualified participants are invited to the Global Onsite Assessment at Xidian University, Hangzhou Campus. The 7-day academic program combines rigorous examination with international scholarly exchange.</p>
+            <p className="text-sm font-light text-gate-800/60 leading-[1.9]">Qualified participants are invited to the Global Onsite Assessment at a leading international host institution. The 7-day academic program combines rigorous examination with international scholarly exchange.</p>
             <Button variant="outline" size="sm" asChild className="w-fit"><Link href="/onsite-assessment">Program Details</Link></Button>
           </div>
           <div className="flex flex-col gap-0 border border-gate-fog">
             {[
-              { label: "Venue", value: "Xidian University, Hangzhou Campus, China" },
+              { label: "Venue", value: "Announced per edition" },
               { label: "Format", value: "In-person — University Examination Halls" },
               { label: "Supervision", value: "International Academic Jury" },
               { label: "Duration", value: "7-Day Academic Program" },
@@ -230,7 +230,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-8 text-center">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Begin Your Journey</span>
           <h2 className="font-serif text-5xl md:text-6xl font-light text-gate-800 leading-tight">Ready to Compete<br />on a Global Stage?</h2>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9] max-w-lg">Applications are open. Register your interest, select your discipline, and begin your path toward the Global Final at Xidian University, Hangzhou.</p>
+          <p className="text-sm font-light text-gate-800/65 leading-[1.9] max-w-lg">Applications are open. Register your interest, select your discipline, and begin your path toward the Global Final.</p>
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild><Link href="/register">Apply Now</Link></Button>
             <Button variant="outline" size="lg" asChild><Link href="/contact">Get in Touch</Link></Button>

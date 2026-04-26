@@ -41,7 +41,7 @@ const SECTIONS = [
     number: "04",
     title: "Visa, Travel, and Entry",
     content: [
-      "Participants selected for the Global Onsite Assessment are solely responsible for obtaining all travel documentation necessary to enter the People's Republic of China, including any required visas, passport validity requirements, and health documentation.",
+      "Participants selected for the Global Onsite Assessment are solely responsible for obtaining all travel documentation necessary to enter the host country for their edition, including any required visas, passport validity requirements, and health documentation.",
       "G.A.T.E. will issue an official invitation letter to finalists upon request to support visa applications. The issuance of an invitation letter does not constitute a guarantee of visa approval by any governmental authority.",
       "A visa denial, travel restriction, illness, or any other circumstance preventing a finalist from attending Phase II does not entitle the participant to a refund of the registration fee, an alternative assessment pathway, or any form of compensation.",
       "G.A.T.E. is not responsible for costs incurred in connection with travel arrangements that cannot be fulfilled due to program modification, postponement, or cancellation.",
@@ -61,7 +61,7 @@ const SECTIONS = [
     number: "06",
     title: "Media Consent",
     content: [
-      "By registering for Phase II and attending the Global Onsite Assessment, participants (and, where applicable, their parents or guardians on their behalf) consent to being photographed, filmed, or recorded at G.A.T.E. events and at Xidian University.",
+      "By registering for Phase II and attending the Global Onsite Assessment, participants (and, where applicable, their parents or guardians on their behalf) consent to being photographed, filmed, or recorded at G.A.T.E. events and at the host venue.",
       "G.A.T.E. may use such photographs, video recordings, or audio recordings for educational, promotional, and informational purposes — including on the G.A.T.E. website, social media channels, and official publications — without additional compensation.",
       "Participants who do not wish to be photographed or filmed must notify G.A.T.E. in writing at least fourteen (14) days before the event. G.A.T.E. will make reasonable efforts to accommodate such requests, but cannot guarantee exclusion from all incidental coverage.",
     ],

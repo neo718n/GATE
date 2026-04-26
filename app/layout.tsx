@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     template: "%s · G.A.T.E. Assessment",
   },
   description:
-    "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a Global Onsite Final hosted at Xidian University, Hangzhou Campus.",
+    "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a multi-stage Global Final hosted across international venues.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     siteName: "G.A.T.E. Assessment",
     title: "G.A.T.E. Assessment",
     description:
-      "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a Global Onsite Final hosted at Xidian University, Hangzhou Campus.",
+      "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a multi-stage Global Final hosted across international venues.",
     images: [
       {
         url: "/brand/GATE-Logo-Primary-Dark@2x.png",

@@ -61,7 +61,7 @@ const SECTIONS = [
     number: "06",
     title: "International Data Transfers",
     content: [
-      "G.A.T.E. operates an international program with participants from across the world. Your personal data may be processed in countries other than your country of residence. In particular, data related to the Global Onsite Assessment may be shared with Xidian University and authorized event partners located in the People's Republic of China for the purpose of organizing and administering the in-person final.",
+      "G.A.T.E. operates an international program with participants from across the world. Your personal data may be processed in countries other than your country of residence. In particular, data related to the Global Onsite Assessment may be shared with the host institution and authorized event partners located in the host country for the purpose of organizing and administering the in-person final.",
       "When transferring personal data internationally, G.A.T.E. implements appropriate safeguards consistent with applicable data protection laws, including contractual protections with our data processors.",
     ],
   },
@@ -70,7 +70,7 @@ const SECTIONS = [
     title: "Sharing Your Information",
     content: [
       "G.A.T.E. does not sell, rent, or trade your personal data to third parties.",
-      "We may share your data with: authorized service providers (cloud hosting, email delivery, payment processing) under binding data processing agreements; Xidian University and authorized event partners solely for the purpose of administering the Global Onsite Assessment; legal authorities where required by applicable law or in response to lawful requests.",
+      "We may share your data with: authorized service providers (cloud hosting, email delivery, payment processing) under binding data processing agreements; the host institution and authorized event partners solely for the purpose of administering the Global Onsite Assessment; legal authorities where required by applicable law or in response to lawful requests.",
       "G.A.T.E. may publish anonymized, aggregated statistics about participation (such as country-level participation counts) without identifying individual participants.",
     ],
   },

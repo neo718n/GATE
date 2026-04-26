@@ -58,7 +58,7 @@ const SECTIONS = [
     content: [
       "Phase I examinations are conducted under remotely proctored conditions using technology and human review processes designed to detect unauthorized behavior in real time.",
       "G.A.T.E. employs statistical analysis of examination responses, including similarity analysis, to identify patterns that may indicate unauthorized collaboration, shared answer sets, or impersonation.",
-      "Phase II examinations are conducted in person at Xidian University under supervised conditions equivalent to formal university examination standards.",
+      "Phase II examinations are conducted in person at the designated host venue under supervised conditions equivalent to formal university examination standards.",
       "G.A.T.E. reserves the right to investigate any submission that raises reasonable suspicion of misconduct, at any time prior to or following the publication of results.",
     ],
   },

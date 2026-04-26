@@ -13,7 +13,7 @@ export default function AuthLayout({
           <Logo size="lg" variant="light" showTagline />
           <p className="text-sm font-light text-gate-800/65 leading-relaxed">
             An international academic assessment program uniting exceptional students
-            worldwide, culminating at Xidian University, Hangzhou.
+            worldwide, culminating in the invitation-only Global Onsite Final.
           </p>
         </div>
       </div>

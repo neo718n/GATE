@@ -31,7 +31,7 @@ const SECTIONS = [
     number: "03",
     title: "Examination Format",
     content: [
-      "The G.A.T.E. Assessment operates across two phases. Phase I (the Preliminary Round) is an open, globally accessible theoretical examination conducted online under remotely proctored conditions. Phase II (the Global Onsite Assessment) is an in-person examination held at Xidian University, Hangzhou Campus, China, by invitation only.",
+      "The G.A.T.E. Assessment operates across two phases. Phase I (the Preliminary Round) is an open, globally accessible theoretical examination conducted online under remotely proctored conditions. Phase II (the Global Onsite Assessment) is an in-person examination held at the edition's designated host venue, by invitation only.",
       "Examination format, duration, and permitted materials are specified in official instructions issued to registered participants prior to each phase. Participants are responsible for reading and complying with all examination instructions.",
       "Unless explicitly authorized in the examination instructions, the following are prohibited during any examination: calculators, mathematical software, reference materials, textbooks, notes, and any form of electronic communication device.",
       "All examination content — including questions, problems, and answers — is strictly confidential. Disclosure, reproduction, or distribution of examination content, in whole or in part, before, during, or after the examination window is prohibited and constitutes academic misconduct.",
@@ -43,7 +43,7 @@ const SECTIONS = [
     content: [
       "Participants must complete the examination independently, without receiving or providing assistance from any person or resource not explicitly authorized.",
       "Impersonation — that is, taking the examination under another person's identity, or knowingly allowing another person to take the examination on your behalf — is strictly prohibited and will result in immediate and permanent disqualification.",
-      "Participants attending the Global Onsite Assessment are expected to conduct themselves with integrity, courtesy, and respect toward fellow participants, G.A.T.E. staff, Xidian University personnel, and the broader academic community. G.A.T.E. reserves the right to remove any participant whose conduct is deemed inappropriate or disruptive.",
+      "Participants attending the Global Onsite Assessment are expected to conduct themselves with integrity, courtesy, and respect toward fellow participants, G.A.T.E. staff, host institution personnel, and the broader academic community. G.A.T.E. reserves the right to remove any participant whose conduct is deemed inappropriate or disruptive.",
       "Participants must not engage in any activity that could reasonably be construed as an attempt to gain an unfair advantage, compromise the integrity of the assessment, or undermine the fairness of the results.",
     ],
   },

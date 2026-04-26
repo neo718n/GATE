@@ -85,6 +85,13 @@ export const careerStatusEnum = pgEnum("career_status", [
   "hired",
 ]);
 
+export const stripePaymentStatusEnum = pgEnum("stripe_payment_status", [
+  "pending",
+  "paid",
+  "failed",
+  "refunded",
+]);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Better Auth core tables
 // Column names match the names Better Auth's Drizzle adapter expects.
@@ -160,9 +167,8 @@ export const cycles = pgTable("cycles", {
   prelimEnd: timestamp("prelim_end"),
   onsiteStart: timestamp("onsite_start"),
   onsiteEnd: timestamp("onsite_end"),
-  onsiteVenue: text("onsite_venue").default(
-    "Xidian University, Hangzhou Campus",
-  ),
+  onsiteVenue: text("onsite_venue"),
+  registrationFeeUsd: integer("registration_fee_usd").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -285,6 +291,25 @@ export const careerApplications = pgTable("career_applications", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const payments = pgTable("payments", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  participantId: integer("participant_id").references(() => participants.id, {
+    onDelete: "set null",
+  }),
+  cycleId: integer("cycle_id").references(() => cycles.id),
+  stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  amountUsd: integer("amount_usd").notNull(),
+  currency: text("currency").notNull().default("usd"),
+  status: stripePaymentStatusEnum("stripe_payment_status")
+    .notNull()
+    .default("pending"),
+  receiptUrl: text("receipt_url"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // ────────────────────────────────────────────────────────────────────────────
 // Relations
 // ────────────────────────────────────────────────────────────────────────────
@@ -300,6 +325,7 @@ export const userRelations = relations(user, ({ one, many }) => ({
   }),
   sessions: many(session),
   accounts: many(account),
+  payments: many(payments),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -328,6 +354,7 @@ export const participantRelations = relations(participants, ({ one, many }) => (
   }),
   subjects: many(participantSubjects),
   results: many(results),
+  payments: many(payments),
 }));
 
 export const participantSubjectRelations = relations(
@@ -378,6 +405,15 @@ export const careerApplicationRelations = relations(
   }),
 );
 
+export const paymentRelations = relations(payments, ({ one }) => ({
+  user: one(user, { fields: [payments.userId], references: [user.id] }),
+  participant: one(participants, {
+    fields: [payments.participantId],
+    references: [participants.id],
+  }),
+  cycle: one(cycles, { fields: [payments.cycleId], references: [cycles.id] }),
+}));
+
 // ────────────────────────────────────────────────────────────────────────────
 // Types
 // ────────────────────────────────────────────────────────────────────────────
@@ -393,3 +429,4 @@ export type Result = typeof results.$inferSelect;
 export type Partner = typeof partners.$inferSelect;
 export type Position = typeof positions.$inferSelect;
 export type CareerApplication = typeof careerApplications.$inferSelect;
+export type Payment = typeof payments.$inferSelect;

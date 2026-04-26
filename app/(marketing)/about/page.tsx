@@ -30,14 +30,14 @@ export default function AboutPage() {
               <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
                 <p>G.A.T.E. — the Global Academic and Theoretical Excellence Assessment — was founded to create a credible, transparent, and academically rigorous platform for international academic excellence across six disciplines.</p>
                 <p>We believe that rigorous academic assessment, when conducted with integrity and at the highest standard, is one of the most powerful tools for identifying and developing talent. Our Assessment is structured to reward depth of understanding — emphasizing theoretical reasoning, rigorous proof, and creative problem-solving.</p>
-                <p>By partnering with Xidian University, Hangzhou Campus, for the Global Final, G.A.T.E. places its participants within one of the world's leading academic environments — creating an experience that extends beyond examination into genuine scholarly exchange.</p>
+                <p>The Global Final brings participants together at a leading international host institution, creating an experience that extends beyond examination into genuine scholarly exchange. The host venue is selected and announced per edition.</p>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-6">
             {[
               { label: "Founded", value: "2025" },
-              { label: "Global Final Host", value: "Xidian University\nHangzhou Campus, China" },
+              { label: "Global Final Venue", value: "Announced per edition" },
               { label: "Disciplines", value: "6 Academic Areas" },
               { label: "Format", value: "Two-Round System\nOnline + Onsite" },
               { label: "Recognition", value: "Gold, Silver, Bronze\nHonorable Mention\nCertificates" },

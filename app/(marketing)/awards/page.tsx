@@ -122,7 +122,7 @@ export default function AwardsPage() {
       <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="font-serif text-4xl font-light text-gate-800">Begin Your Path to Recognition</h2>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. The top performers earn medals at the Global Final in Hangzhou.</p>
+          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. The top performers earn medals at the invitation-only Global Final.</p>
           <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
         </div>
       </section>

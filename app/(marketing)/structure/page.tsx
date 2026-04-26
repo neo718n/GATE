@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Assessment Structure",
   description:
-    "Learn about the G.A.T.E. Assessment two-phase structure: an online preliminary round followed by the global onsite final at Xidian University, Hangzhou.",
+    "Learn about the G.A.T.E. Assessment two-phase structure: an open online preliminary round followed by the invitation-only Global Onsite Final.",
 };
 
 const PHASES = [
@@ -26,9 +26,9 @@ const PHASES = [
     phase: "Phase II",
     label: "Global Onsite Assessment",
     description:
-      "Finalists are invited to compete in person at the Xidian University Hangzhou Campus, China. The onsite assessment features more advanced theoretical problems, collaboration events, and a formal awards ceremony.",
+      "Finalists are invited to compete in person at the edition's designated host venue. The onsite assessment features more advanced theoretical problems, collaboration events, and a formal awards ceremony.",
     details: [
-      { label: "Location", value: "Xidian University · Hangzhou Campus · China" },
+      { label: "Location", value: "Announced per edition" },
       { label: "Format", value: "Onsite theoretical examination + awards ceremony" },
       { label: "Eligibility", value: "Invitation only — top performers from Phase I" },
       { label: "Hospitality", value: "Accommodation and local transport arrangements provided for finalists" },
@@ -41,7 +41,7 @@ const TIMELINE = [
   { period: "Registration Opens", detail: "Applications open to participants worldwide" },
   { period: "Preliminary Round", detail: "Online examination across all subject areas" },
   { period: "Results Announced", detail: "Phase I results published; finalists notified" },
-  { period: "Global Onsite Assessment", detail: "Finals at Xidian University, Hangzhou Campus" },
+  { period: "Global Onsite Assessment", detail: "In-person finals at the edition's host venue" },
   { period: "Awards Ceremony", detail: "Medal presentation and closing celebration" },
 ];
 
@@ -60,7 +60,7 @@ export default function StructurePage() {
           <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-2xl mt-2">
             G.A.T.E. operates across two distinct phases — an open online
             preliminary accessible to students everywhere, followed by a
-            prestigious in-person final hosted at Xidian University, Hangzhou.
+            prestigious in-person Global Final at the edition's host venue.
           </p>
         </div>
       </section>
