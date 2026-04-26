@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, results } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -15,7 +15,7 @@ export default async function ResultsPage() {
   const myResults = participant
     ? await db.query.results.findMany({
         where: eq(results.participantId, participant.id),
-        with: { subject: true, cycle: true },
+        with: { subject: true, cycle: true, round: true },
         orderBy: results.publishedAt,
       })
     : [];
@@ -60,7 +60,7 @@ export default async function ResultsPage() {
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex flex-col gap-1">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
-                    {r.cycle?.name} — {r.stage === "preliminary" ? "Round I" : "Round II"}
+                    {r.cycle?.name} вЂ” {r.round?.name ?? "Round"}
                   </p>
                   <p className="text-base font-light text-gate-800">{r.subject?.name}</p>
                 </div>
@@ -98,3 +98,4 @@ export default async function ResultsPage() {
     </div>
   );
 }
+

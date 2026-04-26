@@ -1,6 +1,6 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { results, participants, subjects, cycles } from "@/lib/db/schema";
+import { results, participants, subjects, cycles, rounds } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,12 +12,15 @@ export default async function ResultsPage() {
 
   const [allResults, allParticipants, allSubjects, allCycles] = await Promise.all([
     db.query.results.findMany({
-      with: { participant: true, subject: true, cycle: true },
+      with: { participant: true, subject: true, cycle: true, round: true },
       orderBy: desc(results.publishedAt),
     }),
     db.query.participants.findMany({ orderBy: participants.fullName }),
     db.query.subjects.findMany({ orderBy: subjects.order }),
-    db.query.cycles.findMany({ orderBy: desc(cycles.year) }),
+    db.query.cycles.findMany({
+      with: { rounds: { orderBy: (r, { asc }) => [asc(r.order)] } },
+      orderBy: desc(cycles.year),
+    }),
   ]);
 
   return (
@@ -64,9 +67,7 @@ export default async function ResultsPage() {
               >
                 <option value="">Select subject...</option>
                 {allSubjects.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
+                  <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
             </div>
@@ -80,22 +81,25 @@ export default async function ResultsPage() {
               >
                 <option value="">Select cycle...</option>
                 {allCycles.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="stage">Stage *</Label>
+              <Label htmlFor="roundId">Round</Label>
               <select
-                id="stage"
-                name="stage"
-                required
+                id="roundId"
+                name="roundId"
                 className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
               >
-                <option value="preliminary">Preliminary (Round I)</option>
-                <option value="onsite">Onsite (Round II)</option>
+                <option value="">No specific round</option>
+                {allCycles.flatMap((c) =>
+                  c.rounds.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {c.name} — {r.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
             <div className="flex flex-col gap-2">
@@ -127,9 +131,7 @@ export default async function ResultsPage() {
             </div>
           </div>
           <div>
-            <Button type="submit" variant="gold" size="md">
-              Add Result
-            </Button>
+            <Button type="submit" variant="gold" size="md">Add Result</Button>
           </div>
         </form>
       </details>
@@ -141,7 +143,7 @@ export default async function ResultsPage() {
       ) : (
         <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40">
           <div className="grid grid-cols-[2fr_1fr_1fr_1fr_80px_80px_100px] gap-3 px-5 py-3 bg-gate-fog/30">
-            {["Participant", "Subject", "Cycle", "Stage", "Score", "Rank", "Award"].map((h) => (
+            {["Participant", "Subject", "Cycle", "Round", "Score", "Rank", "Award"].map((h) => (
               <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
                 {h}
               </span>
@@ -157,9 +159,7 @@ export default async function ResultsPage() {
               </p>
               <p className="text-xs font-light text-gate-800/70">{r.subject?.name ?? "—"}</p>
               <p className="text-xs font-light text-gate-800/70">{r.cycle?.name ?? "—"}</p>
-              <p className="text-xs font-light text-gate-800/70 capitalize">
-                {r.stage === "preliminary" ? "Round I" : "Round II"}
-              </p>
+              <p className="text-xs font-light text-gate-800/70">{r.round?.name ?? "—"}</p>
               <p className="text-xs font-light text-gate-800">
                 {r.score !== null ? `${r.score}${r.maxScore ? `/${r.maxScore}` : ""}` : "—"}
               </p>

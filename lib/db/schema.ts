@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+﻿import { relations } from "drizzle-orm";
 import {
   boolean,
   date,
@@ -28,10 +28,15 @@ export const roleEnum = pgEnum("role", [
 export const cycleStatusEnum = pgEnum("cycle_status", [
   "planning",
   "registration_open",
-  "preliminary",
-  "onsite",
+  "active",
   "completed",
   "archived",
+]);
+
+export const roundFormatEnum = pgEnum("round_format", [
+  "online",
+  "onsite",
+  "hybrid",
 ]);
 
 export const registrationStatusEnum = pgEnum("registration_status", [
@@ -46,8 +51,6 @@ export const paymentStatusEnum = pgEnum("payment_status", [
   "paid",
   "waived",
 ]);
-
-export const stageEnum = pgEnum("stage", ["preliminary", "onsite"]);
 
 export const awardEnum = pgEnum("award", [
   "gold",
@@ -94,7 +97,6 @@ export const stripePaymentStatusEnum = pgEnum("stripe_payment_status", [
 
 // ────────────────────────────────────────────────────────────────────────────
 // Better Auth core tables
-// Column names match the names Better Auth's Drizzle adapter expects.
 // ────────────────────────────────────────────────────────────────────────────
 
 export const user = pgTable("user", {
@@ -106,7 +108,6 @@ export const user = pgTable("user", {
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 
-  // Additional fields exposed to Better Auth via `user.additionalFields`.
   role: roleEnum("role").notNull().default("participant"),
   firstName: text("firstName"),
   lastName: text("lastName"),
@@ -160,18 +161,43 @@ export const verification = pgTable("verification", {
 
 export const cycles = pgTable("cycles", {
   id: serial("id").primaryKey(),
-  year: integer("year").notNull().unique(),
+  year: integer("year").notNull(),
   name: text("name").notNull(),
+  description: text("description"),
   status: cycleStatusEnum("status").notNull().default("planning"),
-  prelimStart: timestamp("prelim_start"),
-  prelimEnd: timestamp("prelim_end"),
-  onsiteStart: timestamp("onsite_start"),
-  onsiteEnd: timestamp("onsite_end"),
-  onsiteVenue: text("onsite_venue"),
   registrationFeeUsd: integer("registration_fee_usd").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const rounds = pgTable("rounds", {
+  id: serial("id").primaryKey(),
+  cycleId: integer("cycle_id")
+    .notNull()
+    .references(() => cycles.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  order: integer("order").notNull().default(1),
+  format: roundFormatEnum("format").notNull().default("online"),
+  startDate: timestamp("start_date"),
+  endDate: timestamp("end_date"),
+  venue: text("venue"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const cycleSubjects = pgTable(
+  "cycle_subjects",
+  {
+    cycleId: integer("cycle_id")
+      .notNull()
+      .references(() => cycles.id, { onDelete: "cascade" }),
+    subjectId: integer("subject_id")
+      .notNull()
+      .references(() => subjects.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.cycleId, t.subjectId] }),
+  }),
+);
 
 export const subjects = pgTable("subjects", {
   id: serial("id").primaryKey(),
@@ -235,7 +261,7 @@ export const results = pgTable("results", {
   cycleId: integer("cycle_id")
     .notNull()
     .references(() => cycles.id),
-  stage: stageEnum("stage").notNull(),
+  roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
   score: numeric("score"),
   maxScore: numeric("max_score"),
   rank: integer("rank"),
@@ -339,11 +365,31 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const cycleRelations = relations(cycles, ({ many }) => ({
   participants: many(participants),
   results: many(results),
+  rounds: many(rounds),
+  subjects: many(cycleSubjects),
+  payments: many(payments),
+}));
+
+export const roundRelations = relations(rounds, ({ one, many }) => ({
+  cycle: one(cycles, { fields: [rounds.cycleId], references: [cycles.id] }),
+  results: many(results),
+}));
+
+export const cycleSubjectRelations = relations(cycleSubjects, ({ one }) => ({
+  cycle: one(cycles, {
+    fields: [cycleSubjects.cycleId],
+    references: [cycles.id],
+  }),
+  subject: one(subjects, {
+    fields: [cycleSubjects.subjectId],
+    references: [subjects.id],
+  }),
 }));
 
 export const subjectRelations = relations(subjects, ({ many }) => ({
   results: many(results),
   participants: many(participantSubjects),
+  cycles: many(cycleSubjects),
 }));
 
 export const participantRelations = relations(participants, ({ one, many }) => ({
@@ -381,6 +427,7 @@ export const resultRelations = relations(results, ({ one }) => ({
     references: [subjects.id],
   }),
   cycle: one(cycles, { fields: [results.cycleId], references: [cycles.id] }),
+  round: one(rounds, { fields: [results.roundId], references: [rounds.id] }),
 }));
 
 export const partnerRelations = relations(partners, ({ one }) => ({
@@ -423,6 +470,7 @@ export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
 export type Session = typeof session.$inferSelect;
 export type Cycle = typeof cycles.$inferSelect;
+export type Round = typeof rounds.$inferSelect;
 export type Subject = typeof subjects.$inferSelect;
 export type Participant = typeof participants.$inferSelect;
 export type Result = typeof results.$inferSelect;

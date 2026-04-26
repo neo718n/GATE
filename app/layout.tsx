@@ -60,7 +60,7 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${montserrat.variable} ${cormorant.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-background text-foreground">
+      <body suppressHydrationWarning className="flex min-h-full flex-col bg-background text-foreground">
         {children}
       </body>
     </html>

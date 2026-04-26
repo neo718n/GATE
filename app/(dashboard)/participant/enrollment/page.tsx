@@ -1,6 +1,6 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, cycles, subjects } from "@/lib/db/schema";
+import { participants, cycles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -47,13 +47,13 @@ export default async function EnrollmentPage({
 
   const activeCycle = await db.query.cycles.findFirst({
     where: eq(cycles.status, "registration_open"),
+    with: {
+      subjects: { with: { subject: true } },
+      rounds: { orderBy: (r, { asc }) => [asc(r.order)] },
+    },
   });
 
-  const allSubjects = await db.query.subjects.findMany({
-    where: eq(subjects.active, true),
-    orderBy: subjects.order,
-  });
-
+  const cycleSubjects = activeCycle?.subjects ?? [];
   const selectedSubjectId = participant.subjects[0]?.subjectId ?? null;
   const selectedSubject = participant.subjects[0]?.subject ?? null;
   const isPaid = participant.paymentStatus === "paid";
@@ -108,17 +108,34 @@ export default async function EnrollmentPage({
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
               Active Cycle
             </p>
-            <div className="flex flex-wrap gap-x-8 gap-y-1">
-              <span className="text-sm font-light text-gate-800">{activeCycle.name}</span>
-              {activeCycle.registrationFeeUsd > 0 && (
+            <p className="text-sm font-light text-gate-800">{activeCycle.name}</p>
+            {activeCycle.description && (
+              <p className="text-xs font-light text-gate-800/55">{activeCycle.description}</p>
+            )}
+            <div className="flex flex-wrap gap-x-6 gap-y-1 pt-1">
+              {activeCycle.registrationFeeUsd > 0 ? (
                 <span className="text-sm font-light text-gate-800/60">
                   Fee: ${(activeCycle.registrationFeeUsd / 100).toFixed(2)} USD
                 </span>
-              )}
-              {activeCycle.registrationFeeUsd === 0 && (
+              ) : (
                 <span className="text-sm font-light text-gate-gold">Free enrollment</span>
               )}
             </div>
+            {activeCycle.rounds.length > 0 && (
+              <div className="flex flex-col gap-1 pt-1 border-t border-gate-fog/60">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40 mb-1">Rounds</p>
+                {activeCycle.rounds.map((r) => (
+                  <p key={r.id} className="text-xs font-light text-gate-800/60">
+                    {r.name}
+                    {r.startDate
+                      ? ` — ${new Date(r.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
+                      : ""}
+                    {` (${r.format})`}
+                    {r.venue ? ` · ${r.venue}` : ""}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
 
           {isPaid ? (
@@ -139,36 +156,38 @@ export default async function EnrollmentPage({
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
                   Select Your Subject
                 </p>
-                {allSubjects.length === 0 ? (
+                {cycleSubjects.length === 0 ? (
                   <p className="text-sm font-light text-gate-800/60">
-                    No subjects available. Contact support.
+                    No subjects have been configured for this cycle yet. Contact support.
                   </p>
                 ) : (
                   <form action={selectSubject} className="flex flex-col gap-3">
                     <input type="hidden" name="participantId" value={participant.id} />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {allSubjects.map((s) => (
-                        <label
-                          key={s.id}
-                          className="flex items-start gap-3 border border-gate-fog p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
-                        >
-                          <input
-                            type="radio"
-                            name="subjectId"
-                            value={s.id}
-                            defaultChecked={s.id === selectedSubjectId}
-                            className="mt-1 accent-[#C9993A]"
-                          />
-                          <div className="flex flex-col gap-0.5">
-                            <span className="text-sm font-semibold text-gate-800">{s.name}</span>
-                            {s.description && (
-                              <span className="text-xs font-light text-gate-800/55 leading-[1.7]">
-                                {s.description}
-                              </span>
-                            )}
-                          </div>
-                        </label>
-                      ))}
+                      {cycleSubjects.map(({ subject: s }) =>
+                        s ? (
+                          <label
+                            key={s.id}
+                            className="flex items-start gap-3 border border-gate-fog p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
+                          >
+                            <input
+                              type="radio"
+                              name="subjectId"
+                              value={s.id}
+                              defaultChecked={s.id === selectedSubjectId}
+                              className="mt-1 accent-[#C9993A]"
+                            />
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-sm font-semibold text-gate-800">{s.name}</span>
+                              {s.description && (
+                                <span className="text-xs font-light text-gate-800/55 leading-[1.7]">
+                                  {s.description}
+                                </span>
+                              )}
+                            </div>
+                          </label>
+                        ) : null
+                      )}
                     </div>
                     <div className="pt-1">
                       <Button type="submit" variant="outline" size="sm">

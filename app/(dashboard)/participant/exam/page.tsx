@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, cycles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -17,6 +17,7 @@ export default async function ExamPage() {
   const activeCycle = isPaid
     ? await db.query.cycles.findFirst({
         where: eq(cycles.id, participant!.cycleId!),
+        with: { rounds: { orderBy: (r, { asc }) => [asc(r.order)] } },
       })
     : null;
 
@@ -27,7 +28,7 @@ export default async function ExamPage() {
           Exam Instructions
         </span>
         <h1 className="font-serif text-4xl font-light text-gate-800">
-          Round I — Preliminary
+          Examination Guide
         </h1>
       </div>
 
@@ -46,7 +47,7 @@ export default async function ExamPage() {
       ) : (
         <>
           {activeCycle && (
-            <div className="border border-gate-gold/30 bg-gate-gold/5 p-6 flex flex-col gap-2">
+            <div className="border border-gate-gold/30 bg-gate-gold/5 p-6 flex flex-col gap-3">
               <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
                 You Are Enrolled
               </p>
@@ -56,23 +57,22 @@ export default async function ExamPage() {
                   {participant?.subjects[0]?.subject?.name ?? "—"}
                 </span>
               </p>
-              {activeCycle.prelimStart && (
-                <p className="text-sm font-light text-gate-800/60">
-                  Exam window:{" "}
-                  {new Date(activeCycle.prelimStart).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}{" "}
-                  —{" "}
-                  {activeCycle.prelimEnd
-                    ? new Date(activeCycle.prelimEnd).toLocaleDateString("en-GB", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })
-                    : "TBA"}
-                </p>
+              {activeCycle.rounds.length > 0 && (
+                <div className="flex flex-col gap-1 pt-1 border-t border-gate-gold/20">
+                  {activeCycle.rounds.map((r) => (
+                    <p key={r.id} className="text-sm font-light text-gate-800/60">
+                      <span className="font-medium text-gate-800">{r.name}</span>
+                      {r.startDate
+                        ? ` — ${new Date(r.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
+                        : ""}
+                      {r.endDate
+                        ? ` – ${new Date(r.endDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
+                        : ""}
+                      {r.venue ? ` · ${r.venue}` : ""}
+                      {` (${r.format})`}
+                    </p>
+                  ))}
+                </div>
               )}
             </div>
           )}
@@ -81,7 +81,7 @@ export default async function ExamPage() {
             {[
               {
                 heading: "Format",
-                body: "Round I is a theory-based written examination conducted online. It consists of structured problems requiring written solutions, proofs, and analytical reasoning. Duration varies by subject — typically 3–4 hours.",
+                body: "Examinations are theory-based written assessments. They consist of structured problems requiring written solutions, proofs, and analytical reasoning. Duration varies by subject — typically 3–4 hours.",
               },
               {
                 heading: "Permitted Materials",
@@ -97,7 +97,7 @@ export default async function ExamPage() {
               },
               {
                 heading: "Results",
-                body: "Examinations are independently scored by subject-matter experts. Results are published in your portal. Participants who achieve the qualifying threshold receive an official invitation to Round II.",
+                body: "Examinations are independently scored by subject-matter experts. Results are published in your portal. Participants who achieve the qualifying threshold receive an official invitation to the next round.",
               },
             ].map((item) => (
               <div key={item.heading} className="flex flex-col gap-2 border-b border-gate-fog pb-6 last:border-0">

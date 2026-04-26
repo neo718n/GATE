@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, results } from "@/lib/db/schema";
 import { eq, and, isNotNull } from "drizzle-orm";
@@ -18,7 +18,7 @@ export default async function CertificatesPage() {
           eq(results.participantId, participant.id),
           isNotNull(results.publishedAt),
         ),
-        with: { subject: true, cycle: true },
+        with: { subject: true, cycle: true, round: true },
         orderBy: results.publishedAt,
       })
     : [];
@@ -70,10 +70,10 @@ export default async function CertificatesPage() {
                     : "Certificate of Participation"}
                 </p>
                 <p className="text-sm font-light text-gate-800">
-                  {r.subject?.name} — {r.cycle?.name}
+                  {r.subject?.name} вЂ” {r.cycle?.name}
                 </p>
                 <p className="text-xs font-light text-gate-800/50">
-                  {r.stage === "preliminary" ? "Preliminary Round" : "Global Onsite Assessment"}
+                  {r.round?.name ?? "Assessment Round"}
                 </p>
               </div>
               <div>
@@ -96,3 +96,4 @@ export default async function CertificatesPage() {
     </div>
   );
 }
+

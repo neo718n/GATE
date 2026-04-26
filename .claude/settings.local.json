@@ -1,7 +1,23 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(git commit -m ' *)",
+      "Bash(gh repo *)",
+      "Bash(cargo --version)",
+      "Bash(curl --version)",
+      "Bash(rustup --version)",
+      "Bash(curl -s https://api.github.com/repos/rtk-ai/rtk/releases/latest)",
+      "Bash(python3 -c \"import sys,json; r=json.load\\(sys.stdin\\); [print\\(a['name'], a['browser_download_url']\\) for a in r.get\\('assets',[]\\)]\")",
+      "Bash(curl -s https://api.github.com/repos/rtk-ai/rtk/releases/assets)",
+      "Skill(update-config)",
+      "Skill(update-config:*)"
+    ],
     "additionalDirectories": [
       "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "vercel"
+  ],
+  "enableAllProjectMcpServers": true
 }
