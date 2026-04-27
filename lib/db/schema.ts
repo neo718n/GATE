@@ -324,6 +324,7 @@ export const payments = pgTable("payments", {
     onDelete: "set null",
   }),
   cycleId: integer("cycle_id").references(() => cycles.id),
+  roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   amountUsd: integer("amount_usd").notNull(),
@@ -334,6 +335,18 @@ export const payments = pgTable("payments", {
   receiptUrl: text("receipt_url"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  subject: text("subject").notNull(),
+  body: text("body").notNull(),
+  recipientFilter: text("recipient_filter").notNull().default("all"),
+  cycleId: integer("cycle_id").references(() => cycles.id, { onDelete: "set null" }),
+  sentByUserId: text("sent_by_user_id").references(() => user.id, { onDelete: "set null" }),
+  recipientCount: integer("recipient_count").notNull().default(0),
+  sentAt: timestamp("sent_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -373,6 +386,7 @@ export const cycleRelations = relations(cycles, ({ many }) => ({
 export const roundRelations = relations(rounds, ({ one, many }) => ({
   cycle: one(cycles, { fields: [rounds.cycleId], references: [cycles.id] }),
   results: many(results),
+  payments: many(payments),
 }));
 
 export const cycleSubjectRelations = relations(cycleSubjects, ({ one }) => ({
@@ -459,6 +473,12 @@ export const paymentRelations = relations(payments, ({ one }) => ({
     references: [participants.id],
   }),
   cycle: one(cycles, { fields: [payments.cycleId], references: [cycles.id] }),
+  round: one(rounds, { fields: [payments.roundId], references: [rounds.id] }),
+}));
+
+export const notificationRelations = relations(notifications, ({ one }) => ({
+  sentBy: one(user, { fields: [notifications.sentByUserId], references: [user.id] }),
+  cycle: one(cycles, { fields: [notifications.cycleId], references: [cycles.id] }),
 }));
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -478,3 +498,4 @@ export type Partner = typeof partners.$inferSelect;
 export type Position = typeof positions.$inferSelect;
 export type CareerApplication = typeof careerApplications.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
+export type Notification = typeof notifications.$inferSelect;

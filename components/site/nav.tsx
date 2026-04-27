@@ -24,11 +24,32 @@ const MORE_LINKS = [
 
 const ALL_LINKS = [...PRIMARY_LINKS, ...MORE_LINKS];
 
-export function SiteNav() {
+const ROLE_HOME: Record<string, string> = {
+  super_admin: "/admin",
+  admin: "/admin",
+  coordinator: "/coordinator",
+  partner_contact: "/partner",
+  participant: "/participant",
+  career_applicant: "/participant",
+};
+
+interface NavSession {
+  user: {
+    name: string;
+    email: string;
+    role?: string | null;
+  };
+}
+
+export function SiteNav({ session }: { session?: NavSession | null }) {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const moreRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  const dashboardHref = session
+    ? (ROLE_HOME[(session.user as any).role ?? "participant"] ?? "/participant")
+    : "/participant";
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -112,13 +133,27 @@ export function SiteNav() {
             </div>
           </nav>
 
+          {/* Desktop auth buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild className="text-gate-800/50 hover:text-gate-800">
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button variant="gold" size="sm" asChild>
-              <Link href="/register">Apply Now</Link>
-            </Button>
+            {session ? (
+              <>
+                <span className="text-[11px] font-light text-gate-800/50 max-w-[140px] truncate">
+                  {session.user.name}
+                </span>
+                <Button variant="gold" size="sm" asChild>
+                  <Link href={dashboardHref}>Dashboard</Link>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" asChild className="text-gate-800/50 hover:text-gate-800">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button variant="gold" size="sm" asChild>
+                  <Link href="/register">Apply Now</Link>
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -167,16 +202,33 @@ export function SiteNav() {
               </Link>
             ))}
             <div className="flex flex-col gap-3 pt-3 border-t border-gate-fog">
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/login" onClick={() => setOpen(false)}>
-                  Sign In
-                </Link>
-              </Button>
-              <Button variant="gold" size="sm" asChild>
-                <Link href="/register" onClick={() => setOpen(false)}>
-                  Apply Now
-                </Link>
-              </Button>
+              {session ? (
+                <>
+                  <Button variant="gold" size="sm" asChild>
+                    <Link href={dashboardHref} onClick={() => setOpen(false)}>
+                      Dashboard
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/api/auth/sign-out" onClick={() => setOpen(false)}>
+                      Sign Out
+                    </Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/login" onClick={() => setOpen(false)}>
+                      Sign In
+                    </Link>
+                  </Button>
+                  <Button variant="gold" size="sm" asChild>
+                    <Link href="/register" onClick={() => setOpen(false)}>
+                      Apply Now
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>

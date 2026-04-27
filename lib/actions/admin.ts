@@ -11,10 +11,13 @@ import {
   results,
   partners,
   careerApplications,
+  payments,
+  notifications,
 } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
+import { resend, DEFAULT_FROM } from "@/lib/email";
 
 // ── Cycles ────────────────────────────────────────────────────────────────
 
@@ -240,4 +243,83 @@ export async function seedDefaultSubjects() {
   }
 
   revalidatePath("/admin/subjects");
+}
+
+// ── Payments ──────────────────────────────────────────────────────────────
+
+export async function updatePaymentStatus(formData: FormData) {
+  await requireRole(["super_admin", "admin"]);
+  const id = parseInt(formData.get("id") as string);
+  const status = formData.get("status") as string;
+  await db
+    .update(payments)
+    .set({
+      status: status as typeof payments.$inferInsert.status,
+      updatedAt: new Date(),
+    })
+    .where(eq(payments.id, id));
+  revalidatePath("/admin/payments");
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────
+
+export async function sendNotification(formData: FormData) {
+  const session = await requireRole(["super_admin", "admin"]);
+
+  const subject = (formData.get("subject") as string)?.trim();
+  const body = (formData.get("body") as string)?.trim();
+  const recipientFilter = (formData.get("recipientFilter") as string) || "all";
+  const cycleIdRaw = formData.get("cycleId") as string;
+  const cycleId = cycleIdRaw ? parseInt(cycleIdRaw) : null;
+
+  if (!subject || !body) throw new Error("Subject and body are required");
+
+  let recipients: { email: string; name: string }[] = [];
+
+  if (recipientFilter === "all") {
+    const allUsers = await db.query.user.findMany({
+      where: eq(user.emailVerified, true),
+    });
+    recipients = allUsers.map((u) => ({ email: u.email, name: u.name }));
+  } else if (cycleId) {
+    const participantList = await db.query.participants.findMany({
+      where: eq(participants.cycleId, cycleId),
+      with: { user: true },
+    });
+    recipients = participantList
+      .filter((p) => p.user?.email)
+      .map((p) => ({ email: p.user!.email, name: p.user!.name }));
+  }
+
+  let sentCount = 0;
+  for (const recipient of recipients) {
+    try {
+      await resend.emails.send({
+        from: DEFAULT_FROM,
+        to: recipient.email,
+        subject,
+        html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;">
+          <h2 style="color:#1a2634;font-weight:300;">${subject}</h2>
+          <div style="color:#4a5568;line-height:1.8;">${body.replace(/\n/g, "<br>")}</div>
+          <hr style="margin:30px 0;border:none;border-top:1px solid #e2e8f0;">
+          <p style="color:#9ca3af;font-size:12px;">G.A.T.E. Assessment Platform</p>
+        </div>`,
+      });
+      sentCount++;
+    } catch {
+      // continue sending to others if one fails
+    }
+  }
+
+  await db.insert(notifications).values({
+    subject,
+    body,
+    recipientFilter,
+    cycleId,
+    sentByUserId: session.user.id,
+    recipientCount: sentCount,
+    sentAt: new Date(),
+  });
+
+  revalidatePath("/admin/notifications");
 }
