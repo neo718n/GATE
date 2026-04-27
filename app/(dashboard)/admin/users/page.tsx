@@ -4,6 +4,7 @@ import { user } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { updateUserRole } from "@/lib/actions/admin";
+import { DeleteUserButton } from "./delete-user-button";
 
 const ROLES = [
   "participant",
@@ -31,7 +32,7 @@ export default async function UsersPage() {
   });
 
   return (
-    <div className="flex flex-col gap-8 max-w-5xl">
+    <div className="flex flex-col gap-8 max-w-6xl">
       <div className="flex flex-col gap-1.5">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Super Admin
@@ -43,8 +44,8 @@ export default async function UsersPage() {
       </div>
 
       <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40">
-        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_160px] gap-4 px-5 py-3 bg-gate-fog/30">
-          {["Name", "Email", "Role", "Verified", "Change Role"].map((h) => (
+        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_180px_80px] gap-4 px-5 py-3 bg-gate-fog/30">
+          {["Name", "Email", "Role", "Verified", "Change Role", ""].map((h) => (
             <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
               {h}
             </span>
@@ -53,7 +54,7 @@ export default async function UsersPage() {
         {allUsers.map((u) => (
           <div
             key={u.id}
-            className="grid grid-cols-[2fr_2fr_1fr_1fr_160px] gap-4 px-5 py-4 items-center"
+            className="grid grid-cols-[2fr_2fr_1fr_1fr_180px_80px] gap-4 px-5 py-4 items-center"
           >
             <p className="text-sm font-light text-gate-800 truncate">{u.name}</p>
             <p className="text-xs font-light text-gate-800/55 truncate">{u.email}</p>
@@ -87,6 +88,11 @@ export default async function UsersPage() {
               </form>
             ) : (
               <span className="text-[10px] font-light text-gate-800/30">(you)</span>
+            )}
+            {u.id !== session.user.id ? (
+              <DeleteUserButton userId={u.id} name={u.name} />
+            ) : (
+              <span />
             )}
           </div>
         ))}

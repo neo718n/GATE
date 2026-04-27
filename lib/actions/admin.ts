@@ -135,6 +135,14 @@ export async function updateUserRole(formData: FormData) {
   revalidatePath("/admin/users");
 }
 
+export async function deleteUser(formData: FormData) {
+  const session = await requireRole(["super_admin"]);
+  const userId = formData.get("userId") as string;
+  if (!userId || userId === session.user.id) return;
+  await db.delete(user).where(eq(user.id, userId));
+  revalidatePath("/admin/users");
+}
+
 // ── Subjects ──────────────────────────────────────────────────────────────
 
 export async function createSubject(formData: FormData) {

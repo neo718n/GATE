@@ -36,7 +36,6 @@ export function RegisterForm() {
         email: form.email,
         password: form.password,
         name: `${form.firstName} ${form.lastName}`.trim(),
-        callbackURL: "/participant",
       });
 
       if (err) {
@@ -50,6 +49,7 @@ export function RegisterForm() {
         type: "email-verification",
       });
 
+      sessionStorage.setItem("gate_verify_pw", form.password);
       router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
     } catch {
       setError("Something went wrong. Please try again.");

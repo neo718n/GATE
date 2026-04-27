@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useRef, Fragment } from "react";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
+import { authClient, signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 
 export function VerifyEmailForm({ email }: { email: string }) {
-  const router = useRouter();
   const [digits, setDigits] = useState<string[]>(Array(6).fill(""));
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -27,7 +25,22 @@ export function VerifyEmailForm({ email }: { email: string }) {
       return;
     }
     setVerified(true);
-    setTimeout(() => router.push("/participant"), 1400);
+
+    const password = sessionStorage.getItem("gate_verify_pw");
+    if (password) {
+      sessionStorage.removeItem("gate_verify_pw");
+      const { data } = await signIn.email({ email, password });
+      const role = (data as any)?.user?.role ?? "participant";
+      const ROLE_HOME: Record<string, string> = {
+        super_admin: "/admin",
+        admin: "/admin",
+        coordinator: "/coordinator",
+        partner_contact: "/partner",
+      };
+      setTimeout(() => { window.location.href = ROLE_HOME[role] ?? "/participant"; }, 1400);
+    } else {
+      setTimeout(() => { window.location.href = "/login?verified=1"; }, 1400);
+    }
   }
 
   function onDigit(i: number, val: string) {

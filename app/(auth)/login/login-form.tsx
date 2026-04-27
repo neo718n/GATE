@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn, authClient } from "@/lib/auth-client";
 import { Label } from "@/components/ui/label";
@@ -17,11 +17,12 @@ const ROLE_HOME: Record<string, string> = {
 };
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
+  const verified = searchParams.get("verified") === "1";
+  const prefilledEmail = searchParams.get("email") ?? "";
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -44,7 +45,7 @@ export function LoginForm() {
             email,
             type: "email-verification",
           });
-          router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+          window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
           return;
         }
         setError(err.message ?? "Sign in failed. Please try again.");
@@ -53,12 +54,12 @@ export function LoginForm() {
       }
 
       if (from) {
-        router.push(from);
+        window.location.href = from;
         return;
       }
 
       const role = (data as any)?.user?.role ?? "participant";
-      router.push(ROLE_HOME[role] ?? "/participant");
+      window.location.href = ROLE_HOME[role] ?? "/participant";
     } catch {
       setError("Something went wrong. Please try again.");
       setPending(false);
@@ -75,6 +76,12 @@ export function LoginForm() {
           Access your G.A.T.E. Assessment account
         </p>
       </div>
+
+      {verified && !error && (
+        <p className="text-xs text-green-700 border border-green-200 bg-green-50 px-4 py-3">
+          Email verified. Sign in to continue.
+        </p>
+      )}
 
       {error && (
         <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
