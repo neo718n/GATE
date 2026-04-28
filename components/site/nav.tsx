@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/components/sign-out-button";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS = [
@@ -209,11 +210,9 @@ export function SiteNav({ session }: { session?: NavSession | null }) {
                       Dashboard
                     </Link>
                   </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/api/auth/sign-out" onClick={() => setOpen(false)}>
-                      Sign Out
-                    </Link>
-                  </Button>
+                  <SignOutButton className="inline-flex items-center justify-center h-8 px-3 border border-gate-800/20 text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-800/70 hover:bg-gate-fog transition-colors w-full">
+                    Sign Out
+                  </SignOutButton>
                 </>
               ) : (
                 <>

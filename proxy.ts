@@ -9,11 +9,17 @@ const PROTECTED_PREFIXES = [
   "/partner",
 ];
 
+const AUTH_ROUTES = ["/login", "/register"];
+
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const sessionCookie = getSessionCookie(request);
+
+  if (AUTH_ROUTES.includes(pathname) && sessionCookie) {
+    return NextResponse.redirect(new URL("/participant", request.url));
+  }
 
   if (PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
-    const sessionCookie = getSessionCookie(request);
     if (!sessionCookie) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
@@ -27,6 +33,8 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/login",
+    "/register",
     "/dashboard/:path*",
     "/admin/:path*",
     "/coordinator/:path*",

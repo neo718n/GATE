@@ -2,6 +2,7 @@
 import { Logo } from "@/components/brand/logo";
 import { requireSession } from "@/lib/authz";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export default async function DashboardLayout({
   children,
@@ -77,12 +78,9 @@ export default async function DashboardLayout({
         </div>
         <DashboardSidebar links={links} />
         <div className="p-4 border-t border-gate-fog">
-          <Link
-            href="/api/auth/sign-out"
-            className="block px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 hover:text-red-500 transition-colors border-l-2 border-transparent"
-          >
+          <SignOutButton className="block w-full text-left px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 hover:text-red-500 transition-colors border-l-2 border-transparent">
             Sign Out
-          </Link>
+          </SignOutButton>
         </div>
       </aside>
 
