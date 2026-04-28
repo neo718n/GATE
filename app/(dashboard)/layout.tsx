@@ -16,12 +16,14 @@ export default async function DashboardLayout({
     super_admin: [
       { href: "/admin", label: "Overview" },
       { href: "/admin/users", label: "Users & Roles" },
+      { href: "/admin/participants", label: "Participants" },
       { href: "/admin/cycles", label: "Assessment Cycles" },
       { href: "/admin/subjects", label: "Subjects & Exams" },
       { href: "/admin/payments", label: "Payments" },
       { href: "/admin/notifications", label: "Notifications" },
       { href: "/admin/partners", label: "Partner Applications" },
       { href: "/admin/careers", label: "Career Applications" },
+      { href: "/admin/content", label: "Content" },
       { href: "/admin/analytics", label: "Analytics" },
       { href: "/admin/settings", label: "System Settings" },
     ],
@@ -33,6 +35,7 @@ export default async function DashboardLayout({
       { href: "/admin/notifications", label: "Notifications" },
       { href: "/admin/certificates", label: "Certificates" },
       { href: "/admin/inquiries", label: "Academic Inquiries" },
+      { href: "/admin/content", label: "Content" },
     ],
     coordinator: [
       { href: "/coordinator", label: "Overview" },
@@ -51,6 +54,7 @@ export default async function DashboardLayout({
       { href: "/participant/exam", label: "Exam Instructions" },
       { href: "/participant/results", label: "Results" },
       { href: "/participant/certificates", label: "Certificates" },
+      { href: "/participant/documents", label: "My Documents" },
     ],
   };
 

@@ -10,14 +10,17 @@
       "Bash(python3 -c \"import sys,json; r=json.load\\(sys.stdin\\); [print\\(a['name'], a['browser_download_url']\\) for a in r.get\\('assets',[]\\)]\")",
       "Bash(curl -s https://api.github.com/repos/rtk-ai/rtk/releases/assets)",
       "Skill(update-config)",
-      "Skill(update-config:*)"
+      "Skill(update-config:*)",
+      "PowerShell(\\(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\auth.ts\" | Measure-Object -Line\\).Lines)",
+      "PowerShell(\\(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\actions\\\\admin.ts\" | Measure-Object -Line\\).Lines)"
     ],
     "additionalDirectories": [
-      "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms"
+      "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms",
+      "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(dashboard)\\admin\\participants"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
     "vercel"
-  ],
-  "enableAllProjectMcpServers": true
+  ]
 }

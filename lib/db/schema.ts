@@ -95,6 +95,15 @@ export const stripePaymentStatusEnum = pgEnum("stripe_payment_status", [
   "refunded",
 ]);
 
+export const documentTypeEnum = pgEnum("document_type", [
+  "identity",
+  "photo",
+  "certificate",
+  "invoice",
+  "cv",
+  "other",
+]);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Better Auth core tables
 // ────────────────────────────────────────────────────────────────────────────
@@ -337,6 +346,23 @@ export const payments = pgTable("payments", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const documents = pgTable("documents", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  participantId: integer("participant_id").references(() => participants.id, {
+    onDelete: "set null",
+  }),
+  type: documentTypeEnum("type").notNull().default("other"),
+  name: text("name").notNull(),
+  key: text("key").notNull().unique(),
+  size: integer("size"),
+  mimeType: text("mime_type"),
+  archivedAt: timestamp("archived_at"),
+  uploadedAt: timestamp("uploaded_at").notNull().defaultNow(),
+});
+
 export const notifications = pgTable("notifications", {
   id: serial("id").primaryKey(),
   subject: text("subject").notNull(),
@@ -365,6 +391,7 @@ export const userRelations = relations(user, ({ one, many }) => ({
   sessions: many(session),
   accounts: many(account),
   payments: many(payments),
+  documents: many(documents),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
@@ -415,6 +442,7 @@ export const participantRelations = relations(participants, ({ one, many }) => (
   subjects: many(participantSubjects),
   results: many(results),
   payments: many(payments),
+  documents: many(documents),
 }));
 
 export const participantSubjectRelations = relations(
@@ -481,6 +509,14 @@ export const notificationRelations = relations(notifications, ({ one }) => ({
   cycle: one(cycles, { fields: [notifications.cycleId], references: [cycles.id] }),
 }));
 
+export const documentRelations = relations(documents, ({ one }) => ({
+  user: one(user, { fields: [documents.userId], references: [user.id] }),
+  participant: one(participants, {
+    fields: [documents.participantId],
+    references: [participants.id],
+  }),
+}));
+
 // ────────────────────────────────────────────────────────────────────────────
 // Types
 // ────────────────────────────────────────────────────────────────────────────
@@ -499,3 +535,4 @@ export type Position = typeof positions.$inferSelect;
 export type CareerApplication = typeof careerApplications.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
+export type Document = typeof documents.$inferSelect;
