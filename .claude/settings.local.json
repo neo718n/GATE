@@ -16,7 +16,8 @@
     ],
     "additionalDirectories": [
       "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms",
-      "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(dashboard)\\admin\\participants"
+      "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(dashboard)\\admin\\participants",
+      "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(dashboard)\\admin\\cycles"
     ]
   },
   "enableAllProjectMcpServers": true,

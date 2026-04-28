@@ -323,3 +323,109 @@ export async function sendNotification(formData: FormData) {
 
   revalidatePath("/admin/notifications");
 }
+
+// ── Cycle full edit ────────────────────────────────────────────────────────
+
+export async function updateCycle(formData: FormData) {
+  await requireRole(["super_admin"]);
+  const id = parseInt(formData.get("id") as string);
+  const name = (formData.get("name") as string)?.trim();
+  const year = parseInt(formData.get("year") as string);
+  const description = (formData.get("description") as string)?.trim() || null;
+  const registrationFeeUsd = parseInt(formData.get("registrationFeeUsd") as string) || 0;
+  const status = formData.get("status") as string;
+
+  if (!id || !name || !year) throw new Error("Required fields missing");
+
+  await db
+    .update(cycles)
+    .set({
+      name,
+      year,
+      description,
+      registrationFeeUsd,
+      status: status as typeof cycles.$inferInsert.status,
+      updatedAt: new Date(),
+    })
+    .where(eq(cycles.id, id));
+
+  revalidatePath("/admin/cycles");
+  revalidatePath(`/admin/cycles/${id}`);
+}
+
+// ── Round full edit ────────────────────────────────────────────────────────
+
+export async function updateRound(formData: FormData) {
+  await requireRole(["super_admin"]);
+  const id = parseInt(formData.get("id") as string);
+  const name = (formData.get("name") as string)?.trim();
+  const order = parseInt(formData.get("order") as string) || 1;
+  const format = formData.get("format") as string;
+  const startDate = (formData.get("startDate") as string) || null;
+  const endDate = (formData.get("endDate") as string) || null;
+  const venue = (formData.get("venue") as string)?.trim() || null;
+
+  if (!id || !name) throw new Error("Round id and name required");
+
+  await db
+    .update(rounds)
+    .set({
+      name,
+      order,
+      format: format as typeof rounds.$inferInsert.format,
+      startDate: startDate ? new Date(startDate) : null,
+      endDate: endDate ? new Date(endDate) : null,
+      venue,
+    })
+    .where(eq(rounds.id, id));
+
+  revalidatePath("/admin/cycles");
+}
+
+// ── Results upsert/delete ─────────────────────────────────────────────────
+
+export async function upsertResult(formData: FormData) {
+  await requireRole(["super_admin", "admin"]);
+
+  const resultId = parseInt(formData.get("resultId") as string) || null;
+  const participantId = parseInt(formData.get("participantId") as string);
+  const subjectId = parseInt(formData.get("subjectId") as string);
+  const cycleId = parseInt(formData.get("cycleId") as string);
+  const roundId = parseInt(formData.get("roundId") as string) || null;
+  const score = (formData.get("score") as string)?.trim() || null;
+  const maxScore = (formData.get("maxScore") as string)?.trim() || null;
+  const rank = parseInt(formData.get("rank") as string) || null;
+  const awardRaw = (formData.get("award") as string)?.trim() || "";
+  const publishedAtRaw = (formData.get("publishedAt") as string)?.trim() || "";
+
+  const vals = {
+    participantId,
+    subjectId,
+    cycleId,
+    roundId,
+    score: score || null,
+    maxScore: maxScore || null,
+    rank: rank || null,
+    award: awardRaw ? (awardRaw as "gold" | "silver" | "bronze" | "honorable_mention" | "participation") : null,
+    publishedAt: publishedAtRaw ? new Date(publishedAtRaw) : null,
+  };
+
+  if (resultId) {
+    await db.update(results).set(vals).where(eq(results.id, resultId));
+  } else {
+    await db.insert(results).values(vals);
+  }
+
+  revalidatePath(`/admin/cycles/${cycleId}`);
+  revalidatePath(`/admin/participants/${participantId}`);
+}
+
+export async function deleteResult(formData: FormData) {
+  await requireRole(["super_admin", "admin"]);
+  const id = parseInt(formData.get("id") as string);
+  const cycleId = parseInt(formData.get("cycleId") as string) || 0;
+  if (!id) return;
+  await db.delete(results).where(eq(results.id, id));
+  if (cycleId) revalidatePath(`/admin/cycles/${cycleId}`);
+  revalidatePath("/admin/cycles");
+}
