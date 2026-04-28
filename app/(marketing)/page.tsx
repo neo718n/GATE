@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { FaqAccordion } from "@/components/site/faq-accordion";
@@ -89,12 +89,12 @@ export default async function HomePage() {
       )}
 
       {/* HERO */}
-      <section className="relative flex min-h-[calc(100vh-56px)] flex-col items-center justify-center px-6 text-center overflow-hidden bg-gate-800">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_115%,rgba(201,153,58,0.16),transparent)]" />
+      <section className="relative flex min-h-[calc(100vh-56px)] flex-col items-center justify-center px-6 text-center overflow-hidden bg-gate-white">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_50%_115%,rgba(201,153,58,0.07),transparent)]" />
         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gate-gold/25 to-transparent" />
         <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gate-gold/15 to-transparent" />
         <div
-          className="absolute inset-0 opacity-[0.035]"
+          className="absolute inset-0 opacity-[0.022]"
           style={{
             backgroundImage: "radial-gradient(rgba(201,153,58,1) 1px, transparent 1px)",
             backgroundSize: "40px 40px",
@@ -110,9 +110,9 @@ export default async function HomePage() {
             <div className="h-px w-10 bg-gate-gold/40" />
           </div>
 
-          <Logo size="xl" variant="dark" showTagline />
+          <Logo size="xl" variant="light" showTagline />
 
-          <p className="text-base md:text-lg font-light text-gate-white/50 leading-relaxed max-w-xl mt-2">
+          <p className="text-base md:text-lg font-light text-gate-800/55 leading-relaxed max-w-xl mt-2">
             A rigorous multi-discipline academic assessment — open to students worldwide. From a global online Preliminary Round to an invitation-only onsite Final.
           </p>
 
@@ -120,12 +120,7 @@ export default async function HomePage() {
             <Button variant="gold" size="lg" asChild>
               <Link href="/register">Apply Now</Link>
             </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              asChild
-              className="border-gate-white/20 text-gate-white/65 bg-transparent hover:bg-gate-white/5 hover:border-gate-white/35 hover:text-gate-white/90"
-            >
+            <Button variant="outline" size="lg" asChild>
               <Link href="/structure">How It Works</Link>
             </Button>
           </div>
@@ -510,3 +505,9 @@ export default async function HomePage() {
     </>
   );
 }
+
+
+
+
+
+
