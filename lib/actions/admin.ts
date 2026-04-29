@@ -62,7 +62,7 @@ export async function createRound(formData: FormData) {
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
-  const registrationOpen = formData.get("registrationOpen") === "true";
+  const registrationStatus = (formData.get("registrationStatus") as string) || "closed";
 
   if (!cycleId || !name) throw new Error("Cycle and round name are required");
 
@@ -75,7 +75,7 @@ export async function createRound(formData: FormData) {
     endDate: endDate ? new Date(endDate) : null,
     venue,
     feeUsd,
-    registrationOpen,
+    registrationStatus: registrationStatus as typeof rounds.$inferInsert.registrationStatus,
   });
 
   revalidatePath("/admin/cycles");
@@ -394,7 +394,7 @@ export async function updateRound(formData: FormData) {
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
-  const registrationOpen = formData.get("registrationOpen") === "true";
+  const registrationStatus = (formData.get("registrationStatus") as string) || "closed";
 
   if (!id || !name) throw new Error("Round id and name required");
 
@@ -408,7 +408,7 @@ export async function updateRound(formData: FormData) {
       endDate: endDate ? new Date(endDate) : null,
       venue,
       feeUsd,
-      registrationOpen,
+      registrationStatus: registrationStatus as typeof rounds.$inferInsert.registrationStatus,
     })
     .where(eq(rounds.id, id));
 

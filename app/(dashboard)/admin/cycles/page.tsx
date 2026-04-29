@@ -246,8 +246,8 @@ export default async function CyclesPage() {
                                 </p>
                               </div>
                               <div className="flex items-center gap-2 shrink-0 mt-0.5">
-                                <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${r.registrationOpen ? "text-green-600" : "text-gate-800/30"}`}>
-                                  {r.registrationOpen ? "Open" : "Closed"}
+                                <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${r.registrationStatus === "open" ? "text-green-600" : r.registrationStatus === "soon" ? "text-amber-500" : "text-gate-800/30"}`}>
+                                  {r.registrationStatus === "open" ? "Open" : r.registrationStatus === "soon" ? "Soon" : "Closed"}
                                 </span>
                                 <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-gold/70">Edit</span>
                               </div>
@@ -290,12 +290,13 @@ export default async function CyclesPage() {
                               <div className="flex flex-col gap-1">
                                 <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Registration Status</label>
                                 <select
-                                  name="registrationOpen"
-                                  defaultValue={r.registrationOpen ? "true" : "false"}
+                                  name="registrationStatus"
+                                  defaultValue={r.registrationStatus}
                                   className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
-                                  <option value="false">Closed</option>
-                                  <option value="true">Open</option>
+                                  <option value="closed">Closed</option>
+                                  <option value="soon">Soon</option>
+                                  <option value="open">Open</option>
                                 </select>
                               </div>
                               <div className="flex items-center gap-3">
@@ -350,12 +351,13 @@ export default async function CyclesPage() {
                         <div className="flex flex-col gap-1">
                           <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Registration Status</label>
                           <select
-                            name="registrationOpen"
-                            defaultValue="false"
+                            name="registrationStatus"
+                            defaultValue="closed"
                             className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                           >
-                            <option value="false">Closed</option>
-                            <option value="true">Open</option>
+                            <option value="closed">Closed</option>
+                            <option value="soon">Soon</option>
+                            <option value="open">Open</option>
                           </select>
                         </div>
                         <Button type="submit" variant="outline" size="sm">Add Round</Button>

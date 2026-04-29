@@ -39,6 +39,12 @@ export const roundFormatEnum = pgEnum("round_format", [
   "hybrid",
 ]);
 
+export const roundRegistrationStatusEnum = pgEnum("round_registration_status", [
+  "closed",
+  "soon",
+  "open",
+]);
+
 export const registrationStatusEnum = pgEnum("registration_status", [
   "draft",
   "submitted",
@@ -193,7 +199,7 @@ export const rounds = pgTable("rounds", {
   endDate: timestamp("end_date"),
   venue: text("venue"),
   feeUsd: integer("fee_usd").notNull().default(0),
-  registrationOpen: boolean("registration_open").notNull().default(false),
+  registrationStatus: roundRegistrationStatusEnum("registration_status").notNull().default("closed"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
