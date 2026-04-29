@@ -234,6 +234,7 @@ export const participants = pgTable("participants", {
     .references(() => user.id, { onDelete: "cascade" })
     .unique(),
   cycleId: integer("cycle_id").references(() => cycles.id),
+  roundId: integer("round_id").references(() => rounds.id),
   fullName: text("full_name").notNull(),
   dateOfBirth: date("date_of_birth"),
   country: text("country").notNull(),

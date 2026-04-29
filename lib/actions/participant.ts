@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { participants, participantSubjects, cycles, payments } from "@/lib/db/schema";
+import { participants, participantSubjects, cycles, rounds, payments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
@@ -48,6 +48,28 @@ export async function saveParticipantProfile(formData: FormData) {
   redirect("/participant/enrollment");
 }
 
+export async function selectRound(formData: FormData) {
+  const session = await requireRole(["participant", "admin", "super_admin"]);
+  const participantId = parseInt(formData.get("participantId") as string);
+  const roundId = parseInt(formData.get("roundId") as string);
+
+  if (!roundId || !participantId) return;
+
+  const participant = await db.query.participants.findFirst({
+    where: eq(participants.id, participantId),
+  });
+  if (!participant || participant.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  await db
+    .update(participants)
+    .set({ roundId, cycleId: participant.cycleId, updatedAt: new Date() })
+    .where(eq(participants.id, participantId));
+
+  revalidatePath("/participant/enrollment");
+}
+
 export async function selectSubject(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
   const participantId = parseInt(formData.get("participantId") as string);
@@ -72,27 +94,35 @@ export async function selectSubject(formData: FormData) {
 export async function initiatePayment(formData: FormData) {
   const session = await requireRole(["participant"]);
   const cycleId = parseInt(formData.get("cycleId") as string);
+  const roundId = parseInt(formData.get("roundId") as string);
   const participantId = parseInt(formData.get("participantId") as string);
 
-  const cycle = await db.query.cycles.findFirst({
-    where: eq(cycles.id, cycleId),
-  });
-  if (!cycle) throw new Error("Cycle not found");
+  const [cycle, round] = await Promise.all([
+    db.query.cycles.findFirst({ where: eq(cycles.id, cycleId) }),
+    db.query.rounds.findFirst({ where: eq(rounds.id, roundId) }),
+  ]);
+  if (!cycle || !round) throw new Error("Cycle or round not found");
 
-  if (cycle.registrationFeeUsd === 0) {
+  // Update participant's roundId
+  await db
+    .update(participants)
+    .set({ roundId, updatedAt: new Date() })
+    .where(eq(participants.id, participantId));
+
+  if (round.feeUsd === 0) {
     await db
       .update(participants)
       .set({ paymentStatus: "paid", updatedAt: new Date() })
       .where(eq(participants.id, participantId));
     revalidatePath("/participant");
-    redirect("/participant?payment=success");
+    redirect("/participant/enrollment?payment=success");
   }
 
   const grossAmount = Math.ceil(
-    (cycle.registrationFeeUsd + cycle.stripeFeeFixedCents) /
+    (round.feeUsd + cycle.stripeFeeFixedCents) /
       (1 - cycle.stripeFeePercent / 10000)
   );
-  const feeAmount = grossAmount - cycle.registrationFeeUsd;
+  const feeAmount = grossAmount - round.feeUsd;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const checkoutSession = await stripe.checkout.sessions.create({
@@ -106,7 +136,7 @@ export async function initiatePayment(formData: FormData) {
           currency: "usd",
           unit_amount: grossAmount,
           product_data: {
-            name: `GATE Assessment ${cycle.name} — Registration Fee`,
+            name: `${round.name} — Registration Fee`,
             description: `Includes $${(feeAmount / 100).toFixed(2)} service fee`,
           },
         },
@@ -115,6 +145,7 @@ export async function initiatePayment(formData: FormData) {
     metadata: {
       userId: session.user.id,
       cycleId: String(cycleId),
+      roundId: String(roundId),
       participantId: String(participantId),
     },
     success_url: `${appUrl}/participant/enrollment?payment=success&sid={CHECKOUT_SESSION_ID}`,
@@ -125,6 +156,7 @@ export async function initiatePayment(formData: FormData) {
     userId: session.user.id,
     participantId,
     cycleId,
+    roundId,
     stripeCheckoutSessionId: checkoutSession.id,
     amountUsd: grossAmount,
     currency: "usd",

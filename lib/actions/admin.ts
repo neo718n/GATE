@@ -26,13 +26,12 @@ export async function createCycle(formData: FormData) {
 
   const name = (formData.get("name") as string)?.trim();
   const year = parseInt(formData.get("year") as string);
-  const fee = parseInt(formData.get("registrationFeeUsd") as string) || 0;
   const description = (formData.get("description") as string)?.trim() || null;
 
   if (!name || !year) throw new Error("Name and year are required");
 
   try {
-    await db.insert(cycles).values({ name, year, description, registrationFeeUsd: fee, status: "planning" });
+    await db.insert(cycles).values({ name, year, description, status: "planning" });
   } catch (e) {
     throw new Error(`Failed to create cycle: ${e instanceof Error ? e.message : String(e)}`);
   }
@@ -357,7 +356,6 @@ export async function updateCycle(formData: FormData) {
   const name = (formData.get("name") as string)?.trim();
   const year = parseInt(formData.get("year") as string);
   const description = (formData.get("description") as string)?.trim() || null;
-  const registrationFeeUsd = parseInt(formData.get("registrationFeeUsd") as string) || 0;
   const stripeFeePercent = parseInt(formData.get("stripeFeePercent") as string) || 290;
   const stripeFeeFixedCents = parseInt(formData.get("stripeFeeFixedCents") as string) || 30;
   const status = formData.get("status") as string;
@@ -370,7 +368,6 @@ export async function updateCycle(formData: FormData) {
       name,
       year,
       description,
-      registrationFeeUsd,
       stripeFeePercent,
       stripeFeeFixedCents,
       status: status as typeof cycles.$inferInsert.status,

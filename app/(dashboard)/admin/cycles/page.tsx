@@ -94,10 +94,6 @@ export default async function CyclesPage() {
               <Label htmlFor="c-desc">Description</Label>
               <Input id="c-desc" name="description" placeholder="Optional short description" />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="c-fee">Registration Fee (cents USD)</Label>
-              <Input id="c-fee" name="registrationFeeUsd" type="number" placeholder="e.g. 5000 = $50.00" min="0" />
-            </div>
           </div>
           <Button type="submit" variant="gold" size="md">Create Cycle</Button>
         </form>
@@ -124,10 +120,6 @@ export default async function CyclesPage() {
                     <p className="text-xs font-light text-gate-800/50">
                       {cycle.year}
                       {cycle.description ? ` · ${cycle.description}` : ""}
-                      {" · "}
-                      {cycle.registrationFeeUsd > 0
-                        ? `$${(cycle.registrationFeeUsd / 100).toFixed(2)} fee`
-                        : "Free"}
                       {" · "}
                       {participantCount} participant{participantCount !== 1 ? "s" : ""}
                     </p>
@@ -164,10 +156,6 @@ export default async function CyclesPage() {
                       <div className="flex flex-col gap-2 md:col-span-2">
                         <Label>Description</Label>
                         <Input name="description" defaultValue={cycle.description ?? ""} />
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <Label>Registration Fee (cents USD)</Label>
-                        <Input name="registrationFeeUsd" type="number" defaultValue={cycle.registrationFeeUsd} min="0" />
                       </div>
                       <div className="flex flex-col gap-2">
                         <Label>Stripe Fee % (basis points, e.g. 290 = 2.9%)</Label>
