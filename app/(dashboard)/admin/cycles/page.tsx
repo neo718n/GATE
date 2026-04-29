@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   createCycle,
-  deleteCycle,
   updateCycle,
   updateCycleStatus,
   createRound,
@@ -18,6 +17,7 @@ import {
   removeCycleSubject,
 } from "@/lib/actions/admin";
 import { LocalDate } from "@/components/ui/local-date";
+import { ConfirmDeleteCycle } from "@/components/ui/confirm-delete-button";
 
 const STATUS_LABELS: Record<string, string> = {
   planning: "Planning",
@@ -195,18 +195,7 @@ export default async function CyclesPage() {
                     </form>
                     {participantCount === 0 && (
                       <div className="pt-4 border-t border-gate-fog/40 flex items-center gap-3">
-                        <form action={deleteCycle}>
-                          <input type="hidden" name="id" value={cycle.id} />
-                          <button
-                            type="submit"
-                            className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-400 hover:text-red-600 transition-colors"
-                            onClick={(e) => {
-                              if (!confirm(`Delete "${cycle.name}" permanently?`)) e.preventDefault();
-                            }}
-                          >
-                            Delete Cycle
-                          </button>
-                        </form>
+                        <ConfirmDeleteCycle cycleId={cycle.id} cycleName={cycle.name} />
                         <span className="text-[10px] text-gate-800/30">No participants — safe to delete</span>
                       </div>
                     )}
