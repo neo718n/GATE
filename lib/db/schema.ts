@@ -352,6 +352,7 @@ export const payments = pgTable("payments", {
     .notNull()
     .default("pending"),
   receiptUrl: text("receipt_url"),
+  invoicePdfKey: text("invoice_pdf_key"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

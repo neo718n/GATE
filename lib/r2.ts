@@ -12,10 +12,14 @@ export const r2 = new S3Client({
 
 export const BUCKET = process.env.R2_BUCKET_NAME!;
 
-export async function getPresignedDownloadUrl(key: string, expiresIn = 3600) {
+export async function getPresignedDownloadUrl(key: string, expiresIn = 3600, filename?: string) {
   return getSignedUrl(
     r2,
-    new GetObjectCommand({ Bucket: BUCKET, Key: key }),
+    new GetObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      ...(filename ? { ResponseContentDisposition: `attachment; filename="${filename}"` } : {}),
+    }),
     { expiresIn },
   );
 }

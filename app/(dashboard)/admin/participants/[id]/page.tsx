@@ -175,10 +175,7 @@ export default async function ParticipantDetailPage({
                 <p className="text-[11px] font-light text-gate-800/50">
                   {new Date(p.createdAt).toLocaleDateString()}
                 </p>
-                <InvoiceDownloadButton
-                  payment={p}
-                  participant={{ name: participant.fullName, email: participant.user.email, country: participant.country }}
-                />
+                <InvoiceDownloadButton paymentId={p.id} />
               </div>
             ))}
           </div>
