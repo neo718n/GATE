@@ -150,7 +150,7 @@ export default async function ParticipantDetailPage({
             Transaction History
           </h2>
           <span className="text-[11px] font-semibold text-gate-gold">
-            Total Paid: ${totalPaid}
+            Total Paid: ${(totalPaid / 100).toFixed(2)}
           </span>
         </div>
         {participant.payments.length === 0 ? (
