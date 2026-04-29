@@ -245,7 +245,7 @@ export default async function EnrollmentPage({
                         <span>${(activeCycle.registrationFeeUsd / 100).toFixed(2)}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm font-light text-gate-800/50">
-                        <span>Payment processing</span>
+                        <span>Service fee</span>
                         <span>${(feeAmount / 100).toFixed(2)}</span>
                       </div>
                       <div className="flex items-center justify-between text-sm font-semibold text-gate-800 border-t border-gate-fog pt-2 mt-1">

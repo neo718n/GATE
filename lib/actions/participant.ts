@@ -88,6 +88,12 @@ export async function initiatePayment(formData: FormData) {
     redirect("/participant?payment=success");
   }
 
+  const grossAmount = Math.ceil(
+    (cycle.registrationFeeUsd + cycle.stripeFeeFixedCents) /
+      (1 - cycle.stripeFeePercent / 10000)
+  );
+  const feeAmount = grossAmount - cycle.registrationFeeUsd;
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -98,9 +104,10 @@ export async function initiatePayment(formData: FormData) {
         quantity: 1,
         price_data: {
           currency: "usd",
-          unit_amount: cycle.registrationFeeUsd,
+          unit_amount: grossAmount,
           product_data: {
             name: `GATE Assessment ${cycle.name} — Registration Fee`,
+            description: `Includes $${(feeAmount / 100).toFixed(2)} service fee`,
           },
         },
       },
@@ -110,7 +117,7 @@ export async function initiatePayment(formData: FormData) {
       cycleId: String(cycleId),
       participantId: String(participantId),
     },
-    success_url: `${appUrl}/participant?payment=success`,
+    success_url: `${appUrl}/participant/enrollment?payment=success&sid={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/participant/enrollment?payment=cancelled`,
   });
 
@@ -119,7 +126,7 @@ export async function initiatePayment(formData: FormData) {
     participantId,
     cycleId,
     stripeCheckoutSessionId: checkoutSession.id,
-    amountUsd: cycle.registrationFeeUsd,
+    amountUsd: grossAmount,
     currency: "usd",
     status: "pending",
   });
