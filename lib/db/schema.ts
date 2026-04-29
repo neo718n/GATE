@@ -175,6 +175,8 @@ export const cycles = pgTable("cycles", {
   description: text("description"),
   status: cycleStatusEnum("status").notNull().default("planning"),
   registrationFeeUsd: integer("registration_fee_usd").notNull().default(0),
+  stripeFeePercent: integer("stripe_fee_percent").notNull().default(290),
+  stripeFeeFixedCents: integer("stripe_fee_fixed_cents").notNull().default(30),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -190,6 +192,7 @@ export const rounds = pgTable("rounds", {
   startDate: timestamp("start_date"),
   endDate: timestamp("end_date"),
   venue: text("venue"),
+  feeUsd: integer("fee_usd").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

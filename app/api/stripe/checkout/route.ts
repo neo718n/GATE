@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import { payments, participants, cycles } from "@/lib/db/schema";
@@ -23,6 +23,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "This cycle has no fee" }, { status: 400 });
   }
 
+  // Calculate gross so GATE nets exactly registrationFeeUsd after Stripe fees
+  // gross = ceil((net + fixedCents) / (1 - percent/10000))
+  const grossAmount = Math.ceil(
+    (cycle.registrationFeeUsd + cycle.stripeFeeFixedCents) /
+      (1 - cycle.stripeFeePercent / 10000)
+  );
+  const feeAmount = grossAmount - cycle.registrationFeeUsd;
+
   const participant = await db.query.participants.findFirst({
     where: eq(participants.userId, session.user.id),
   });
@@ -38,9 +46,10 @@ export async function POST(req: NextRequest) {
         quantity: 1,
         price_data: {
           currency: "usd",
-          unit_amount: cycle.registrationFeeUsd,
+          unit_amount: grossAmount,
           product_data: {
-            name: `GATE Assessment ${cycle.name} — Registration Fee`,
+            name: `GATE ${cycle.name} — Registration Fee`,
+            description: `Includes $${(feeAmount / 100).toFixed(2)} payment processing fee`,
           },
         },
       },
@@ -50,7 +59,7 @@ export async function POST(req: NextRequest) {
       cycleId: String(cycleId),
       participantId: participant ? String(participant.id) : "",
     },
-    success_url: `${appUrl}/participant?payment=success`,
+    success_url: `${appUrl}/participant/enrollment?payment=success&sid={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/participant/enrollment?payment=cancelled`,
   });
 
@@ -59,7 +68,7 @@ export async function POST(req: NextRequest) {
     participantId: participant?.id ?? null,
     cycleId,
     stripeCheckoutSessionId: checkoutSession.id,
-    amountUsd: cycle.registrationFeeUsd,
+    amountUsd: grossAmount,
     currency: "usd",
     status: "pending",
   });

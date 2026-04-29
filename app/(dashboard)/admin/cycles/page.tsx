@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   createCycle,
+  deleteCycle,
   updateCycle,
   updateCycleStatus,
   createRound,
@@ -16,6 +17,7 @@ import {
   addCycleSubject,
   removeCycleSubject,
 } from "@/lib/actions/admin";
+import { LocalDate } from "@/components/ui/local-date";
 
 const STATUS_LABELS: Record<string, string> = {
   planning: "Planning",
@@ -148,40 +150,67 @@ export default async function CyclesPage() {
                   <summary className="px-6 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40 cursor-pointer hover:bg-gate-fog/20 list-none">
                     ✎ Edit Cycle Details
                   </summary>
-                  <form action={updateCycle} className="px-6 py-4 border-t border-gate-fog/40 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="hidden" name="id" value={cycle.id} />
-                    <div className="flex flex-col gap-2">
-                      <Label>Name *</Label>
-                      <Input name="name" required defaultValue={cycle.name} />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label>Year *</Label>
-                      <Input name="year" type="number" required defaultValue={cycle.year} min="2024" max="2040" />
-                    </div>
-                    <div className="flex flex-col gap-2 md:col-span-2">
-                      <Label>Description</Label>
-                      <Input name="description" defaultValue={cycle.description ?? ""} />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label>Fee (cents USD)</Label>
-                      <Input name="registrationFeeUsd" type="number" defaultValue={cycle.registrationFeeUsd} min="0" />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <Label>Status</Label>
-                      <select
-                        name="status"
-                        defaultValue={cycle.status}
-                        className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
-                      >
-                        {Object.entries(STATUS_LABELS).map(([v, l]) => (
-                          <option key={v} value={v}>{l}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="md:col-span-2">
-                      <Button type="submit" variant="gold" size="sm">Save Changes</Button>
-                    </div>
-                  </form>
+                  <div className="px-6 py-4 border-t border-gate-fog/40 flex flex-col gap-5">
+                    <form action={updateCycle} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input type="hidden" name="id" value={cycle.id} />
+                      <div className="flex flex-col gap-2">
+                        <Label>Name *</Label>
+                        <Input name="name" required defaultValue={cycle.name} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label>Year *</Label>
+                        <Input name="year" type="number" required defaultValue={cycle.year} min="2024" max="2040" />
+                      </div>
+                      <div className="flex flex-col gap-2 md:col-span-2">
+                        <Label>Description</Label>
+                        <Input name="description" defaultValue={cycle.description ?? ""} />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label>Registration Fee (cents USD)</Label>
+                        <Input name="registrationFeeUsd" type="number" defaultValue={cycle.registrationFeeUsd} min="0" />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label>Stripe Fee % (basis points, e.g. 290 = 2.9%)</Label>
+                        <Input name="stripeFeePercent" type="number" defaultValue={cycle.stripeFeePercent} min="0" max="5000" />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label>Stripe Fixed Fee (cents, e.g. 30 = $0.30)</Label>
+                        <Input name="stripeFeeFixedCents" type="number" defaultValue={cycle.stripeFeeFixedCents} min="0" />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label>Status</Label>
+                        <select
+                          name="status"
+                          defaultValue={cycle.status}
+                          className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                        >
+                          {Object.entries(STATUS_LABELS).map(([v, l]) => (
+                            <option key={v} value={v}>{l}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="md:col-span-2">
+                        <Button type="submit" variant="gold" size="sm">Save Changes</Button>
+                      </div>
+                    </form>
+                    {participantCount === 0 && (
+                      <div className="pt-4 border-t border-gate-fog/40 flex items-center gap-3">
+                        <form action={deleteCycle}>
+                          <input type="hidden" name="id" value={cycle.id} />
+                          <button
+                            type="submit"
+                            className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-400 hover:text-red-600 transition-colors"
+                            onClick={(e) => {
+                              if (!confirm(`Delete "${cycle.name}" permanently?`)) e.preventDefault();
+                            }}
+                          >
+                            Delete Cycle
+                          </button>
+                        </form>
+                        <span className="text-[10px] text-gate-800/30">No participants — safe to delete</span>
+                      </div>
+                    )}
+                  </div>
                 </details>
 
                 {/* Quick status transitions */}
@@ -221,7 +250,9 @@ export default async function CyclesPage() {
                                 <p className="text-sm font-light text-gate-800">{r.name}</p>
                                 <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">
                                   {FORMAT_LABELS[r.format]}
-                                  {r.startDate ? ` · ${new Date(r.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}` : ""}
+                                  {r.feeUsd > 0 ? ` · $${(r.feeUsd / 100).toFixed(2)}` : ""}
+                                  {" · "}
+                                  <LocalDate date={r.startDate} />
                                   {r.venue ? ` · ${r.venue}` : ""}
                                 </p>
                               </div>
@@ -243,10 +274,25 @@ export default async function CyclesPage() {
                                 </select>
                               </div>
                               <div className="grid grid-cols-2 gap-2">
-                                <Input name="startDate" type="datetime-local" defaultValue={toDatetimeLocal(r.startDate)} />
-                                <Input name="endDate" type="datetime-local" defaultValue={toDatetimeLocal(r.endDate)} />
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Start Date</label>
+                                  <Input name="startDate" type="datetime-local" defaultValue={toDatetimeLocal(r.startDate)} />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">End Date</label>
+                                  <Input name="endDate" type="datetime-local" defaultValue={toDatetimeLocal(r.endDate)} />
+                                </div>
                               </div>
-                              <Input name="venue" defaultValue={r.venue ?? ""} placeholder="Venue" />
+                              <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Round Fee (cents USD)</label>
+                                  <Input name="feeUsd" type="number" min="0" defaultValue={r.feeUsd} placeholder="0 = free" />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Venue</label>
+                                  <Input name="venue" defaultValue={r.venue ?? ""} placeholder="Venue" />
+                                </div>
+                              </div>
                               <div className="flex items-center gap-3">
                                 <Button type="submit" variant="gold" size="sm">Save Round</Button>
                                 <form action={deleteRound}>
@@ -277,10 +323,25 @@ export default async function CyclesPage() {
                           </select>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                          <Input name="startDate" type="datetime-local" />
-                          <Input name="endDate" type="datetime-local" />
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Start Date (optional)</label>
+                            <Input name="startDate" type="datetime-local" />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">End Date (optional)</label>
+                            <Input name="endDate" type="datetime-local" />
+                          </div>
                         </div>
-                        <Input name="venue" placeholder="Venue" />
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Round Fee (cents USD)</label>
+                            <Input name="feeUsd" type="number" min="0" placeholder="0 = free" />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Venue</label>
+                            <Input name="venue" placeholder="Venue" />
+                          </div>
+                        </div>
                         <Button type="submit" variant="outline" size="sm">Add Round</Button>
                       </form>
                     </details>

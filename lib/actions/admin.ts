@@ -61,6 +61,7 @@ export async function createRound(formData: FormData) {
   const startDate = (formData.get("startDate") as string) || null;
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
+  const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
 
   if (!cycleId || !name) throw new Error("Cycle and round name are required");
 
@@ -72,6 +73,7 @@ export async function createRound(formData: FormData) {
     startDate: startDate ? new Date(startDate) : null,
     endDate: endDate ? new Date(endDate) : null,
     venue,
+    feeUsd,
   });
 
   revalidatePath("/admin/cycles");
@@ -324,6 +326,27 @@ export async function sendNotification(formData: FormData) {
   revalidatePath("/admin/notifications");
 }
 
+// ── Cycle delete ──────────────────────────────────────────────────────────
+
+export async function deleteCycle(formData: FormData) {
+  await requireRole(["super_admin"]);
+  const id = parseInt(formData.get("id") as string);
+  if (!id) return;
+
+  const linked = await db
+    .select({ id: participants.id })
+    .from(participants)
+    .where(eq(participants.cycleId, id))
+    .limit(1);
+  if (linked.length > 0) throw new Error("Cannot delete a cycle that has participants");
+
+  await db.update(payments).set({ cycleId: null }).where(eq(payments.cycleId, id));
+  await db.delete(results).where(eq(results.cycleId, id));
+  await db.delete(cycles).where(eq(cycles.id, id));
+
+  revalidatePath("/admin/cycles");
+}
+
 // ── Cycle full edit ────────────────────────────────────────────────────────
 
 export async function updateCycle(formData: FormData) {
@@ -333,6 +356,8 @@ export async function updateCycle(formData: FormData) {
   const year = parseInt(formData.get("year") as string);
   const description = (formData.get("description") as string)?.trim() || null;
   const registrationFeeUsd = parseInt(formData.get("registrationFeeUsd") as string) || 0;
+  const stripeFeePercent = parseInt(formData.get("stripeFeePercent") as string) || 290;
+  const stripeFeeFixedCents = parseInt(formData.get("stripeFeeFixedCents") as string) || 30;
   const status = formData.get("status") as string;
 
   if (!id || !name || !year) throw new Error("Required fields missing");
@@ -344,6 +369,8 @@ export async function updateCycle(formData: FormData) {
       year,
       description,
       registrationFeeUsd,
+      stripeFeePercent,
+      stripeFeeFixedCents,
       status: status as typeof cycles.$inferInsert.status,
       updatedAt: new Date(),
     })
@@ -364,6 +391,7 @@ export async function updateRound(formData: FormData) {
   const startDate = (formData.get("startDate") as string) || null;
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
+  const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
 
   if (!id || !name) throw new Error("Round id and name required");
 
@@ -376,6 +404,7 @@ export async function updateRound(formData: FormData) {
       startDate: startDate ? new Date(startDate) : null,
       endDate: endDate ? new Date(endDate) : null,
       venue,
+      feeUsd,
     })
     .where(eq(rounds.id, id));
 

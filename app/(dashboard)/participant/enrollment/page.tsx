@@ -1,25 +1,52 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, cycles } from "@/lib/db/schema";
+import { participants, cycles, payments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
+import { LocalDate } from "@/components/ui/local-date";
 import Link from "next/link";
 import { selectSubject, initiatePayment } from "@/lib/actions/participant";
+import { stripe } from "@/lib/stripe";
 
 export default async function EnrollmentPage({
   searchParams,
 }: {
-  searchParams: Promise<{ payment?: string }>;
+  searchParams: Promise<{ payment?: string; sid?: string }>;
 }) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
   const sp = await searchParams;
 
-  const participant = await db.query.participants.findFirst({
+  let participant = await db.query.participants.findFirst({
     where: eq(participants.userId, session.user.id),
     with: {
       subjects: { with: { subject: true } },
     },
   });
+
+  // Verify Stripe payment when redirected back from checkout (webhook fallback)
+  if (sp.payment === "success" && sp.sid && participant?.paymentStatus !== "paid") {
+    try {
+      const sess = await stripe.checkout.sessions.retrieve(sp.sid);
+      if (sess.payment_status === "paid") {
+        await db
+          .update(payments)
+          .set({
+            status: "paid",
+            stripePaymentIntentId:
+              typeof sess.payment_intent === "string" ? sess.payment_intent : null,
+            updatedAt: new Date(),
+          })
+          .where(eq(payments.stripeCheckoutSessionId, sp.sid));
+        if (participant) {
+          await db
+            .update(participants)
+            .set({ paymentStatus: "paid", updatedAt: new Date() })
+            .where(eq(participants.id, participant.id));
+          participant = { ...participant, paymentStatus: "paid" };
+        }
+      }
+    } catch {}
+  }
 
   if (!participant || participant.registrationStatus === "draft") {
     return (
@@ -57,6 +84,14 @@ export default async function EnrollmentPage({
   const selectedSubjectId = participant.subjects[0]?.subjectId ?? null;
   const selectedSubject = participant.subjects[0]?.subject ?? null;
   const isPaid = participant.paymentStatus === "paid";
+
+  const grossAmount = activeCycle
+    ? Math.ceil(
+        (activeCycle.registrationFeeUsd + activeCycle.stripeFeeFixedCents) /
+          (1 - activeCycle.stripeFeePercent / 10000)
+      )
+    : 0;
+  const feeAmount = activeCycle ? grossAmount - activeCycle.registrationFeeUsd : 0;
 
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
@@ -115,7 +150,7 @@ export default async function EnrollmentPage({
             <div className="flex flex-wrap gap-x-6 gap-y-1 pt-1">
               {activeCycle.registrationFeeUsd > 0 ? (
                 <span className="text-sm font-light text-gate-800/60">
-                  Fee: ${(activeCycle.registrationFeeUsd / 100).toFixed(2)} USD
+                  Registration fee: ${(activeCycle.registrationFeeUsd / 100).toFixed(2)} USD
                 </span>
               ) : (
                 <span className="text-sm font-light text-gate-gold">Free enrollment</span>
@@ -127,11 +162,11 @@ export default async function EnrollmentPage({
                 {activeCycle.rounds.map((r) => (
                   <p key={r.id} className="text-xs font-light text-gate-800/60">
                     {r.name}
-                    {r.startDate
-                      ? ` — ${new Date(r.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
-                      : ""}
+                    {" — "}
+                    <LocalDate date={r.startDate} />
                     {` (${r.format})`}
                     {r.venue ? ` · ${r.venue}` : ""}
+                    {r.feeUsd > 0 ? ` · $${(r.feeUsd / 100).toFixed(2)}` : ""}
                   </p>
                 ))}
               </div>
@@ -203,20 +238,36 @@ export default async function EnrollmentPage({
                   <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
                     Payment
                   </p>
-                  <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
-                    Selected subject:{" "}
-                    <span className="font-semibold text-gate-800">{selectedSubject?.name}</span>
-                    {". "}
-                    {activeCycle.registrationFeeUsd > 0
-                      ? `Complete payment of $${(activeCycle.registrationFeeUsd / 100).toFixed(2)} USD to confirm your enrollment.`
-                      : "This cycle has no registration fee. Click below to confirm enrollment."}
-                  </p>
+                  {activeCycle.registrationFeeUsd > 0 ? (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center justify-between text-sm font-light text-gate-800/65">
+                        <span>Registration fee</span>
+                        <span>${(activeCycle.registrationFeeUsd / 100).toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm font-light text-gate-800/50">
+                        <span>Payment processing</span>
+                        <span>${(feeAmount / 100).toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm font-semibold text-gate-800 border-t border-gate-fog pt-2 mt-1">
+                        <span>Total</span>
+                        <span>${(grossAmount / 100).toFixed(2)} USD</span>
+                      </div>
+                      <p className="text-xs font-light text-gate-800/40 mt-1">
+                        Selected subject:{" "}
+                        <span className="text-gate-800/65">{selectedSubject?.name}</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+                      This cycle has no registration fee. Click below to confirm enrollment.
+                    </p>
+                  )}
                   <form action={initiatePayment}>
                     <input type="hidden" name="cycleId" value={activeCycle.id} />
                     <input type="hidden" name="participantId" value={participant.id} />
                     <Button type="submit" variant="gold" size="md">
                       {activeCycle.registrationFeeUsd > 0
-                        ? `Pay $${(activeCycle.registrationFeeUsd / 100).toFixed(2)} & Confirm`
+                        ? `Pay $${(grossAmount / 100).toFixed(2)} & Confirm`
                         : "Confirm Enrollment"}
                     </Button>
                   </form>
