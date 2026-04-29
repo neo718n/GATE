@@ -1,102 +1,106 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
 const GOLD = "#c9993a";
-const DARK = "#1a1a2e";
-const MUTED = "#6b6b7a";
-const LIGHT_BG = "#faf9f7";
-const BORDER = "#e8e4de";
+const DARK = "#111111";
+const MUTED = "#666666";
+const BORDER = "#cccccc";
+const LIGHT = "#f5f5f5";
 
 const s = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: DARK, backgroundColor: "#ffffff" },
-
-  // Gold accent bar at top
-  topBar: { backgroundColor: GOLD, height: 6 },
-
-  body: { padding: "32 48 48 48" },
+  topBar: { backgroundColor: GOLD, height: 5 },
+  body: { padding: "28 44 60 44" },
 
   // Header
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 },
-  brandBlock: {},
-  brandName: { fontSize: 22, fontFamily: "Helvetica-Bold", color: DARK, letterSpacing: 3 },
-  brandTagline: { fontSize: 7.5, color: MUTED, marginTop: 3, letterSpacing: 1 },
-  brandSite: { fontSize: 7.5, color: GOLD, marginTop: 1 },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 },
+  brandName: { fontSize: 20, fontFamily: "Helvetica-Bold", color: DARK, letterSpacing: 2 },
+  brandSub: { fontSize: 7, color: MUTED, marginTop: 3 },
+  brandSite: { fontSize: 7, color: GOLD, marginTop: 1 },
+  invoiceTitle: { fontSize: 26, fontFamily: "Helvetica-Bold", color: DARK, textAlign: "right" },
+  invoiceSubtitle: { fontSize: 8, color: MUTED, textAlign: "right", marginTop: 2 },
 
-  invoiceBadge: { backgroundColor: GOLD, paddingHorizontal: 10, paddingVertical: 4, alignSelf: "flex-start" },
-  invoiceBadgeText: { color: "#fff", fontSize: 8, fontFamily: "Helvetica-Bold", letterSpacing: 2 },
-
-  // Divider
   divider: { borderBottomWidth: 1, borderBottomColor: BORDER, marginBottom: 20 },
 
-  // Meta row: Bill To + Invoice Details
-  metaRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 28 },
-  metaBlock: { flex: 1 },
-  metaRight: { flex: 1, alignItems: "flex-end" },
-  metaLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: GOLD, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 },
-  metaName: { fontSize: 11, fontFamily: "Helvetica-Bold", color: DARK, marginBottom: 2 },
-  metaLine: { fontSize: 9, color: MUTED, marginBottom: 1 },
-  metaValueRight: { fontSize: 9, color: DARK, textAlign: "right", marginBottom: 1 },
-  metaLabelRight: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, textTransform: "uppercase", marginBottom: 1, textAlign: "right" },
+  // Two-column: recipient + meta box
+  topSection: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
+
+  // Recipient (left)
+  recipientBlock: { flex: 1, paddingRight: 20 },
+  recipientLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, marginBottom: 6, textTransform: "uppercase" },
+  recipientName: { fontSize: 11, fontFamily: "Helvetica-Bold", color: DARK, marginBottom: 3 },
+  recipientLine: { fontSize: 9, color: MUTED, marginBottom: 2 },
+
+  // Meta box (right)
+  metaBox: {
+    width: 200,
+    borderWidth: 1,
+    borderColor: BORDER,
+  },
+  metaRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
+  metaRowLast: { flexDirection: "row" },
+  metaKey: { flex: 1, fontSize: 8, color: MUTED, padding: "7 10", borderRightWidth: 1, borderRightColor: BORDER },
+  metaVal: { flex: 1.2, fontSize: 8, fontFamily: "Helvetica-Bold", color: DARK, padding: "7 10" },
 
   // Table
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: LIGHT_BG,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginBottom: 0,
-  },
-  tableHeaderText: { fontSize: 7.5, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, textTransform: "uppercase" },
-  tableRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-  },
-  colDesc: { flex: 1 },
-  colAmt: { width: 90, alignItems: "flex-end" },
-  descPrimary: { fontSize: 10, color: DARK },
-  descSecondary: { fontSize: 8.5, color: MUTED, marginTop: 2 },
+  table: { borderWidth: 1, borderColor: BORDER, marginBottom: 0 },
+  tableHead: { flexDirection: "row", backgroundColor: LIGHT, borderBottomWidth: 1, borderBottomColor: BORDER },
+  tableRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
+  tableRowLast: { flexDirection: "row" },
 
-  // Totals
-  totalsArea: { marginTop: 0, paddingHorizontal: 12 },
-  totalRow: { flexDirection: "row", justifyContent: "flex-end", paddingVertical: 4 },
-  totalLabel: { fontSize: 9, color: MUTED, width: 120, textAlign: "right", marginRight: 16 },
-  totalValue: { fontSize: 9, color: DARK, width: 90, textAlign: "right" },
-  grandTotalRow: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    marginTop: 6,
-    paddingTop: 10,
-    borderTopWidth: 1.5,
-    borderTopColor: GOLD,
-    paddingHorizontal: 12,
+  thItem: { width: 28, padding: "7 8", borderRightWidth: 1, borderRightColor: BORDER },
+  thDesc: { flex: 1, padding: "7 10", borderRightWidth: 1, borderRightColor: BORDER },
+  thQty: { width: 36, padding: "7 8", borderRightWidth: 1, borderRightColor: BORDER },
+  thUnit: { width: 72, padding: "7 8", borderRightWidth: 1, borderRightColor: BORDER },
+  thTotal: { width: 72, padding: "7 8" },
+  th: { fontSize: 8, fontFamily: "Helvetica-Bold", color: MUTED },
+  thRight: { fontSize: 8, fontFamily: "Helvetica-Bold", color: MUTED, textAlign: "right" },
+
+  tdItem: { width: 28, padding: "10 8", borderRightWidth: 1, borderRightColor: BORDER },
+  tdDesc: { flex: 1, padding: "10 10", borderRightWidth: 1, borderRightColor: BORDER },
+  tdQty: { width: 36, padding: "10 8", borderRightWidth: 1, borderRightColor: BORDER },
+  tdUnit: { width: 72, padding: "10 8", borderRightWidth: 1, borderRightColor: BORDER },
+  tdTotal: { width: 72, padding: "10 8" },
+  td: { fontSize: 9, color: DARK },
+  tdRight: { fontSize: 9, color: DARK, textAlign: "right" },
+  tdSub: { fontSize: 7.5, color: MUTED, marginTop: 2 },
+
+  // Totals below table
+  totalsSection: { flexDirection: "row", justifyContent: "flex-end", marginTop: 0 },
+  totalsBox: { width: 280, borderWidth: 1, borderTopWidth: 0, borderColor: BORDER },
+  totRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
+  totRowLast: { flexDirection: "row", backgroundColor: DARK },
+  totKey: { flex: 1, fontSize: 8, color: MUTED, padding: "6 10", borderRightWidth: 1, borderRightColor: BORDER },
+  totVal: { width: 72, fontSize: 8, color: DARK, textAlign: "right", padding: "6 8" },
+  totKeyBold: { flex: 1, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff", padding: "8 10", borderRightWidth: 1, borderRightColor: "#444" },
+  totValBold: { width: 72, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff", textAlign: "right", padding: "8 8" },
+
+  // Paid notice
+  noticeSection: { marginTop: 24, borderWidth: 1, borderColor: BORDER, padding: "12 16", flexDirection: "row", alignItems: "center" },
+  noticeText: { fontSize: 9, color: DARK, flex: 1 },
+  noticeBold: { fontFamily: "Helvetica-Bold" },
+  paidStamp: {
+    borderWidth: 2,
+    borderColor: "#166534",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginLeft: 16,
   },
-  grandLabel: { fontSize: 11, fontFamily: "Helvetica-Bold", color: GOLD, width: 120, textAlign: "right", marginRight: 16 },
-  grandValue: { fontSize: 11, fontFamily: "Helvetica-Bold", color: GOLD, width: 90, textAlign: "right" },
-
-  // Status stamp
-  statusSection: { marginTop: 24, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  statusBlock: {},
-  statusLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 },
-  statusPaid: { fontSize: 13, fontFamily: "Helvetica-Bold", color: "#166534", letterSpacing: 1 },
-  statusPending: { fontSize: 13, fontFamily: "Helvetica-Bold", color: "#92400e", letterSpacing: 1 },
-  statusBadgePaid: { borderWidth: 2, borderColor: "#166534", paddingHorizontal: 12, paddingVertical: 5 },
-  statusBadgePending: { borderWidth: 2, borderColor: "#92400e", paddingHorizontal: 12, paddingVertical: 5 },
-
-  noteBlock: { flex: 1, marginLeft: 24 },
-  noteText: { fontSize: 8, color: MUTED, lineHeight: 1.5 },
+  paidText: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#166534", letterSpacing: 1 },
+  pendingStamp: {
+    borderWidth: 2,
+    borderColor: "#92400e",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginLeft: 16,
+  },
+  pendingText: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#92400e", letterSpacing: 1 },
 
   // Footer
   footer: {
     position: "absolute",
-    bottom: 28,
-    left: 48,
-    right: 48,
+    bottom: 24,
+    left: 44,
+    right: 44,
     borderTopWidth: 1,
     borderTopColor: BORDER,
     paddingTop: 8,
@@ -117,113 +121,122 @@ interface InvoiceProps {
   status: string;
 }
 
-export function InvoicePDF({
-  invoiceNumber,
-  issuedAt,
-  participant,
-  cycle,
-  round,
-  amountCents,
-  status,
-}: InvoiceProps) {
-  const amount = (amountCents / 100).toFixed(2);
+export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round, amountCents, status }: InvoiceProps) {
+  const amount = `$${(amountCents / 100).toFixed(2)}`;
   const isPaid = status === "paid";
 
   return (
     <Document>
       <Page size="A4" style={s.page}>
-        {/* Gold top bar */}
         <View style={s.topBar} />
 
         <View style={s.body}>
           {/* Header */}
           <View style={s.header}>
-            <View style={s.brandBlock}>
+            <View>
               <Text style={s.brandName}>G.A.T.E.</Text>
-              <Text style={s.brandTagline}>Global Assessment & Testing for Excellence</Text>
+              <Text style={s.brandSub}>Global Assessment {"&"} Testing for Excellence</Text>
               <Text style={s.brandSite}>gate-assessment.org</Text>
             </View>
-            <View style={s.invoiceBadge}>
-              <Text style={s.invoiceBadgeText}>OFFICIAL INVOICE</Text>
+            <View>
+              <Text style={s.invoiceTitle}>Invoice</Text>
+              <Text style={s.invoiceSubtitle}>OFFICIAL TAX DOCUMENT</Text>
             </View>
           </View>
 
           <View style={s.divider} />
 
-          {/* Bill To + Invoice Meta */}
-          <View style={s.metaRow}>
-            <View style={s.metaBlock}>
-              <Text style={s.metaLabel}>Bill To</Text>
-              <Text style={s.metaName}>{participant.name}</Text>
-              <Text style={s.metaLine}>{participant.email}</Text>
-              <Text style={s.metaLine}>{participant.country}</Text>
+          {/* Recipient + Meta Box */}
+          <View style={s.topSection}>
+            <View style={s.recipientBlock}>
+              <Text style={s.recipientLabel}>Bill To</Text>
+              <Text style={s.recipientName}>{participant.name}</Text>
+              <Text style={s.recipientLine}>{participant.email}</Text>
+              <Text style={s.recipientLine}>{participant.country}</Text>
             </View>
 
-            <View style={s.metaRight}>
-              <Text style={s.metaLabelRight}>Invoice No.</Text>
-              <Text style={[s.metaValueRight, { fontFamily: "Helvetica-Bold" }]}>{invoiceNumber}</Text>
-              <Text style={[s.metaLabelRight, { marginTop: 8 }]}>Date Issued</Text>
-              <Text style={s.metaValueRight}>{issuedAt}</Text>
-              <Text style={[s.metaLabelRight, { marginTop: 8 }]}>Currency</Text>
-              <Text style={s.metaValueRight}>USD</Text>
+            <View style={s.metaBox}>
+              <View style={s.metaRow}>
+                <Text style={s.metaKey}>Invoice No.</Text>
+                <Text style={s.metaVal}>{invoiceNumber}</Text>
+              </View>
+              <View style={s.metaRow}>
+                <Text style={s.metaKey}>Date</Text>
+                <Text style={s.metaVal}>{issuedAt}</Text>
+              </View>
+              <View style={s.metaRow}>
+                <Text style={s.metaKey}>Currency</Text>
+                <Text style={s.metaVal}>USD</Text>
+              </View>
+              <View style={s.metaRowLast}>
+                <Text style={s.metaKey}>Amount Due</Text>
+                <Text style={s.metaVal}>{amount}</Text>
+              </View>
             </View>
           </View>
 
           {/* Line Items Table */}
-          <View style={s.tableHeader}>
-            <View style={s.colDesc}>
-              <Text style={s.tableHeaderText}>Description</Text>
+          <View style={s.table}>
+            {/* Head */}
+            <View style={s.tableHead}>
+              <View style={s.thItem}><Text style={s.th}>#</Text></View>
+              <View style={s.thDesc}><Text style={s.th}>Description</Text></View>
+              <View style={s.thQty}><Text style={[s.th, { textAlign: "right" }]}>Qty</Text></View>
+              <View style={s.thUnit}><Text style={s.thRight}>Unit Price</Text></View>
+              <View style={s.thTotal}><Text style={s.thRight}>Total (USD)</Text></View>
             </View>
-            <View style={s.colAmt}>
-              <Text style={[s.tableHeaderText, { textAlign: "right" }]}>Amount</Text>
-            </View>
-          </View>
 
-          <View style={s.tableRow}>
-            <View style={s.colDesc}>
-              <Text style={s.descPrimary}>Registration Fee — {cycle}</Text>
-              {round && <Text style={s.descSecondary}>{round}</Text>}
-            </View>
-            <View style={s.colAmt}>
-              <Text style={[s.descPrimary, { textAlign: "right" }]}>${amount}</Text>
+            {/* Row */}
+            <View style={s.tableRowLast}>
+              <View style={s.tdItem}><Text style={s.td}>1</Text></View>
+              <View style={s.tdDesc}>
+                <Text style={s.td}>Registration Fee</Text>
+                <Text style={s.tdSub}>{cycle}{round ? ` – ${round}` : ""}</Text>
+              </View>
+              <View style={s.tdQty}><Text style={[s.td, { textAlign: "right" }]}>1</Text></View>
+              <View style={s.tdUnit}><Text style={s.tdRight}>{amount}</Text></View>
+              <View style={s.tdTotal}><Text style={s.tdRight}>{amount}</Text></View>
             </View>
           </View>
 
           {/* Totals */}
-          <View style={s.totalsArea}>
-            <View style={s.totalRow}>
-              <Text style={s.totalLabel}>Subtotal</Text>
-              <Text style={s.totalValue}>${amount}</Text>
+          <View style={s.totalsSection}>
+            <View style={s.totalsBox}>
+              <View style={s.totRow}>
+                <Text style={s.totKey}>Subtotal</Text>
+                <Text style={s.totVal}>{amount}</Text>
+              </View>
+              <View style={s.totRow}>
+                <Text style={s.totKey}>Tax / VAT</Text>
+                <Text style={s.totVal}>$0.00</Text>
+              </View>
+              <View style={s.totRow}>
+                <Text style={s.totKey}>Discount</Text>
+                <Text style={s.totVal}>$0.00</Text>
+              </View>
+              <View style={s.totRowLast}>
+                <Text style={s.totKeyBold}>Total Due (USD)</Text>
+                <Text style={s.totValBold}>{amount}</Text>
+              </View>
             </View>
-            <View style={s.totalRow}>
-              <Text style={s.totalLabel}>Tax / VAT</Text>
-              <Text style={s.totalValue}>$0.00</Text>
-            </View>
-          </View>
-          <View style={s.grandTotalRow}>
-            <Text style={s.grandLabel}>Total Due</Text>
-            <Text style={s.grandValue}>${amount}</Text>
           </View>
 
-          {/* Status + Note */}
-          <View style={s.statusSection}>
-            <View style={isPaid ? s.statusBadgePaid : s.statusBadgePending}>
-              <Text style={isPaid ? s.statusPaid : s.statusPending}>
-                {status.toUpperCase()}
-              </Text>
-            </View>
-            <View style={s.noteBlock}>
-              <Text style={s.noteText}>
-                This is an official receipt issued by G.A.T.E. Assessment upon confirmation of payment.
-                Please retain this document for your records.
-              </Text>
+          {/* Payment notice */}
+          <View style={s.noticeSection}>
+            <Text style={s.noticeText}>
+              {isPaid
+                ? <Text>This invoice has been <Text style={s.noticeBold}>paid in full</Text>. Please retain this document for your records. Invoice reference: <Text style={s.noticeBold}>{invoiceNumber}</Text>.</Text>
+                : "Payment is pending. Please complete the payment to confirm your registration."}
+            </Text>
+            <View style={isPaid ? s.paidStamp : s.pendingStamp}>
+              <Text style={isPaid ? s.paidText : s.pendingText}>{status.toUpperCase()}</Text>
             </View>
           </View>
         </View>
 
         {/* Footer */}
         <View style={s.footer}>
-          <Text style={s.footerText}>G.A.T.E. Assessment · Olympiad Management Platform</Text>
+          <Text style={s.footerText}>G.A.T.E. Assessment {"·"} Olympiad Management Platform</Text>
           <Text style={s.footerGold}>support@gate-assessment.org</Text>
         </View>
       </Page>
