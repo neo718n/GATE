@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
@@ -43,14 +43,14 @@ export async function GET(
 
     key = await generateAndUploadInvoice({
       paymentId: payment.id,
-      invoiceNumber: `GATE-${String(payment.id).padStart(6, "0")}`,
+      invoiceNumber: `INV-${String(payment.id).padStart(6, "0")}`,
       issuedAt: new Date(payment.createdAt).toLocaleDateString("en-US"),
       participant: {
-        name: participant?.fullName ?? "—",
-        email: participant?.user?.email ?? "—",
-        country: participant?.country ?? "—",
+        name: participant?.fullName ?? "-",
+        email: participant?.user?.email ?? "-",
+        country: participant?.country ?? "-",
       },
-      cycle: payment.cycle?.name ?? "—",
+      cycle: payment.cycle?.name ?? "-",
       round: payment.round?.name,
       amountCents: payment.amountCents,
       status: payment.status,
@@ -59,7 +59,7 @@ export async function GET(
     await db.update(payments).set({ invoicePdfKey: key }).where(eq(payments.id, paymentId));
   }
 
-  const filename = `invoice-GATE-${String(paymentId).padStart(6, "0")}.pdf`;
+  const filename = `invoice-INV-${String(paymentId).padStart(6, "0")}.pdf`;
   const url = await getPresignedDownloadUrl(key, 300, filename);
   return NextResponse.redirect(url);
 }

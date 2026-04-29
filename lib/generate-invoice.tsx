@@ -1,4 +1,4 @@
-import { renderToBuffer } from "@react-pdf/renderer";
+﻿import { renderToBuffer } from "@react-pdf/renderer";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2, BUCKET } from "@/lib/r2";
 import { InvoicePDF } from "@/components/invoice-pdf";
@@ -28,7 +28,7 @@ export async function generateAndUploadInvoice(params: GenerateInvoiceParams): P
   );
 
   const key = `invoices/invoice-${params.paymentId}.pdf`;
-  const filename = `invoice-GATE-${String(params.paymentId).padStart(6, "0")}.pdf`;
+  const filename = `invoice-INV-${String(params.paymentId).padStart(6, "0")}.pdf`;
 
   await r2.send(
     new PutObjectCommand({
@@ -42,3 +42,4 @@ export async function generateAndUploadInvoice(params: GenerateInvoiceParams): P
 
   return key;
 }
+

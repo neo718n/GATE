@@ -1,4 +1,4 @@
-import { renderToBuffer } from "@react-pdf/renderer";
+﻿import { renderToBuffer } from "@react-pdf/renderer";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2, BUCKET } from "@/lib/r2";
 import { ReceiptPDF } from "@/components/receipt-pdf";
@@ -36,7 +36,7 @@ export async function generateAndUploadReceipt(params: GenerateReceiptParams): P
   );
 
   const key = `receipts/receipt-${params.paymentId}.pdf`;
-  const filename = `receipt-GATE-${String(params.paymentId).padStart(6, "0")}.pdf`;
+  const filename = `receipt-RCT-${String(params.paymentId).padStart(6, "0")}.pdf`;
 
   await r2.send(
     new PutObjectCommand({
@@ -50,3 +50,4 @@ export async function generateAndUploadReceipt(params: GenerateReceiptParams): P
 
   return key;
 }
+

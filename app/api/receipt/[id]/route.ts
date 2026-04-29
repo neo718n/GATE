@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
@@ -43,14 +43,14 @@ export async function GET(
 
     key = await generateAndUploadReceipt({
       paymentId: payment.id,
-      receiptNumber: `GATE-${String(payment.id).padStart(6, "0")}`,
+      receiptNumber: `RCT-${String(payment.id).padStart(6, "0")}`,
       paidAt: new Date(payment.updatedAt).toLocaleDateString("en-US"),
       participant: {
-        name: participant?.fullName ?? "—",
-        email: participant?.user?.email ?? "—",
-        country: participant?.country ?? "—",
+        name: participant?.fullName ?? "-",
+        email: participant?.user?.email ?? "-",
+        country: participant?.country ?? "-",
       },
-      cycle: payment.cycle?.name ?? "—",
+      cycle: payment.cycle?.name ?? "-",
       round: payment.round?.name,
       amountCents: payment.amountCents,
       serviceFeeCents: payment.serviceFeeCents ?? 0,
@@ -63,7 +63,7 @@ export async function GET(
     await db.update(payments).set({ receiptPdfKey: key }).where(eq(payments.id, paymentId));
   }
 
-  const filename = `receipt-GATE-${String(paymentId).padStart(6, "0")}.pdf`;
+  const filename = `receipt-RCT-${String(paymentId).padStart(6, "0")}.pdf`;
   const url = await getPresignedDownloadUrl(key, 300, filename);
   return NextResponse.redirect(url);
 }
