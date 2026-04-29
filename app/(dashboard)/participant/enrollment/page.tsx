@@ -7,6 +7,7 @@ import { LocalDate } from "@/components/ui/local-date";
 import Link from "next/link";
 import { selectRound, selectSubject, initiatePayment } from "@/lib/actions/participant";
 import { stripe } from "@/lib/stripe";
+import { PaymentSubmitButton } from "@/components/payment-submit-button";
 
 export default async function EnrollmentPage({
   searchParams,
@@ -45,7 +46,9 @@ export default async function EnrollmentPage({
           participant = { ...participant, paymentStatus: "paid" };
         }
       }
-    } catch {}
+    } catch (err) {
+      console.error("[enrollment] Stripe session verify failed:", err);
+    }
   }
 
   if (!participant || participant.registrationStatus === "draft") {
@@ -295,11 +298,13 @@ export default async function EnrollmentPage({
                 <input type="hidden" name="cycleId" value={activeCycle.id} />
                 <input type="hidden" name="roundId" value={selectedRoundId} />
                 <input type="hidden" name="participantId" value={participant.id} />
-                <Button type="submit" variant="gold" size="md">
-                  {selectedRound && selectedRound.feeUsd > 0
-                    ? `Pay $${(grossAmount / 100).toFixed(2)} & Confirm`
-                    : "Confirm Enrollment"}
-                </Button>
+                <PaymentSubmitButton
+                  label={
+                    selectedRound && selectedRound.feeUsd > 0
+                      ? `Pay $${(grossAmount / 100).toFixed(2)} & Confirm`
+                      : "Confirm Enrollment"
+                  }
+                />
               </form>
             </div>
           )}

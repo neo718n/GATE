@@ -3,6 +3,7 @@ import { Logo } from "@/components/brand/logo";
 import { requireSession } from "@/lib/authz";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
 import { SignOutButton } from "@/components/sign-out-button";
+import { DashboardMobileNav } from "@/components/dashboard-mobile-nav";
 
 export default async function DashboardLayout({
   children,
@@ -91,13 +92,11 @@ export default async function DashboardLayout({
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile header */}
-        <header className="md:hidden flex items-center justify-between px-5 py-4 border-b border-gate-fog bg-white">
+        <header className="md:hidden relative flex items-center justify-between px-5 py-4 border-b border-gate-fog bg-white">
           <Link href="/">
             <Logo size="xs" variant="light" showTagline={false} />
           </Link>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
-            {roleLabel}
-          </p>
+          <DashboardMobileNav links={links} roleLabel={roleLabel} email={session.user.email} />
         </header>
         <main className="flex-1 p-6 md:p-10">{children}</main>
       </div>

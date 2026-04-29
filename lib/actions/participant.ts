@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { participants, participantSubjects, cycles, rounds, payments } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -62,6 +62,8 @@ export async function selectRound(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
+  if (participant.paymentStatus === "paid") return;
+
   await db
     .update(participants)
     .set({ roundId, cycleId: participant.cycleId, updatedAt: new Date() })
@@ -84,8 +86,12 @@ export async function selectSubject(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
-  await db.delete(participantSubjects).where(eq(participantSubjects.participantId, participantId));
-  await db.insert(participantSubjects).values({ participantId, subjectId });
+  if (participant.paymentStatus === "paid") return;
+
+  await db.transaction(async (tx) => {
+    await tx.delete(participantSubjects).where(eq(participantSubjects.participantId, participantId));
+    await tx.insert(participantSubjects).values({ participantId, subjectId });
+  });
 
   revalidatePath("/participant/enrollment");
   revalidatePath("/participant");
@@ -96,6 +102,19 @@ export async function initiatePayment(formData: FormData) {
   const cycleId = parseInt(formData.get("cycleId") as string);
   const roundId = parseInt(formData.get("roundId") as string);
   const participantId = parseInt(formData.get("participantId") as string);
+
+  // Verify participant belongs to session user
+  const participant = await db.query.participants.findFirst({
+    where: eq(participants.id, participantId),
+  });
+  if (!participant || participant.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // Idempotency: already paid
+  if (participant.paymentStatus === "paid") {
+    redirect("/participant/enrollment?payment=success");
+  }
 
   const [cycle, round] = await Promise.all([
     db.query.cycles.findFirst({ where: eq(cycles.id, cycleId) }),
@@ -116,6 +135,27 @@ export async function initiatePayment(formData: FormData) {
       .where(eq(participants.id, participantId));
     revalidatePath("/participant");
     redirect("/participant/enrollment?payment=success");
+  }
+
+  // Idempotency: re-use an existing open Stripe session for this participant+round
+  const existingPayment = await db.query.payments.findFirst({
+    where: and(
+      eq(payments.participantId, participantId),
+      eq(payments.roundId, roundId),
+      eq(payments.status, "pending")
+    ),
+  });
+  if (existingPayment?.stripeCheckoutSessionId) {
+    try {
+      const existingSession = await stripe.checkout.sessions.retrieve(
+        existingPayment.stripeCheckoutSessionId
+      );
+      if (existingSession.url && existingSession.status === "open") {
+        redirect(existingSession.url);
+      }
+    } catch {
+      // Session expired or invalid — fall through and create a new one
+    }
   }
 
   const grossAmount = Math.ceil(

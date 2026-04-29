@@ -180,7 +180,6 @@ export const cycles = pgTable("cycles", {
   name: text("name").notNull(),
   description: text("description"),
   status: cycleStatusEnum("status").notNull().default("planning"),
-  registrationFeeUsd: integer("registration_fee_usd").notNull().default(0),
   stripeFeePercent: integer("stripe_fee_percent").notNull().default(290),
   stripeFeeFixedCents: integer("stripe_fee_fixed_cents").notNull().default(30),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -423,6 +422,7 @@ export const cycleRelations = relations(cycles, ({ many }) => ({
 
 export const roundRelations = relations(rounds, ({ one, many }) => ({
   cycle: one(cycles, { fields: [rounds.cycleId], references: [cycles.id] }),
+  participants: many(participants),
   results: many(results),
   payments: many(payments),
 }));
@@ -449,6 +449,10 @@ export const participantRelations = relations(participants, ({ one, many }) => (
   cycle: one(cycles, {
     fields: [participants.cycleId],
     references: [cycles.id],
+  }),
+  round: one(rounds, {
+    fields: [participants.roundId],
+    references: [rounds.id],
   }),
   subjects: many(participantSubjects),
   results: many(results),

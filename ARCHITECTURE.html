@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GATE Platform — Full Architecture</title>
+<style>
+  :root {
+    --gold: #C9993A;
+    --gold-light: #e8c97a;
+    --dark: #1a1a1a;
+    --mid: #3a3a3a;
+    --light: #f5f0e8;
+    --fog: #e8e0d0;
+    --green: #2d6a4f;
+    --red: #8b2020;
+    --blue: #1a4a7a;
+    --purple: #5a2a7a;
+    --orange: #8b4a1a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #0f0f0f;
+    color: #e8e8e8;
+    line-height: 1.6;
+  }
+  .page { max-width: 1400px; margin: 0 auto; padding: 40px 32px; }
+  h1 { font-size: 2.2rem; font-weight: 300; color: var(--gold); letter-spacing: 0.05em; margin-bottom: 8px; }
+  h2 { font-size: 1.2rem; font-weight: 600; color: var(--gold-light); text-transform: uppercase; letter-spacing: 0.15em; margin: 48px 0 20px; padding-bottom: 8px; border-bottom: 1px solid #333; }
+  h3 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 12px; }
+  p { font-size: 0.88rem; color: #aaa; line-height: 1.8; margin-bottom: 8px; }
+
+  /* ── Grid helpers ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+  /* ── Boxes ── */
+  .box {
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 16px;
+    background: #161616;
+  }
+  .box.gold   { border-color: var(--gold); }
+  .box.green  { border-color: #2a5a3a; background: #0d1f14; }
+  .box.blue   { border-color: #1a3a5a; background: #0d1525; }
+  .box.purple { border-color: #3a1a5a; background: #150d25; }
+  .box.red    { border-color: #5a1a1a; background: #1f0d0d; }
+  .box.orange { border-color: #5a3a1a; background: #1f140d; }
+
+  /* ── Tags / badges ── */
+  .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 2px 2px 2px 0;
+  }
+  .tag.gold   { background: #3a2a10; color: var(--gold); border: 1px solid #5a4a20; }
+  .tag.green  { background: #0d2a1a; color: #5aaa7a; border: 1px solid #1a4a2a; }
+  .tag.blue   { background: #0d1a3a; color: #5a8aba; border: 1px solid #1a3a6a; }
+  .tag.purple { background: #1a0d3a; color: #8a5aba; border: 1px solid #2a1a5a; }
+  .tag.red    { background: #2a0d0d; color: #ba5a5a; border: 1px solid #4a1a1a; }
+  .tag.gray   { background: #222; color: #888; border: 1px solid #333; }
+  .tag.orange { background: #2a1a0d; color: #ba8a5a; border: 1px solid #4a2a1a; }
+
+  /* ── Flow arrows ── */
+  .arrow-down {
+    text-align: center;
+    font-size: 1.4rem;
+    color: #555;
+    padding: 4px 0;
+  }
+  .arrow-right {
+    display: flex;
+    align-items: center;
+    color: #555;
+    font-size: 1.2rem;
+    padding: 0 8px;
+  }
+
+  /* ── Flow step ── */
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-content { flex: 1; }
+  .step-title { font-size: 0.85rem; font-weight: 600; color: #e8e8e8; }
+  .step-desc  { font-size: 0.78rem; color: #888; margin-top: 2px; }
+
+  /* ── Table ── */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .tbl th { background: #1e1e1e; color: var(--gold-light); text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em; padding: 8px 12px; text-align: left; border-bottom: 1px solid #333; }
+  .tbl td { padding: 7px 12px; border-bottom: 1px solid #1e1e1e; vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl .mono { font-family: 'Cascadia Code', 'Fira Code', monospace; color: #7ab8e8; font-size: 0.78rem; }
+  .tbl .muted { color: #666; }
+
+  /* ── DB diagram ── */
+  .db-wrap { display: flex; gap: 12px; flex-wrap: wrap; }
+  .db-table {
+    border: 1px solid #333;
+    border-radius: 6px;
+    min-width: 200px;
+    background: #161616;
+    overflow: hidden;
+  }
+  .db-table-head {
+    background: #2a2010;
+    border-bottom: 1px solid #4a3a20;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+  .db-col {
+    padding: 4px 12px;
+    font-size: 0.76rem;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+    border-bottom: 1px solid #1e1e1e;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .db-col:last-child { border-bottom: none; }
+  .db-col .col-name { color: #d0d0d0; }
+  .db-col .col-type { color: #5a8aba; font-size: 0.7rem; }
+  .db-col .col-pk   { color: var(--gold); font-size: 0.65rem; font-weight: 700; }
+  .db-col .col-fk   { color: #8a5aba; font-size: 0.65rem; }
+  .db-col .col-enum { color: #5aaa7a; font-size: 0.65rem; }
+
+  /* ── Role card ── */
+  .role-card { border-radius: 6px; overflow: hidden; border: 1px solid #333; }
+  .role-head { padding: 10px 14px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .role-routes { padding: 10px 14px; }
+  .route-item { font-size: 0.76rem; font-family: monospace; color: #7ab8e8; padding: 2px 0; }
+
+  /* ── Flow diagram ── */
+  .flow { display: flex; flex-direction: column; gap: 0; }
+  .flow-node {
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    background: #161616;
+    position: relative;
+  }
+  .flow-edge {
+    width: 2px;
+    background: #444;
+    height: 16px;
+    margin-left: 20px;
+  }
+  .flow-edge-label {
+    font-size: 0.7rem;
+    color: #666;
+    margin-left: 30px;
+    margin-top: -6px;
+    margin-bottom: -6px;
+    position: relative;
+    z-index: 1;
+  }
+  .fork { display: flex; gap: 12px; }
+  .fork > * { flex: 1; }
+
+  /* ── Enum pill row ── */
+  .enum-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .enum-name { font-size: 0.75rem; font-weight: 700; color: #888; min-width: 200px; font-family: monospace; }
+
+  /* ── Divider ── */
+  .divider { border: none; border-top: 1px solid #222; margin: 32px 0; }
+
+  .subtitle { font-size: 0.82rem; color: #777; margin-bottom: 32px; }
+  .section-note { font-size: 0.78rem; color: #666; margin-top: 8px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══════════════════════════════════════════════ HEADER -->
+  <h1>GATE Platform — Full Architecture</h1>
+  <p class="subtitle">Next.js 15 App Router · Drizzle ORM · PostgreSQL (Neon) · Better Auth · Stripe · Cloudflare R2</p>
+
+  <!-- ═══════════════════════════════════════════════ SYSTEM OVERVIEW -->
+  <h2>1. System Overview</h2>
+  <div class="grid-3">
+    <div class="box blue">
+      <h3 style="color:#5a8aba">Frontend</h3>
+      <p>Next.js 15 App Router, React Server Components, Tailwind CSS, shadcn/ui. All pages are server-rendered by default.</p>
+      <div style="margin-top:10px">
+        <span class="tag blue">RSC</span>
+        <span class="tag blue">Server Actions</span>
+        <span class="tag blue">Tailwind</span>
+      </div>
+    </div>
+    <div class="box green">
+      <h3 style="color:#5aaa7a">Backend</h3>
+      <p>Server Actions for mutations. API routes for auth (Better Auth), Stripe webhooks, and file uploads (R2). No middleware.ts — auth guards are per-page via <code style="color:#7ab8e8">requireRole()</code>.</p>
+      <div style="margin-top:10px">
+        <span class="tag green">Server Actions</span>
+        <span class="tag green">API Routes</span>
+        <span class="tag green">Better Auth</span>
+      </div>
+    </div>
+    <div class="box purple">
+      <h3 style="color:#8a5aba">Infrastructure</h3>
+      <p>Deployed on Vercel. PostgreSQL on Neon (serverless). File storage on Cloudflare R2. Stripe for payments.</p>
+      <div style="margin-top:10px">
+        <span class="tag purple">Vercel</span>
+        <span class="tag purple">Neon DB</span>
+        <span class="tag purple">Cloudflare R2</span>
+        <span class="tag purple">Stripe</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ DATABASE SCHEMA -->
+  <h2>2. Database Schema</h2>
+
+  <div style="margin-bottom:20px">
+    <h3 style="color:#888; margin-bottom:12px">Enums</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="enum-row">
+        <span class="enum-name">roleEnum</span>
+        <span class="tag purple">super_admin</span><span class="tag red">admin</span><span class="tag blue">coordinator</span><span class="tag green">participant</span><span class="tag orange">partner_contact</span><span class="tag gray">career_applicant</span>
+      </div>
+      <div class="enum-row">
+        <span class="enum-name">cycleStatusEnum</span>
+        <span class="tag gray">planning</span><span class="tag green">registration_open</span><span class="tag blue">active</span><span class="tag gold">completed</span><span class="tag gray">archived</span>
+      </div>
+      <div class="enum-row">
+        <span class="enum-name">roundRegistrationStatusEnum</span>
+        <span class="tag gray">closed</span><span class="tag orange">soon</span><span class="tag green">open</span>
+      </div>
+      <div class="enum-row">
+        <span class="enum-name">roundFormatEnum</span>
+        <span class="tag blue">online</span><span class="tag orange">onsite</span><span class="tag purple">hybrid</span>
+      </div>
+      <div class="enum-row">
+        <span class="enum-name">registrationStatusEnum</span>
+        <span class="tag gray">draft</span><span class="tag green">submitted</span>
+      </div>
+      <div class="enum-row">
+        <span class="enum-name">paymentStatusEnum</span>
+        <span class="tag red">unpaid</span><span class="tag green">paid</span><span class="tag gold">waived</span>
+      </div>
+      <div class="enum-row">
+        <span class="enum-name">stripePaymentStatusEnum</span>
+        <span class="tag gray">pending</span><span class="tag green">paid</span><span class="tag red">failed</span><span class="tag orange">refunded</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="db-wrap">
+
+    <div class="db-table">
+      <div class="db-table-head">users <span style="color:#666;font-weight:400;font-size:0.7rem">(Better Auth)</span></div>
+      <div class="db-col"><span class="col-name">id</span><span class="col-pk">PK · text</span></div>
+      <div class="db-col"><span class="col-name">email</span><span class="col-type">text · unique</span></div>
+      <div class="db-col"><span class="col-name">name</span><span class="col-type">text</span></div>
+      <div class="db-col"><span class="col-name">role</span><span class="col-enum">roleEnum</span></div>
+      <div class="db-col"><span class="col-name">emailVerified</span><span class="col-type">boolean</span></div>
+      <div class="db-col"><span class="col-name">image</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">createdAt / updatedAt</span><span class="col-type">timestamp</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">cycles</div>
+      <div class="db-col"><span class="col-name">id</span><span class="col-pk">PK · serial</span></div>
+      <div class="db-col"><span class="col-name">year</span><span class="col-type">integer</span></div>
+      <div class="db-col"><span class="col-name">name</span><span class="col-type">text</span></div>
+      <div class="db-col"><span class="col-name">description</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">status</span><span class="col-enum">cycleStatusEnum</span></div>
+      <div class="db-col"><span class="col-name">registrationFeeUsd</span><span class="col-type">integer (orphaned)</span></div>
+      <div class="db-col"><span class="col-name">stripeFeePercent</span><span class="col-type">integer (basis pts)</span></div>
+      <div class="db-col"><span class="col-name">stripeFeeFixedCents</span><span class="col-type">integer (cents)</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">rounds</div>
+      <div class="db-col"><span class="col-name">id</span><span class="col-pk">PK · serial</span></div>
+      <div class="db-col"><span class="col-name">cycleId</span><span class="col-fk">FK → cycles · CASCADE</span></div>
+      <div class="db-col"><span class="col-name">name</span><span class="col-type">text</span></div>
+      <div class="db-col"><span class="col-name">order</span><span class="col-type">integer (default 1)</span></div>
+      <div class="db-col"><span class="col-name">format</span><span class="col-enum">roundFormatEnum</span></div>
+      <div class="db-col"><span class="col-name">startDate / endDate</span><span class="col-type">timestamp?</span></div>
+      <div class="db-col"><span class="col-name">venue</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">feeUsd</span><span class="col-type">integer (cents)</span></div>
+      <div class="db-col"><span class="col-name">registrationStatus</span><span class="col-enum">roundRegStatusEnum</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">subjects</div>
+      <div class="db-col"><span class="col-name">id</span><span class="col-pk">PK · serial</span></div>
+      <div class="db-col"><span class="col-name">name</span><span class="col-type">text · unique</span></div>
+      <div class="db-col"><span class="col-name">description</span><span class="col-type">text?</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">cycleSubjects <span style="color:#666;font-weight:400;font-size:0.7rem">(join)</span></div>
+      <div class="db-col"><span class="col-name">cycleId</span><span class="col-fk">FK → cycles · CASCADE</span></div>
+      <div class="db-col"><span class="col-name">subjectId</span><span class="col-fk">FK → subjects · CASCADE</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">participants</div>
+      <div class="db-col"><span class="col-name">id</span><span class="col-pk">PK · serial</span></div>
+      <div class="db-col"><span class="col-name">userId</span><span class="col-fk">FK → users · CASCADE</span></div>
+      <div class="db-col"><span class="col-name">cycleId</span><span class="col-fk">FK → cycles · SET NULL</span></div>
+      <div class="db-col"><span class="col-name">roundId</span><span class="col-fk">FK → rounds · SET NULL</span></div>
+      <div class="db-col"><span class="col-name">fullName</span><span class="col-type">text</span></div>
+      <div class="db-col"><span class="col-name">dateOfBirth</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">country / city</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">school / grade</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">guardianName/Email/Phone</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">registrationStatus</span><span class="col-enum">regStatusEnum</span></div>
+      <div class="db-col"><span class="col-name">paymentStatus</span><span class="col-enum">paymentStatusEnum</span></div>
+      <div class="db-col"><span class="col-name">notes</span><span class="col-type">text?</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">participantSubjects <span style="color:#666;font-weight:400;font-size:0.7rem">(join)</span></div>
+      <div class="db-col"><span class="col-name">participantId</span><span class="col-fk">FK → participants</span></div>
+      <div class="db-col"><span class="col-name">subjectId</span><span class="col-fk">FK → subjects</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">payments</div>
+      <div class="db-col"><span class="col-name">id</span><span class="col-pk">PK · serial</span></div>
+      <div class="db-col"><span class="col-name">userId</span><span class="col-fk">FK → users</span></div>
+      <div class="db-col"><span class="col-name">participantId</span><span class="col-fk">FK → participants</span></div>
+      <div class="db-col"><span class="col-name">cycleId</span><span class="col-fk">FK → cycles</span></div>
+      <div class="db-col"><span class="col-name">roundId</span><span class="col-fk">FK → rounds · SET NULL</span></div>
+      <div class="db-col"><span class="col-name">stripeCheckoutSessionId</span><span class="col-type">text · unique</span></div>
+      <div class="db-col"><span class="col-name">stripePaymentIntentId</span><span class="col-type">text?</span></div>
+      <div class="db-col"><span class="col-name">amountUsd</span><span class="col-type">integer (gross cents)</span></div>
+      <div class="db-col"><span class="col-name">currency</span><span class="col-type">text (default "usd")</span></div>
+      <div class="db-col"><span class="col-name">status</span><span class="col-enum">stripePaymentStatusEnum</span></div>
+      <div class="db-col"><span class="col-name">receiptUrl</span><span class="col-type">text?</span></div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ RELATIONS -->
+  <h2>3. Entity Relations</h2>
+  <div class="box" style="padding:20px; font-family:monospace; font-size:0.8rem; line-height:2; color:#aaa">
+    <div><span style="color:#C9993A">cycles</span> 1 ──── N <span style="color:#5a8aba">rounds</span> &nbsp;&nbsp;&nbsp;&nbsp; (cycleId FK, CASCADE DELETE)</div>
+    <div><span style="color:#C9993A">cycles</span> N ──── N <span style="color:#5aaa7a">subjects</span> &nbsp;&nbsp; via <span style="color:#666">cycleSubjects</span></div>
+    <div><span style="color:#8a5aba">users</span> 1 ──── 1 <span style="color:#ba8a5a">participants</span> (userId FK, CASCADE DELETE)</div>
+    <div><span style="color:#C9993A">cycles</span> 1 ──── N <span style="color:#ba8a5a">participants</span> (cycleId FK, SET NULL)</div>
+    <div><span style="color:#5a8aba">rounds</span> 1 ──── N <span style="color:#ba8a5a">participants</span> (roundId FK, SET NULL)</div>
+    <div><span style="color:#ba8a5a">participants</span> N ─ N <span style="color:#5aaa7a">subjects</span> via <span style="color:#666">participantSubjects</span></div>
+    <div><span style="color:#8a5aba">users</span> 1 ──── N <span style="color:#ba5a5a">payments</span></div>
+    <div><span style="color:#ba8a5a">participants</span> 1 ── N <span style="color:#ba5a5a">payments</span></div>
+    <div><span style="color:#5a8aba">rounds</span> 1 ──── N <span style="color:#ba5a5a">payments</span> (SET NULL on delete)</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ AUTH FLOW -->
+  <h2>4. Authentication & Authorization Flow</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Auth Stack</h3>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Better Auth — /api/auth/[...all]</div>
+            <div class="step-desc">Handles sign-up, sign-in, email verification, session management. JWT/cookie sessions.</div>
+          </div>
+        </div>
+      </div>
+      <div class="box blue" style="margin-bottom:10px">
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">requireRole(["role1","role2"])</div>
+            <div class="step-desc">Called at the top of every protected page/layout. Reads session, checks role, throws redirect to /login if unauthorized.</div>
+          </div>
+        </div>
+      </div>
+      <div class="box blue">
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Server Action guards</div>
+            <div class="step-desc">Every server action also calls requireRole() — double protection so direct action calls fail without a valid session.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Roles & Access</h3>
+      <table class="tbl">
+        <thead><tr><th>Role</th><th>Dashboard</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag purple">super_admin</span></td><td class="mono">/admin + all features</td></tr>
+          <tr><td><span class="tag red">admin</span></td><td class="mono">/admin (limited)</td></tr>
+          <tr><td><span class="tag blue">coordinator</span></td><td class="mono">/coordinator</td></tr>
+          <tr><td><span class="tag green">participant</span></td><td class="mono">/participant</td></tr>
+          <tr><td><span class="tag orange">partner_contact</span></td><td class="mono">/partner</td></tr>
+          <tr><td><span class="tag gray">career_applicant</span></td><td class="mono">(marketing only)</td></tr>
+        </tbody>
+      </table>
+      <div class="box" style="margin-top:12px">
+        <h3 style="color:#888;margin-bottom:8px">Staff Login</h3>
+        <p>Separate login at <span class="mono" style="color:#7ab8e8">/staff</span> for internal users. No public register flow for staff.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ PAGE MAP -->
+  <h2>5. Page Structure by Role</h2>
+  <div class="grid-4" style="align-items:start">
+
+    <div class="role-card">
+      <div class="role-head" style="background:#1a0d2a;color:#8a5aba">Marketing (Public)</div>
+      <div class="role-routes">
+        <div class="route-item">/</div>
+        <div class="route-item">/about</div>
+        <div class="route-item">/subjects</div>
+        <div class="route-item">/structure</div>
+        <div class="route-item">/rules</div>
+        <div class="route-item">/academic-info</div>
+        <div class="route-item">/academic-integrity</div>
+        <div class="route-item">/onsite-assessment</div>
+        <div class="route-item">/awards</div>
+        <div class="route-item">/contact</div>
+        <div class="route-item">/careers</div>
+        <div class="route-item">/partnerships</div>
+        <div class="route-item">/terms</div>
+        <div class="route-item">/privacy</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head" style="background:#0d1a2a;color:#5a8aba">Auth Routes</div>
+      <div class="role-routes">
+        <div class="route-item">/login</div>
+        <div class="route-item">/register</div>
+        <div class="route-item">/verify-email</div>
+        <div class="route-item">/staff (staff login)</div>
+        <div style="margin-top:10px;border-top:1px solid #222;padding-top:10px">
+          <div style="font-size:0.7rem;color:#555;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">API</div>
+          <div class="route-item">/api/auth/[...all]</div>
+          <div class="route-item">/api/upload</div>
+          <div class="route-item">/api/stripe/checkout</div>
+          <div class="route-item">/api/stripe/webhook</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head" style="background:#0d2a10;color:#5aaa7a">Participant</div>
+      <div class="role-routes">
+        <div class="route-item">/participant</div>
+        <div class="route-item">/participant/profile</div>
+        <div class="route-item">/participant/enrollment</div>
+        <div class="route-item">/participant/exam</div>
+        <div class="route-item">/participant/results</div>
+        <div class="route-item">/participant/certificates</div>
+        <div class="route-item">/participant/documents</div>
+      </div>
+    </div>
+
+    <div class="role-card">
+      <div class="role-head" style="background:#2a0d10;color:#ba5a5a">Admin / Super Admin</div>
+      <div class="role-routes">
+        <div class="route-item">/admin</div>
+        <div class="route-item">/admin/cycles</div>
+        <div class="route-item">/admin/cycles/[id]</div>
+        <div class="route-item">/admin/participants</div>
+        <div class="route-item">/admin/participants/[id]</div>
+        <div class="route-item">/admin/payments</div>
+        <div class="route-item">/admin/notifications</div>
+        <div class="route-item">/admin/subjects</div>
+        <div class="route-item">/admin/users</div>
+        <div class="route-item">/admin/results</div>
+        <div class="route-item">/admin/certificates</div>
+        <div class="route-item">/admin/careers</div>
+        <div class="route-item">/admin/inquiries</div>
+        <div class="route-item">/admin/partners</div>
+        <div class="route-item">/admin/analytics</div>
+        <div class="route-item">/admin/settings</div>
+        <div style="margin-top:10px;border-top:1px solid #222;padding-top:10px">
+          <div class="route-item" style="color:#5a8aba">/coordinator</div>
+          <div class="route-item" style="color:#5a8aba">/coordinator/participants</div>
+          <div class="route-item" style="color:#5a8aba">/coordinator/reports</div>
+          <div style="margin-top:8px"></div>
+          <div class="route-item" style="color:#ba8a5a">/partner</div>
+          <div class="route-item" style="color:#ba8a5a">/partner/profile</div>
+          <div class="route-item" style="color:#ba8a5a">/partner/status</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ PARTICIPANT FLOW -->
+  <h2>6. Participant Registration & Enrollment Flow</h2>
+  <div class="grid-2">
+    <div>
+      <div class="flow">
+        <div class="flow-node" style="border-color:#5a8aba">
+          <strong style="color:#5a8aba">1. Register Account</strong><br/>
+          <span style="font-size:0.78rem;color:#888">/register → Better Auth → email verification</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5a8aba">
+          <strong style="color:#5a8aba">2. Verify Email</strong><br/>
+          <span style="font-size:0.78rem;color:#888">/verify-email → emailVerified = true</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:var(--gold)">
+          <strong style="color:var(--gold)">3. Complete Profile</strong><br/>
+          <span style="font-size:0.78rem;color:#888">/participant/profile → saveParticipantProfile()<br/>Creates participants row (registrationStatus: "submitted")</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:var(--gold)">
+          <strong style="color:var(--gold)">4. Select Round</strong><br/>
+          <span style="font-size:0.78rem;color:#888">/participant/enrollment → selectRound()<br/>Only rounds with registrationStatus = "open" shown<br/>Sets participants.roundId</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:var(--gold)">
+          <strong style="color:var(--gold)">5. Select Subject</strong><br/>
+          <span style="font-size:0.78rem;color:#888">selectSubject() → upserts participantSubjects row</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5aaa7a">
+          <strong style="color:#5aaa7a">6. Pay (or Free Enroll)</strong><br/>
+          <span style="font-size:0.78rem;color:#888">initiatePayment() → Stripe Checkout or direct paid</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5aaa7a;background:#0d1f14">
+          <strong style="color:#5aaa7a">7. Enrolled</strong><br/>
+          <span style="font-size:0.78rem;color:#888">participants.paymentStatus = "paid"<br/>Enrollment complete — locked UI shown</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">State Transitions</h3>
+      <table class="tbl" style="margin-bottom:16px">
+        <thead><tr><th>Field</th><th>Draft</th><th>Submitted</th><th>Enrolled</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">registrationStatus</td><td class="muted">draft</td><td style="color:#5aaa7a">submitted</td><td style="color:#5aaa7a">submitted</td></tr>
+          <tr><td class="mono">paymentStatus</td><td class="muted">unpaid</td><td class="muted">unpaid</td><td style="color:#5aaa7a">paid</td></tr>
+          <tr><td class="mono">roundId</td><td class="muted">null</td><td class="muted">null</td><td style="color:#5aaa7a">set</td></tr>
+          <tr><td class="mono">subjects</td><td class="muted">none</td><td class="muted">selected</td><td style="color:#5aaa7a">confirmed</td></tr>
+        </tbody>
+      </table>
+      <div class="box" style="margin-bottom:12px">
+        <h3 style="color:#888;margin-bottom:8px">Cycle prerequisite</h3>
+        <p>If no cycle has <span class="tag green">registration_open</span> status, enrollment page shows "Registration Not Open" — no actions available.</p>
+      </div>
+      <div class="box">
+        <h3 style="color:#888;margin-bottom:8px">Round prerequisite</h3>
+        <p>Within an open cycle, only rounds with <span class="tag green">registrationStatus = "open"</span> are shown. Rounds with <span class="tag orange">soon</span> or <span class="tag gray">closed</span> are hidden from selection.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ PAYMENT FLOW -->
+  <h2>7. Payment Flow (Stripe)</h2>
+  <div class="grid-2">
+    <div>
+      <div class="flow">
+        <div class="flow-node" style="border-color:var(--gold)">
+          <strong style="color:var(--gold)">initiatePayment() — Server Action</strong><br/>
+          <span style="font-size:0.78rem;color:#888">Reads cycleId + roundId + participantId from form</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node">
+          <strong>Free round check</strong><br/>
+          <span style="font-size:0.78rem;color:#888">If round.feeUsd === 0 → mark paid immediately, redirect</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5aaa7a">
+          <strong style="color:#5aaa7a">Gross Amount Calculation</strong><br/>
+          <span style="font-size:0.78rem;color:#888;font-family:monospace">gross = ceil((feeUsd + fixedCents) / (1 - percent/10000))</span><br/>
+          <span style="font-size:0.78rem;color:#888">fee config from cycles.stripeFeePercent / stripeFeeFixedCents</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5a8aba">
+          <strong style="color:#5a8aba">stripe.checkout.sessions.create()</strong><br/>
+          <span style="font-size:0.78rem;color:#888">unit_amount = grossAmount · metadata = {userId, cycleId, roundId, participantId}<br/>success_url includes {CHECKOUT_SESSION_ID}</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node">
+          <strong>payments row inserted</strong><br/>
+          <span style="font-size:0.78rem;color:#888">status: "pending" · amountUsd: grossAmount</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5a8aba">
+          <strong style="color:#5a8aba">Redirect → Stripe Hosted Checkout</strong>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="flow">
+        <div class="flow-node" style="border-color:#5aaa7a">
+          <strong style="color:#5aaa7a">User completes payment on Stripe</strong>
+        </div>
+        <div class="flow-edge"></div>
+        <div style="display:flex;gap:12px;margin-bottom:0">
+          <div style="flex:1">
+            <div class="flow-node" style="border-color:var(--gold);margin-bottom:8px">
+              <strong style="color:var(--gold)">Path A: Webhook</strong><br/>
+              <span style="font-size:0.78rem;color:#888">POST /api/stripe/webhook<br/>checkout.session.completed event<br/>→ update payments.status = "paid"<br/>→ update participants.paymentStatus = "paid"</span>
+            </div>
+          </div>
+          <div style="flex:1">
+            <div class="flow-node" style="border-color:#5a8aba;margin-bottom:8px">
+              <strong style="color:#5a8aba">Path B: Fallback</strong><br/>
+              <span style="font-size:0.78rem;color:#888">Redirect to ?payment=success&sid=cs_xxx<br/>Enrollment page calls stripe.checkout.sessions.retrieve()<br/>If paid → same DB updates as webhook</span>
+            </div>
+          </div>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5aaa7a;background:#0d1f14">
+          <strong style="color:#5aaa7a">Enrollment confirmed — "Enrolled" card shown</strong>
+        </div>
+      </div>
+      <div class="box" style="margin-top:12px">
+        <h3 style="color:#888;margin-bottom:8px">Fee display in UI</h3>
+        <table class="tbl">
+          <tbody>
+            <tr><td>Registration fee</td><td class="mono">round.feeUsd / 100</td></tr>
+            <tr><td>Service fee</td><td class="mono">(grossAmount - feeUsd) / 100</td></tr>
+            <tr><td>Total charged</td><td class="mono">grossAmount / 100</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ ADMIN CYCLE FLOW -->
+  <h2>8. Admin Cycle Management Flow</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Cycle Lifecycle</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+        <div class="flow-node" style="padding:6px 12px;font-size:0.8rem">planning</div>
+        <span style="color:#555">→</span>
+        <div class="flow-node" style="padding:6px 12px;font-size:0.8rem;border-color:#5aaa7a">registration_open</div>
+        <span style="color:#555">→</span>
+        <div class="flow-node" style="padding:6px 12px;font-size:0.8rem;border-color:#5a8aba">active</div>
+        <span style="color:#555">→</span>
+        <div class="flow-node" style="padding:6px 12px;font-size:0.8rem;border-color:var(--gold)">completed</div>
+        <span style="color:#555">→</span>
+        <div class="flow-node" style="padding:6px 12px;font-size:0.8rem">archived</div>
+      </div>
+      <p class="section-note">Status transitions enforced by STATUS_NEXT map in the UI — only forward moves allowed. Controlled by updateCycleStatus() action.</p>
+
+      <h3 style="color:#888;margin-top:20px;margin-bottom:12px">Admin Actions (lib/actions/admin.ts)</h3>
+      <table class="tbl">
+        <thead><tr><th>Action</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">createCycle</td><td class="muted">Insert new cycle</td></tr>
+          <tr><td class="mono">updateCycle</td><td class="muted">Edit cycle metadata + Stripe fee config</td></tr>
+          <tr><td class="mono">updateCycleStatus</td><td class="muted">Advance cycle status</td></tr>
+          <tr><td class="mono">deleteCycle</td><td class="muted">Delete cycle (cascades to rounds + cycleSubjects)</td></tr>
+          <tr><td class="mono">createRound</td><td class="muted">Add round to cycle with fee + registrationStatus</td></tr>
+          <tr><td class="mono">updateRound</td><td class="muted">Edit round — fee, dates, venue, registrationStatus</td></tr>
+          <tr><td class="mono">deleteRound</td><td class="muted">Remove round</td></tr>
+          <tr><td class="mono">addCycleSubject</td><td class="muted">Link subject to cycle</td></tr>
+          <tr><td class="mono">removeCycleSubject</td><td class="muted">Unlink subject from cycle</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Round Registration Control</h3>
+      <div class="box" style="margin-bottom:12px">
+        <p>Super admin controls each round's <strong>registrationStatus</strong> independently. Three states:</p>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="tag gray">closed</span>
+            <span style="font-size:0.8rem;color:#888">Round not accepting registrations. Hidden from participants.</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="tag orange">soon</span>
+            <span style="font-size:0.8rem;color:#888">Coming soon. Shown with amber badge in admin. Hidden from participants.</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="tag green">open</span>
+            <span style="font-size:0.8rem;color:#888">Active registration. Shown in participant enrollment page.</span>
+          </div>
+        </div>
+      </div>
+      <h3 style="color:#888;margin-bottom:12px;margin-top:16px">Stripe Fee Config (per cycle)</h3>
+      <table class="tbl">
+        <thead><tr><th>Field</th><th>Default</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">stripeFeePercent</td><td class="mono">290</td><td class="muted">2.90% (basis pts × 100)</td></tr>
+          <tr><td class="mono">stripeFeeFixedCents</td><td class="mono">30</td><td class="muted">$0.30 fixed fee</td></tr>
+        </tbody>
+      </table>
+      <p class="section-note" style="margin-top:8px">Configurable per cycle from admin UI — used in gross amount formula to pass Stripe fees to the participant.</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ FILE UPLOAD -->
+  <h2>9. File Upload Flow (Cloudflare R2)</h2>
+  <div class="grid-2">
+    <div>
+      <div class="flow">
+        <div class="flow-node">
+          <strong>Client selects file</strong><br/>
+          <span style="font-size:0.78rem;color:#888">Participant documents page</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:var(--gold)">
+          <strong style="color:var(--gold)">POST /api/upload</strong><br/>
+          <span style="font-size:0.78rem;color:#888">Multipart form data · Server validates session</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5a8aba">
+          <strong style="color:#5a8aba">Cloudflare R2 PUT</strong><br/>
+          <span style="font-size:0.78rem;color:#888">File stored in R2 bucket · Returns public/signed URL</span>
+        </div>
+        <div class="flow-edge"></div>
+        <div class="flow-node" style="border-color:#5aaa7a">
+          <strong style="color:#5aaa7a">URL saved to DB</strong><br/>
+          <span style="font-size:0.78rem;color:#888">Document record linked to participant</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="box">
+        <h3 style="color:#888;margin-bottom:10px">File Categories</h3>
+        <p>R2 stores: participant documents (ID, photos), admin content (PDFs, images, archives). Superadmin content management panel exists for bulk file operations.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ SERVER ACTIONS MAP -->
+  <h2>10. Server Actions Map</h2>
+  <div class="grid-2">
+    <div class="box">
+      <h3 style="color:#ba5a5a;margin-bottom:12px">lib/actions/admin.ts <span class="tag red">super_admin / admin</span></h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag red">createCycle</span>
+        <span class="tag red">updateCycle</span>
+        <span class="tag red">updateCycleStatus</span>
+        <span class="tag red">deleteCycle</span>
+        <span class="tag red">createRound</span>
+        <span class="tag red">updateRound</span>
+        <span class="tag red">deleteRound</span>
+        <span class="tag red">addCycleSubject</span>
+        <span class="tag red">removeCycleSubject</span>
+        <span class="tag red">createSubject</span>
+        <span class="tag red">updateSubject</span>
+        <span class="tag red">manageUsers</span>
+        <span class="tag red">sendNotification</span>
+        <span class="tag red">updateParticipant</span>
+      </div>
+    </div>
+    <div class="box">
+      <h3 style="color:#5aaa7a;margin-bottom:12px">lib/actions/participant.ts <span class="tag green">participant</span></h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag green">saveParticipantProfile</span>
+        <span class="tag green">selectRound</span>
+        <span class="tag green">selectSubject</span>
+        <span class="tag green">initiatePayment</span>
+      </div>
+      <div style="margin-top:16px">
+        <h3 style="color:#888;margin-bottom:8px">Flow in initiatePayment</h3>
+        <div style="font-size:0.78rem;color:#888;font-family:monospace;line-height:2">
+          requireRole(["participant"])<br/>
+          fetch cycle + round in parallel<br/>
+          update participants.roundId<br/>
+          if feeUsd === 0 → mark paid + redirect<br/>
+          else → calculate grossAmount<br/>
+          → stripe.checkout.sessions.create()<br/>
+          → insert payments row (pending)<br/>
+          → redirect to Stripe URL
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ KNOWN GAPS -->
+  <h2>11. Known Gaps / Future Work</h2>
+  <div class="grid-3">
+    <div class="box orange">
+      <h3 style="color:#ba8a5a;margin-bottom:8px">Orphaned DB Column</h3>
+      <p><span class="mono" style="color:#7ab8e8">cycles.registrationFeeUsd</span> still exists in schema but is no longer populated or used. Safe to drop in a future migration.</p>
+    </div>
+    <div class="box orange">
+      <h3 style="color:#ba8a5a;margin-bottom:8px">Stripe Webhook in Prod</h3>
+      <p>Webhook handler exists at <span class="mono" style="color:#7ab8e8">/api/stripe/webhook</span> but must be registered in Stripe Dashboard and <span class="mono" style="color:#7ab8e8">STRIPE_WEBHOOK_SECRET</span> set in Vercel env vars.</p>
+    </div>
+    <div class="box orange">
+      <h3 style="color:#ba8a5a;margin-bottom:8px">Missing Pages</h3>
+      <p><span class="mono" style="color:#7ab8e8">/admin/content</span> — nav link exists in sidebar but no page.tsx. Admin participants view doesn't show which round each participant enrolled in.</p>
+    </div>
+  </div>
+
+  <hr class="divider" />
+  <p style="font-size:0.75rem;color:#444;text-align:center">GATE Platform Architecture · Generated 2026-04-29 · Next.js 15 · Drizzle ORM · PostgreSQL (Neon) · Better Auth · Stripe · Cloudflare R2</p>
+  <div style="height:40px"></div>
+
+</div>
+</body>
+</html>

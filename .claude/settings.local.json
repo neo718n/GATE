@@ -12,7 +12,18 @@
       "Skill(update-config)",
       "Skill(update-config:*)",
       "PowerShell(\\(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\auth.ts\" | Measure-Object -Line\\).Lines)",
-      "PowerShell(\\(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\actions\\\\admin.ts\" | Measure-Object -Line\\).Lines)"
+      "PowerShell(\\(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\actions\\\\admin.ts\" | Measure-Object -Line\\).Lines)",
+      "Bash(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\app\\\\\\(dashboard\\)\\\\admin\\\\cycles\\\\page.tsx\")",
+      "Bash(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\actions\\\\admin.ts\")",
+      "Bash(Select-Object -Last 100)",
+      "PowerShell(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\actions\\\\admin.ts\" | Select-String -Pattern \"createRound\" -Context 0,20 | Select-Object -First 1 | ForEach-Object { $_.Context.PreContext + $_.Line + $_.Context.PostContext })",
+      "PowerShell(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\lib\\\\db\\\\schema.ts\" | Select-String -Pattern \"cycles|registrationFee\" -Context 0,2 | Select-Object -First 5 | ForEach-Object { $_.LineNumber.ToString\\(\\) + \": \" + $_.Line })",
+      "Bash(rtk npx *)",
+      "Bash(./node_modules/.bin/drizzle-kit push *)",
+      "Bash(rtk tsc *)",
+      "Bash(node -e ' *)",
+      "Bash(start \"\" \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\ARCHITECTURE.html\")",
+      "PowerShell(Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\app\\\\\\(dashboard\\)\\\\participant\\\\enrollment\\\\page.tsx\" -Raw | Select-String -Pattern \"try \\\\{\" -AllMatches | ForEach-Object { $_.Line })"
     ],
     "additionalDirectories": [
       "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms",
