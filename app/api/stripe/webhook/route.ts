@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import { payments, participants } from "@/lib/db/schema";
@@ -27,13 +27,37 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const { userId, participantId } = session.metadata ?? {};
+    const { participantId } = session.metadata ?? {};
+
+    let stripeChargeId: string | null = null;
+    let cardLast4: string | null = null;
+    let cardBrand: string | null = null;
+
+    if (session.payment_intent) {
+      try {
+        const pi = await stripe.paymentIntents.retrieve(
+          session.payment_intent as string,
+          { expand: ["latest_charge"] }
+        );
+        const charge = pi.latest_charge as Stripe.Charge | null;
+        if (charge) {
+          stripeChargeId = charge.id;
+          cardLast4 = charge.payment_method_details?.card?.last4 ?? null;
+          cardBrand = charge.payment_method_details?.card?.brand ?? null;
+        }
+      } catch {
+        // non-fatal: proceed without card details
+      }
+    }
 
     await db
       .update(payments)
       .set({
         status: "paid",
         stripePaymentIntentId: session.payment_intent as string | null,
+        stripeChargeId,
+        cardLast4,
+        cardBrand,
         updatedAt: new Date(),
       })
       .where(eq(payments.stripeCheckoutSessionId, session.id));

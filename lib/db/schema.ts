@@ -346,13 +346,18 @@ export const payments = pgTable("payments", {
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeChargeId: text("stripe_charge_id"),
+  cardLast4: text("card_last4"),
+  cardBrand: text("card_brand"),
   amountCents: integer("amount_cents").notNull(),
+  serviceFeeCents: integer("service_fee_cents").default(0),
   currency: text("currency").notNull().default("usd"),
   status: stripePaymentStatusEnum("stripe_payment_status")
     .notNull()
     .default("pending"),
   receiptUrl: text("receipt_url"),
   invoicePdfKey: text("invoice_pdf_key"),
+  receiptPdfKey: text("receipt_pdf_key"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
