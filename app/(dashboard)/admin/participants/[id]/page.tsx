@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, payments, documents } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -32,7 +32,7 @@ export default async function ParticipantDetailPage({
 
   const totalPaid = participant.payments
     .filter((p) => p.status === "paid")
-    .reduce((sum, p) => sum + p.amountUsd, 0);
+    .reduce((sum, p) => sum + p.amountCents, 0);
 
   const STATUS_COLOR: Record<string, string> = {
     paid: "text-green-700",
@@ -168,7 +168,7 @@ export default async function ParticipantDetailPage({
               <div key={p.id} className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_100px] gap-4 py-3 items-center">
                 <p className="text-sm font-light text-gate-800">{p.cycle?.name ?? "—"}</p>
                 <p className="text-xs font-light text-gate-800/60">{p.round?.name ?? "—"}</p>
-                <p className="text-sm text-gate-800">${p.amountUsd}</p>
+                <p className="text-sm text-gate-800">${(p.amountCents / 100).toFixed(2)}</p>
                 <span className={`text-[10px] font-semibold uppercase tracking-[0.12em] ${STATUS_COLOR[p.status] ?? ""}`}>
                   {p.status}
                 </span>

@@ -34,9 +34,9 @@ export default async function PaymentsPage() {
   const paid = allPayments.filter((p) => p.status === "paid").length;
   const pending = allPayments.filter((p) => p.status === "pending").length;
   const failed = allPayments.filter((p) => p.status === "failed").length;
-  const totalUsd = allPayments
+  const totalCents = allPayments
     .filter((p) => p.status === "paid")
-    .reduce((sum, p) => sum + p.amountUsd, 0);
+    .reduce((sum, p) => sum + p.amountCents, 0);
 
   return (
     <div className="flex flex-col gap-8 max-w-6xl">
@@ -53,7 +53,7 @@ export default async function PaymentsPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total Collected", value: `$${totalUsd}`, color: "text-gate-gold" },
+          { label: "Total Collected", value: `$${(totalCents / 100).toFixed(2)}`, color: "text-gate-gold" },
           { label: "Paid", value: paid, color: "text-green-700" },
           { label: "Pending", value: pending, color: "text-yellow-700" },
           { label: "Failed", value: failed, color: "text-red-600" },
@@ -105,7 +105,7 @@ export default async function PaymentsPage() {
             <p className="text-xs font-light text-gate-800/70 truncate">
               {p.round?.name ?? "—"}
             </p>
-            <p className="text-sm font-light text-gate-800">${p.amountUsd}</p>
+            <p className="text-sm font-light text-gate-800">${(p.amountCents / 100).toFixed(2)}</p>
             <span
               className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${STATUS_COLOR[p.status] ?? "text-gate-800"}`}
             >

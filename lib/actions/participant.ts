@@ -198,7 +198,7 @@ export async function initiatePayment(formData: FormData) {
     cycleId,
     roundId,
     stripeCheckoutSessionId: checkoutSession.id,
-    amountUsd: grossAmount,
+    amountCents: grossAmount,
     currency: "usd",
     status: "pending",
   });

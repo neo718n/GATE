@@ -27,11 +27,11 @@ interface InvoiceProps {
   participant: { name: string; email: string; country: string };
   cycle: string;
   round?: string;
-  amountUsd: number;
+  amountCents: number;
   status: string;
 }
 
-export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round, amountUsd, status }: InvoiceProps) {
+export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round, amountCents, status }: InvoiceProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -66,11 +66,11 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
               <Text style={styles.value}>Registration Fee — {cycle}</Text>
               {round && <Text style={[styles.value, { color: "#666", fontSize: 10 }]}>{round}</Text>}
             </View>
-            <Text style={styles.value}>${amountUsd} USD</Text>
+            <Text style={styles.value}>${(amountCents / 100).toFixed(2)} USD</Text>
           </View>
           <View style={styles.total}>
             <Text style={[styles.value, styles.bold, styles.gold]}>Total</Text>
-            <Text style={[styles.value, styles.bold, styles.gold]}>${amountUsd} USD</Text>
+            <Text style={[styles.value, styles.bold, styles.gold]}>${(amountCents / 100).toFixed(2)} USD</Text>
           </View>
         </View>
 

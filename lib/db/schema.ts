@@ -346,7 +346,7 @@ export const payments = pgTable("payments", {
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
-  amountUsd: integer("amount_usd").notNull(),
+  amountCents: integer("amount_cents").notNull(),
   currency: text("currency").notNull().default("usd"),
   status: stripePaymentStatusEnum("stripe_payment_status")
     .notNull()

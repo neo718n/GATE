@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { pdf } from "@react-pdf/renderer";
 import { InvoicePDF } from "@/components/invoice-pdf";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 interface Payment {
   id: number;
-  amountUsd: number;
+  amountCents: number;
   status: string;
   createdAt: Date;
   cycle?: { name: string } | null;
@@ -28,7 +28,7 @@ export function InvoiceDownloadButton({
         participant={participant}
         cycle={payment.cycle?.name ?? "—"}
         round={payment.round?.name}
-        amountUsd={payment.amountUsd}
+        amountCents={payment.amountCents}
         status={payment.status}
       />,
     ).toBlob();
