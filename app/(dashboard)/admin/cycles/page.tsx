@@ -245,7 +245,12 @@ export default async function CyclesPage() {
                                   {r.venue ? ` · ${r.venue}` : ""}
                                 </p>
                               </div>
-                              <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-gold/70 shrink-0 mt-0.5">Edit</span>
+                              <div className="flex items-center gap-2 shrink-0 mt-0.5">
+                                <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${r.registrationOpen ? "text-green-600" : "text-gate-800/30"}`}>
+                                  {r.registrationOpen ? "Open" : "Closed"}
+                                </span>
+                                <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-gold/70">Edit</span>
+                              </div>
                             </summary>
                             <form action={updateRound} className="px-3 py-3 border-t border-gate-fog/40 flex flex-col gap-3">
                               <input type="hidden" name="id" value={r.id} />
@@ -281,6 +286,17 @@ export default async function CyclesPage() {
                                   <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Venue</label>
                                   <Input name="venue" defaultValue={r.venue ?? ""} placeholder="Venue" />
                                 </div>
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Registration Status</label>
+                                <select
+                                  name="registrationOpen"
+                                  defaultValue={r.registrationOpen ? "true" : "false"}
+                                  className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                                >
+                                  <option value="false">Closed</option>
+                                  <option value="true">Open</option>
+                                </select>
                               </div>
                               <div className="flex items-center gap-3">
                                 <Button type="submit" variant="gold" size="sm">Save Round</Button>
@@ -330,6 +346,17 @@ export default async function CyclesPage() {
                             <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Venue</label>
                             <Input name="venue" placeholder="Venue" />
                           </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Registration Status</label>
+                          <select
+                            name="registrationOpen"
+                            defaultValue="false"
+                            className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                          >
+                            <option value="false">Closed</option>
+                            <option value="true">Open</option>
+                          </select>
                         </div>
                         <Button type="submit" variant="outline" size="sm">Add Round</Button>
                       </form>

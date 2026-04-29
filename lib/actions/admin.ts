@@ -62,6 +62,7 @@ export async function createRound(formData: FormData) {
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
+  const registrationOpen = formData.get("registrationOpen") === "true";
 
   if (!cycleId || !name) throw new Error("Cycle and round name are required");
 
@@ -74,6 +75,7 @@ export async function createRound(formData: FormData) {
     endDate: endDate ? new Date(endDate) : null,
     venue,
     feeUsd,
+    registrationOpen,
   });
 
   revalidatePath("/admin/cycles");
@@ -392,6 +394,7 @@ export async function updateRound(formData: FormData) {
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
+  const registrationOpen = formData.get("registrationOpen") === "true";
 
   if (!id || !name) throw new Error("Round id and name required");
 
@@ -405,6 +408,7 @@ export async function updateRound(formData: FormData) {
       endDate: endDate ? new Date(endDate) : null,
       venue,
       feeUsd,
+      registrationOpen,
     })
     .where(eq(rounds.id, id));
 
