@@ -19,6 +19,32 @@ import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { resend, DEFAULT_FROM } from "@/lib/email";
 
+// ── Helpers ───────────────────────────────────────────────────────────────
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;");
+}
+
+function assertEnum<T extends string>(value: string, allowed: readonly T[], label: string): T {
+  if (!(allowed as readonly string[]).includes(value)) throw new Error(`Invalid ${label}`);
+  return value as T;
+}
+
+const CYCLE_STATUSES = ["planning", "registration_open", "active", "completed", "archived"] as const;
+const ROUND_FORMATS = ["online", "onsite", "hybrid"] as const;
+const ROUND_REG_STATUSES = ["closed", "soon", "open"] as const;
+const PARTICIPANT_REG_STATUSES = ["draft", "submitted", "verified", "rejected"] as const;
+const USER_ROLES = ["super_admin", "admin", "coordinator", "participant", "partner_contact", "career_applicant"] as const;
+const PARTNER_STATUSES = ["pending", "approved", "rejected"] as const;
+const CAREER_STATUSES = ["submitted", "reviewing", "shortlisted", "rejected", "hired"] as const;
+const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"] as const;
+const AWARD_VALUES = ["gold", "silver", "bronze", "honorable_mention", "participation"] as const;
+
 // ── Cycles ────────────────────────────────────────────────────────────────
 
 export async function createCycle(formData: FormData) {
@@ -28,12 +54,12 @@ export async function createCycle(formData: FormData) {
   const year = parseInt(formData.get("year") as string);
   const description = (formData.get("description") as string)?.trim() || null;
 
-  if (!name || !year) throw new Error("Name and year are required");
+  if (!name || isNaN(year) || year < 2000 || year > 2100) throw new Error("Name and valid year are required");
 
   try {
     await db.insert(cycles).values({ name, year, description, status: "planning" });
-  } catch (e) {
-    throw new Error(`Failed to create cycle: ${e instanceof Error ? e.message : String(e)}`);
+  } catch {
+    throw new Error("Failed to create cycle");
   }
 
   revalidatePath("/admin/cycles");
@@ -41,9 +67,10 @@ export async function createCycle(formData: FormData) {
 
 export async function updateCycleStatus(id: number, status: string) {
   await requireRole(["super_admin", "admin"]);
+  const validStatus = assertEnum(status, CYCLE_STATUSES, "cycle status");
   await db
     .update(cycles)
-    .set({ status: status as typeof cycles.$inferInsert.status, updatedAt: new Date() })
+    .set({ status: validStatus, updatedAt: new Date() })
     .where(eq(cycles.id, id));
   revalidatePath("/admin/cycles");
 }
@@ -56,25 +83,27 @@ export async function createRound(formData: FormData) {
   const cycleId = parseInt(formData.get("cycleId") as string);
   const name = (formData.get("name") as string)?.trim();
   const order = parseInt(formData.get("order") as string) || 1;
-  const format = (formData.get("format") as string) || "online";
+  const rawFormat = (formData.get("format") as string) || "online";
   const startDate = (formData.get("startDate") as string) || null;
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
-  const registrationStatus = (formData.get("registrationStatus") as string) || "closed";
+  const rawRegStatus = (formData.get("registrationStatus") as string) || "closed";
 
-  if (!cycleId || !name) throw new Error("Cycle and round name are required");
+  if (isNaN(cycleId) || !cycleId || !name) throw new Error("Cycle and round name are required");
+  const format = assertEnum(rawFormat, ROUND_FORMATS, "format");
+  const registrationStatus = assertEnum(rawRegStatus, ROUND_REG_STATUSES, "registration status");
 
   await db.insert(rounds).values({
     cycleId,
     name,
     order,
-    format: format as typeof rounds.$inferInsert.format,
+    format,
     startDate: startDate ? new Date(startDate) : null,
     endDate: endDate ? new Date(endDate) : null,
     venue,
     feeUsd,
-    registrationStatus: registrationStatus as typeof rounds.$inferInsert.registrationStatus,
+    registrationStatus,
   });
 
   revalidatePath("/admin/cycles");
@@ -117,13 +146,11 @@ export async function removeCycleSubject(formData: FormData) {
 export async function updateParticipantStatus(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
   const id = parseInt(formData.get("id") as string);
-  const status = formData.get("status") as string;
+  if (isNaN(id) || !id) throw new Error("Invalid request");
+  const status = assertEnum(formData.get("status") as string, PARTICIPANT_REG_STATUSES, "status");
   await db
     .update(participants)
-    .set({
-      registrationStatus: status as typeof participants.$inferInsert.registrationStatus,
-      updatedAt: new Date(),
-    })
+    .set({ registrationStatus: status, updatedAt: new Date() })
     .where(eq(participants.id, id));
   revalidatePath("/admin/participants");
 }
@@ -131,12 +158,13 @@ export async function updateParticipantStatus(formData: FormData) {
 // ── Users ─────────────────────────────────────────────────────────────────
 
 export async function updateUserRole(formData: FormData) {
-  await requireRole(["super_admin"]);
+  const session = await requireRole(["super_admin"]);
   const userId = formData.get("userId") as string;
-  const role = formData.get("role") as string;
+  if (!userId || userId === session.user.id) throw new Error("Invalid request");
+  const role = assertEnum(formData.get("role") as string, USER_ROLES, "role");
   await db
     .update(user)
-    .set({ role: role as typeof user.$inferInsert.role })
+    .set({ role })
     .where(eq(user.id, userId));
   revalidatePath("/admin/users");
 }
@@ -175,10 +203,11 @@ export async function toggleSubjectActive(formData: FormData) {
 export async function updatePartnerStatus(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
-  const status = formData.get("status") as string;
+  if (isNaN(id) || !id) throw new Error("Invalid request");
+  const status = assertEnum(formData.get("status") as string, PARTNER_STATUSES, "status");
   await db
     .update(partners)
-    .set({ status: status as typeof partners.$inferInsert.status, updatedAt: new Date() })
+    .set({ status, updatedAt: new Date() })
     .where(eq(partners.id, id));
   revalidatePath("/admin/partners");
 }
@@ -188,10 +217,11 @@ export async function updatePartnerStatus(formData: FormData) {
 export async function updateCareerStatus(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
-  const status = formData.get("status") as string;
+  if (isNaN(id) || !id) throw new Error("Invalid request");
+  const status = assertEnum(formData.get("status") as string, CAREER_STATUSES, "status");
   await db
     .update(careerApplications)
-    .set({ status: status as typeof careerApplications.$inferInsert.status, updatedAt: new Date() })
+    .set({ status, updatedAt: new Date() })
     .where(eq(careerApplications.id, id));
   revalidatePath("/admin/careers");
 }
@@ -253,13 +283,11 @@ export async function seedDefaultSubjects() {
 export async function updatePaymentStatus(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
   const id = parseInt(formData.get("id") as string);
-  const status = formData.get("status") as string;
+  if (isNaN(id) || !id) throw new Error("Invalid request");
+  const status = assertEnum(formData.get("status") as string, PAYMENT_STATUSES, "status");
   await db
     .update(payments)
-    .set({
-      status: status as typeof payments.$inferInsert.status,
-      updatedAt: new Date(),
-    })
+    .set({ status, updatedAt: new Date() })
     .where(eq(payments.id, id));
   revalidatePath("/admin/payments");
 }
@@ -302,8 +330,8 @@ export async function sendNotification(formData: FormData) {
         to: recipient.email,
         subject,
         html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:40px 20px;">
-          <h2 style="color:#1a2634;font-weight:300;">${subject}</h2>
-          <div style="color:#4a5568;line-height:1.8;">${body.replace(/\n/g, "<br>")}</div>
+          <h2 style="color:#1a2634;font-weight:300;">${escapeHtml(subject)}</h2>
+          <div style="color:#4a5568;line-height:1.8;">${escapeHtml(body).replace(/\n/g, "<br>")}</div>
           <hr style="margin:30px 0;border:none;border-top:1px solid #e2e8f0;">
           <p style="color:#9ca3af;font-size:12px;">G.A.T.E. Assessment Platform</p>
         </div>`,
@@ -358,21 +386,14 @@ export async function updateCycle(formData: FormData) {
   const description = (formData.get("description") as string)?.trim() || null;
   const stripeFeePercent = parseInt(formData.get("stripeFeePercent") as string) || 290;
   const stripeFeeFixedCents = parseInt(formData.get("stripeFeeFixedCents") as string) || 30;
-  const status = formData.get("status") as string;
+  const rawStatus = formData.get("status") as string;
 
-  if (!id || !name || !year) throw new Error("Required fields missing");
+  if (isNaN(id) || !id || !name || isNaN(year) || year < 2000 || year > 2100) throw new Error("Required fields missing");
+  const status = assertEnum(rawStatus, CYCLE_STATUSES, "status");
 
   await db
     .update(cycles)
-    .set({
-      name,
-      year,
-      description,
-      stripeFeePercent,
-      stripeFeeFixedCents,
-      status: status as typeof cycles.$inferInsert.status,
-      updatedAt: new Date(),
-    })
+    .set({ name, year, description, stripeFeePercent, stripeFeeFixedCents, status, updatedAt: new Date() })
     .where(eq(cycles.id, id));
 
   revalidatePath("/admin/cycles");
@@ -386,27 +407,20 @@ export async function updateRound(formData: FormData) {
   const id = parseInt(formData.get("id") as string);
   const name = (formData.get("name") as string)?.trim();
   const order = parseInt(formData.get("order") as string) || 1;
-  const format = formData.get("format") as string;
+  const rawFormat = formData.get("format") as string;
   const startDate = (formData.get("startDate") as string) || null;
   const endDate = (formData.get("endDate") as string) || null;
   const venue = (formData.get("venue") as string)?.trim() || null;
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
-  const registrationStatus = (formData.get("registrationStatus") as string) || "closed";
+  const rawRegStatus = (formData.get("registrationStatus") as string) || "closed";
 
-  if (!id || !name) throw new Error("Round id and name required");
+  if (isNaN(id) || !id || !name) throw new Error("Round id and name required");
+  const format = assertEnum(rawFormat, ROUND_FORMATS, "format");
+  const registrationStatus = assertEnum(rawRegStatus, ROUND_REG_STATUSES, "registration status");
 
   await db
     .update(rounds)
-    .set({
-      name,
-      order,
-      format: format as typeof rounds.$inferInsert.format,
-      startDate: startDate ? new Date(startDate) : null,
-      endDate: endDate ? new Date(endDate) : null,
-      venue,
-      feeUsd,
-      registrationStatus: registrationStatus as typeof rounds.$inferInsert.registrationStatus,
-    })
+    .set({ name, order, format, startDate: startDate ? new Date(startDate) : null, endDate: endDate ? new Date(endDate) : null, venue, feeUsd, registrationStatus })
     .where(eq(rounds.id, id));
 
   revalidatePath("/admin/cycles");
@@ -428,6 +442,9 @@ export async function upsertResult(formData: FormData) {
   const awardRaw = (formData.get("award") as string)?.trim() || "";
   const publishedAtRaw = (formData.get("publishedAt") as string)?.trim() || "";
 
+  if (isNaN(participantId) || isNaN(subjectId) || isNaN(cycleId)) throw new Error("Invalid request");
+  const award = awardRaw ? assertEnum(awardRaw, AWARD_VALUES, "award") : null;
+
   const vals = {
     participantId,
     subjectId,
@@ -436,7 +453,7 @@ export async function upsertResult(formData: FormData) {
     score: score || null,
     maxScore: maxScore || null,
     rank: rank || null,
-    award: awardRaw ? (awardRaw as "gold" | "silver" | "bronze" | "honorable_mention" | "participation") : null,
+    award,
     publishedAt: publishedAtRaw ? new Date(publishedAtRaw) : null,
   };
 

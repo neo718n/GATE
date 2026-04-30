@@ -27,7 +27,7 @@ export async function GET(
 
   const role = (session.user as { role?: string }).role;
   const isAdmin = role === "super_admin" || role === "admin";
-  if (!isAdmin && payment.userId !== session.user.id) {
+  if (!isAdmin && (payment.userId === null || payment.userId !== session.user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

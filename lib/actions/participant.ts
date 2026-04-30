@@ -53,7 +53,7 @@ export async function selectRound(formData: FormData) {
   const participantId = parseInt(formData.get("participantId") as string);
   const roundId = parseInt(formData.get("roundId") as string);
 
-  if (!roundId || !participantId) return;
+  if (isNaN(participantId) || isNaN(roundId) || !participantId || !roundId) return;
 
   const participant = await db.query.participants.findFirst({
     where: eq(participants.id, participantId),
@@ -77,7 +77,7 @@ export async function selectSubject(formData: FormData) {
   const participantId = parseInt(formData.get("participantId") as string);
   const subjectId = parseInt(formData.get("subjectId") as string);
 
-  if (!subjectId || !participantId) return;
+  if (isNaN(participantId) || isNaN(subjectId) || !participantId || !subjectId) return;
 
   const participant = await db.query.participants.findFirst({
     where: eq(participants.id, participantId),
@@ -100,6 +100,10 @@ export async function initiatePayment(formData: FormData) {
   const cycleId = parseInt(formData.get("cycleId") as string);
   const roundId = parseInt(formData.get("roundId") as string);
   const participantId = parseInt(formData.get("participantId") as string);
+
+  if (isNaN(cycleId) || isNaN(roundId) || isNaN(participantId)) {
+    throw new Error("Invalid request");
+  }
 
   // Verify participant belongs to session user
   const participant = await db.query.participants.findFirst({

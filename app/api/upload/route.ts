@@ -13,23 +13,39 @@ const ALLOWED_TYPES = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
+const ALLOWED_DOC_TYPES = ["identity", "photo", "certificate", "invoice", "cv", "other"] as const;
+
+const MIME_TO_EXT: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+};
+
+const MAX_SIZE = 10 * 1024 * 1024;
 
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { filename, mimeType, size, docType = "other" } = await req.json();
+  const body = await req.json();
+  const { mimeType, size } = body;
+  const rawDocType = typeof body.docType === "string" ? body.docType : "other";
 
   if (!ALLOWED_TYPES.includes(mimeType)) {
     return NextResponse.json({ error: "File type not allowed" }, { status: 400 });
   }
-  if (size > MAX_SIZE) {
-    return NextResponse.json({ error: "File too large (max 10 MB)" }, { status: 400 });
+  if (typeof size !== "number" || size <= 0 || size > MAX_SIZE) {
+    return NextResponse.json({ error: "Invalid file size" }, { status: 400 });
+  }
+  if (!(ALLOWED_DOC_TYPES as readonly string[]).includes(rawDocType)) {
+    return NextResponse.json({ error: "Invalid document type" }, { status: 400 });
   }
 
-  const ext = filename.split(".").pop() ?? "bin";
-  const key = `${session.user.id}/${docType}/${randomUUID()}.${ext}`;
+  const ext = MIME_TO_EXT[mimeType] ?? "bin";
+  const key = `${session.user.id}/${rawDocType}/${randomUUID()}.${ext}`;
 
   const url = await getSignedUrl(
     r2,

@@ -3,9 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { requireSession, requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { documents } from "@/lib/db/schema";
+import { documents, participants } from "@/lib/db/schema";
 import { deleteObject } from "@/lib/r2";
 import { eq } from "drizzle-orm";
+
+const ALLOWED_DOC_TYPES = ["identity", "photo", "certificate", "invoice", "cv", "other"] as const;
+type DocType = typeof ALLOWED_DOC_TYPES[number];
 
 export async function saveDocument(formData: FormData) {
   const session = await requireSession();
@@ -14,15 +17,28 @@ export async function saveDocument(formData: FormData) {
   const name = formData.get("name") as string;
   const mimeType = formData.get("mimeType") as string;
   const size = Number(formData.get("size"));
-  const docType = (formData.get("docType") as string) || "other";
-  const participantId = formData.get("participantId")
-    ? Number(formData.get("participantId"))
-    : null;
+  const rawDocType = (formData.get("docType") as string) || "other";
+  const participantIdRaw = formData.get("participantId");
+  const participantId = participantIdRaw ? Number(participantIdRaw) : null;
+
+  if (!key || !name || !mimeType) throw new Error("Missing required fields");
+  if (!(ALLOWED_DOC_TYPES as readonly string[]).includes(rawDocType)) throw new Error("Invalid document type");
+  if (isNaN(size) || size <= 0) throw new Error("Invalid file size");
+
+  if (participantId !== null) {
+    if (isNaN(participantId)) throw new Error("Invalid request");
+    const ownerParticipant = await db.query.participants.findFirst({
+      where: eq(participants.id, participantId),
+    });
+    if (!ownerParticipant || ownerParticipant.userId !== session.user.id) {
+      throw new Error("Forbidden");
+    }
+  }
 
   await db.insert(documents).values({
     userId: session.user.id,
     participantId,
-    type: docType as any,
+    type: rawDocType as DocType,
     name,
     key,
     size,

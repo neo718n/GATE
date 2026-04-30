@@ -63,11 +63,12 @@ export async function POST(req: NextRequest) {
       })
       .where(eq(payments.stripeCheckoutSessionId, session.id));
 
-    if (participantId) {
+    const participantIdNum = participantId ? parseInt(participantId) : NaN;
+    if (!isNaN(participantIdNum)) {
       await db
         .update(participants)
         .set({ paymentStatus: "paid", updatedAt: new Date() })
-        .where(eq(participants.id, parseInt(participantId)));
+        .where(eq(participants.id, participantIdNum));
     }
 
     // Send confirmation email with invoice + receipt attached
@@ -76,14 +77,15 @@ export async function POST(req: NextRequest) {
       with: { cycle: true, round: true },
     });
 
-    if (payment && participantId) {
+    if (payment && !isNaN(participantIdNum)) {
       const participant = await db.query.participants.findFirst({
-        where: eq(participants.id, parseInt(participantId)),
+        where: eq(participants.id, participantIdNum),
         with: { user: true },
       });
 
       const email = participant?.user?.email;
-      if (email && participant) {
+      // Guard against duplicate emails on Stripe webhook retries
+      if (email && participant && !payment.receiptPdfKey) {
         sendPaymentConfirmationEmail({
           paymentId: payment.id,
           amountCents: payment.amountCents,
