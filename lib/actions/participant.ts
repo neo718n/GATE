@@ -88,10 +88,8 @@ export async function selectSubject(formData: FormData) {
 
   if (participant.paymentStatus === "paid") return;
 
-  await db.transaction(async (tx) => {
-    await tx.delete(participantSubjects).where(eq(participantSubjects.participantId, participantId));
-    await tx.insert(participantSubjects).values({ participantId, subjectId });
-  });
+  await db.delete(participantSubjects).where(eq(participantSubjects.participantId, participantId));
+  await db.insert(participantSubjects).values({ participantId, subjectId });
 
   revalidatePath("/participant/enrollment");
   revalidatePath("/participant");
