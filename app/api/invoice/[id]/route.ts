@@ -41,7 +41,7 @@ export async function GET(
         })
       : null;
 
-    key = await generateAndUploadInvoice({
+    key = (await generateAndUploadInvoice({
       paymentId: payment.id,
       invoiceNumber: `INV-${String(payment.id).padStart(6, "0")}`,
       issuedAt: new Date(payment.createdAt).toLocaleDateString("en-US"),
@@ -54,7 +54,7 @@ export async function GET(
       round: payment.round?.name,
       amountCents: payment.amountCents,
       status: payment.status,
-    });
+    })).key;
 
     await db.update(payments).set({ invoicePdfKey: key }).where(eq(payments.id, paymentId));
   }

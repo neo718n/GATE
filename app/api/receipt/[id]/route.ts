@@ -41,7 +41,7 @@ export async function GET(
         })
       : null;
 
-    key = await generateAndUploadReceipt({
+    key = (await generateAndUploadReceipt({
       paymentId: payment.id,
       receiptNumber: `RCT-${String(payment.id).padStart(6, "0")}`,
       paidAt: new Date(payment.updatedAt).toLocaleDateString("en-US"),
@@ -58,7 +58,7 @@ export async function GET(
       cardBrand: payment.cardBrand,
       stripeChargeId: payment.stripeChargeId,
       stripePaymentIntentId: payment.stripePaymentIntentId,
-    });
+    })).key;
 
     await db.update(payments).set({ receiptPdfKey: key }).where(eq(payments.id, paymentId));
   }

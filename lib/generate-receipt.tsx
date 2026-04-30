@@ -18,7 +18,7 @@ interface GenerateReceiptParams {
   stripePaymentIntentId?: string | null;
 }
 
-export async function generateAndUploadReceipt(params: GenerateReceiptParams): Promise<string> {
+export async function generateAndUploadReceipt(params: GenerateReceiptParams): Promise<{ key: string; buffer: Buffer }> {
   const buffer = await renderToBuffer(
     <ReceiptPDF
       receiptNumber={params.receiptNumber}
@@ -48,6 +48,6 @@ export async function generateAndUploadReceipt(params: GenerateReceiptParams): P
     })
   );
 
-  return key;
+  return { key, buffer };
 }
 

@@ -14,7 +14,7 @@ interface GenerateInvoiceParams {
   status: string;
 }
 
-export async function generateAndUploadInvoice(params: GenerateInvoiceParams): Promise<string> {
+export async function generateAndUploadInvoice(params: GenerateInvoiceParams): Promise<{ key: string; buffer: Buffer }> {
   const buffer = await renderToBuffer(
     <InvoicePDF
       invoiceNumber={params.invoiceNumber}
@@ -40,6 +40,6 @@ export async function generateAndUploadInvoice(params: GenerateInvoiceParams): P
     })
   );
 
-  return key;
+  return { key, buffer };
 }
 

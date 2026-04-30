@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { payments, participants } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
+import { sendPaymentConfirmationEmail } from "@/lib/send-payment-email";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -67,6 +68,39 @@ export async function POST(req: NextRequest) {
         .update(participants)
         .set({ paymentStatus: "paid", updatedAt: new Date() })
         .where(eq(participants.id, parseInt(participantId)));
+    }
+
+    // Send confirmation email with invoice + receipt attached
+    const payment = await db.query.payments.findFirst({
+      where: eq(payments.stripeCheckoutSessionId, session.id),
+      with: { cycle: true, round: true },
+    });
+
+    if (payment && participantId) {
+      const participant = await db.query.participants.findFirst({
+        where: eq(participants.id, parseInt(participantId)),
+        with: { user: true },
+      });
+
+      const email = participant?.user?.email;
+      if (email && participant) {
+        sendPaymentConfirmationEmail({
+          paymentId: payment.id,
+          amountCents: payment.amountCents,
+          serviceFeeCents: payment.serviceFeeCents ?? 0,
+          cardLast4: payment.cardLast4 ?? cardLast4,
+          cardBrand: payment.cardBrand ?? cardBrand,
+          stripeChargeId: payment.stripeChargeId ?? stripeChargeId,
+          stripePaymentIntentId: payment.stripePaymentIntentId,
+          cycle: payment.cycle?.name ?? "-",
+          round: payment.round?.name,
+          participant: {
+            name: participant.fullName,
+            email,
+            country: participant.country ?? "-",
+          },
+        }).catch((err) => console.error("Payment email failed:", err));
+      }
     }
   }
 
