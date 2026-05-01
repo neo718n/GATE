@@ -16,7 +16,7 @@ const STATUS_COLOR: Record<string, string> = {
   pending: "text-yellow-700",
   paid: "text-green-700",
   failed: "text-red-600",
-  refunded: "text-gate-800/40",
+  refunded: "text-foreground/40",
 };
 
 export default async function PaymentsPage() {
@@ -44,8 +44,8 @@ export default async function PaymentsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Admin
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Payments</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Payments</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           {allPayments.length} total payment records
         </p>
       </div>
@@ -58,8 +58,8 @@ export default async function PaymentsPage() {
           { label: "Pending", value: pending, color: "text-yellow-700" },
           { label: "Failed", value: failed, color: "text-red-600" },
         ].map((s) => (
-          <div key={s.label} className="border border-gate-fog bg-white p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/50">
+          <div key={s.label} className="border border-border bg-card p-5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/50">
               {s.label}
             </p>
             <p className={`text-3xl font-serif font-light mt-2 ${s.color}`}>{s.value}</p>
@@ -68,13 +68,13 @@ export default async function PaymentsPage() {
       </div>
 
       {/* Table */}
-      <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40 overflow-x-auto">
-        <div className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr_1fr_110px_100px] gap-3 px-5 py-3 bg-gate-fog/30 min-w-[900px]">
+      <div className="flex flex-col gap-0 border border-border bg-card divide-y divide-border overflow-x-auto">
+        <div className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr_1fr_110px_100px] gap-3 px-5 py-3 bg-muted/30 min-w-[900px]">
           {["User", "Email", "Cycle", "Round", "Amount", "Status", "Date", "Action"].map(
             (h) => (
               <span
                 key={h}
-                className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50"
+                className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50"
               >
                 {h}
               </span>
@@ -83,7 +83,7 @@ export default async function PaymentsPage() {
         </div>
 
         {allPayments.length === 0 && (
-          <p className="px-5 py-10 text-sm font-light text-gate-800/40 text-center">
+          <p className="px-5 py-10 text-sm font-light text-foreground/40 text-center">
             No payments recorded yet.
           </p>
         )}
@@ -93,25 +93,25 @@ export default async function PaymentsPage() {
             key={p.id}
             className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr_1fr_110px_100px] gap-3 px-5 py-4 items-center min-w-[900px]"
           >
-            <p className="text-sm font-light text-gate-800 truncate">
+            <p className="text-sm font-light text-foreground truncate">
               {p.user?.name ?? "—"}
             </p>
-            <p className="text-xs font-light text-gate-800/55 truncate">
+            <p className="text-xs font-light text-foreground/55 truncate">
               {p.user?.email ?? "—"}
             </p>
-            <p className="text-xs font-light text-gate-800/70 truncate">
+            <p className="text-xs font-light text-foreground/70 truncate">
               {p.cycle?.name ?? "—"}
             </p>
-            <p className="text-xs font-light text-gate-800/70 truncate">
+            <p className="text-xs font-light text-foreground/70 truncate">
               {p.round?.name ?? "—"}
             </p>
-            <p className="text-sm font-light text-gate-800">${(p.amountCents / 100).toFixed(2)}</p>
+            <p className="text-sm font-light text-foreground">${(p.amountCents / 100).toFixed(2)}</p>
             <span
-              className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${STATUS_COLOR[p.status] ?? "text-gate-800"}`}
+              className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${STATUS_COLOR[p.status] ?? "text-foreground"}`}
             >
               {STATUS_LABEL[p.status] ?? p.status}
             </span>
-            <p className="text-[11px] font-light text-gate-800/50">
+            <p className="text-[11px] font-light text-foreground/50">
               {new Date(p.createdAt).toLocaleDateString()}
             </p>
             <form action={updatePaymentStatus}>

@@ -43,9 +43,9 @@ export function NotificationForm({ cycles }: { cycles: Cycle[] }) {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-5 border border-gate-fog bg-white p-6"
+      className="flex flex-col gap-5 border border-border bg-card p-6"
     >
-      <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+      <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
         Compose Notification
       </h2>
 
@@ -63,7 +63,7 @@ export function NotificationForm({ cycles }: { cycles: Cycle[] }) {
       <div className="flex flex-col gap-2">
         <Label>Recipients</Label>
         <div className="flex gap-3">
-          <label className="flex items-center gap-2 text-sm font-light text-gate-800 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm font-light text-foreground cursor-pointer">
             <input
               type="radio"
               name="recipientFilter"
@@ -74,7 +74,7 @@ export function NotificationForm({ cycles }: { cycles: Cycle[] }) {
             />
             All verified users
           </label>
-          <label className="flex items-center gap-2 text-sm font-light text-gate-800 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm font-light text-foreground cursor-pointer">
             <input
               type="radio"
               name="recipientFilter"
@@ -94,7 +94,7 @@ export function NotificationForm({ cycles }: { cycles: Cycle[] }) {
           <select
             id="cycleId"
             name="cycleId"
-            className="h-9 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+            className="h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
           >
             <option value="">— select cycle —</option>
             {cycles.map((c) => (
@@ -124,7 +124,7 @@ export function NotificationForm({ cycles }: { cycles: Cycle[] }) {
           rows={6}
           required
           placeholder="Write your message here..."
-          className="w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 placeholder:text-gate-800/30 focus-visible:outline-none focus-visible:border-gate-gold resize-none"
+          className="w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground placeholder:text-foreground/30 focus-visible:outline-none focus-visible:border-gate-gold resize-none"
         />
       </div>
 

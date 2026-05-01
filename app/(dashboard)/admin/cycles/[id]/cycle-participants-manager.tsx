@@ -19,11 +19,11 @@ const AWARD_COLOR: Record<string, string> = {
   silver: "text-slate-600 bg-slate-50",
   bronze: "text-orange-700 bg-orange-50",
   honorable_mention: "text-blue-700 bg-blue-50",
-  participation: "text-gate-800/50 bg-gate-fog/40",
+  participation: "text-foreground/50 bg-muted/40",
 };
 
 const REG_COLOR: Record<string, string> = {
-  draft: "text-gate-800/40",
+  draft: "text-foreground/40",
   submitted: "text-yellow-700",
   verified: "text-green-700",
   rejected: "text-red-600",
@@ -32,7 +32,7 @@ const REG_COLOR: Record<string, string> = {
 const PAY_COLOR: Record<string, string> = {
   unpaid: "text-yellow-700",
   paid: "text-green-700",
-  waived: "text-gate-800/40",
+  waived: "text-foreground/40",
 };
 
 type RoundRow = {
@@ -161,7 +161,7 @@ export function CycleParticipantsManager({
     <button
       type="button"
       onClick={() => toggleSort(k)}
-      className={`text-[10px] font-semibold uppercase tracking-[0.2em] hover:text-gate-gold transition-colors ${sortKey === k ? "text-gate-gold" : "text-gate-800/50"}`}
+      className={`text-[10px] font-semibold uppercase tracking-[0.2em] hover:text-gate-gold transition-colors ${sortKey === k ? "text-gate-gold" : "text-foreground/50"}`}
     >
       {label}
       {sortKey === k ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
@@ -171,7 +171,7 @@ export function CycleParticipantsManager({
   return (
     <div className="flex flex-col gap-5">
       {/* Controls */}
-      <div className="flex flex-wrap items-center gap-3 border border-gate-fog bg-white px-4 py-3">
+      <div className="flex flex-wrap items-center gap-3 border border-border bg-card px-4 py-3">
         <Input
           placeholder="Search name, email, country…"
           value={search}
@@ -180,11 +180,11 @@ export function CycleParticipantsManager({
         />
 
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40">Round:</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/40">Round:</span>
           <button
             type="button"
             onClick={() => setFilterRound("all")}
-            className={`text-[10px] font-semibold uppercase tracking-[0.15em] px-2.5 py-1 border transition-colors ${filterRound === "all" ? "border-gate-gold text-gate-gold" : "border-gate-fog text-gate-800/40 hover:border-gate-gold/40"}`}
+            className={`text-[10px] font-semibold uppercase tracking-[0.15em] px-2.5 py-1 border transition-colors ${filterRound === "all" ? "border-gate-gold text-gate-gold" : "border-border text-foreground/40 hover:border-gate-gold/40"}`}
           >
             All
           </button>
@@ -193,46 +193,46 @@ export function CycleParticipantsManager({
               key={r.id}
               type="button"
               onClick={() => setFilterRound(r.id)}
-              className={`text-[10px] font-semibold uppercase tracking-[0.15em] px-2.5 py-1 border transition-colors ${filterRound === r.id ? "border-gate-gold text-gate-gold" : "border-gate-fog text-gate-800/40 hover:border-gate-gold/40"}`}
+              className={`text-[10px] font-semibold uppercase tracking-[0.15em] px-2.5 py-1 border transition-colors ${filterRound === r.id ? "border-gate-gold text-gate-gold" : "border-border text-foreground/40 hover:border-gate-gold/40"}`}
             >
               {r.name}
             </button>
           ))}
         </div>
 
-        <span className="ml-auto text-[10px] font-light text-gate-800/40">
+        <span className="ml-auto text-[10px] font-light text-foreground/40">
           {filtered.length} of {participants.length}
         </span>
       </div>
 
       {/* Table header */}
-      <div className="border border-gate-fog bg-white">
+      <div className="border border-border bg-card">
         <div
-          className="grid gap-3 px-4 py-2.5 bg-gate-fog/30 border-b border-gate-fog/60"
+          className="grid gap-3 px-4 py-2.5 bg-muted/30 border-b border-border"
           style={{ gridTemplateColumns: `2fr 1fr 1fr ${rounds.map(() => "1fr").join(" ")} 1fr 1fr 60px` }}
         >
           <SortBtn label="Name" k="name" />
           <SortBtn label="Country" k="country" />
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Subject</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Subject</span>
           {rounds.map((r) => (
             <div key={r.id} className="flex flex-col gap-0.5">
               <SortBtn label={r.name} k={`score_${r.id}`} />
               <button
                 type="button"
                 onClick={() => toggleSort(`rank_${r.id}`)}
-                className={`text-[9px] font-semibold uppercase tracking-[0.15em] hover:text-gate-gold transition-colors text-left ${sortKey === `rank_${r.id}` ? "text-gate-gold" : "text-gate-800/30"}`}
+                className={`text-[9px] font-semibold uppercase tracking-[0.15em] hover:text-gate-gold transition-colors text-left ${sortKey === `rank_${r.id}` ? "text-gate-gold" : "text-foreground/30"}`}
               >
                 rank{sortKey === `rank_${r.id}` ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
               </button>
             </div>
           ))}
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Reg</span>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Pay</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Reg</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Pay</span>
           <span />
         </div>
 
         {filtered.length === 0 && (
-          <p className="px-4 py-10 text-sm font-light text-gate-800/40 text-center">
+          <p className="px-4 py-10 text-sm font-light text-foreground/40 text-center">
             No participants match the current filter.
           </p>
         )}
@@ -243,34 +243,34 @@ export function CycleParticipantsManager({
           const isOpen = expanded === p.id;
 
           return (
-            <div key={p.id} className="border-b border-gate-fog/40 last:border-0">
+            <div key={p.id} className="border-b border-border last:border-0">
               {/* Row */}
               <div
-                className="grid gap-3 px-4 py-3 items-center hover:bg-gate-fog/20 cursor-pointer transition-colors"
+                className="grid gap-3 px-4 py-3 items-center hover:bg-muted/20 cursor-pointer transition-colors"
                 style={{ gridTemplateColumns: `2fr 1fr 1fr ${rounds.map(() => "1fr").join(" ")} 1fr 1fr 60px` }}
                 onClick={() => setExpanded(isOpen ? null : p.id)}
               >
                 <div className="flex flex-col gap-0.5 min-w-0">
-                  <p className="text-sm font-light text-gate-800 truncate">{p.fullName}</p>
-                  <p className="text-[10px] font-light text-gate-800/40 truncate">{p.user?.email ?? "—"}</p>
+                  <p className="text-sm font-light text-foreground truncate">{p.fullName}</p>
+                  <p className="text-[10px] font-light text-foreground/40 truncate">{p.user?.email ?? "—"}</p>
                 </div>
-                <span className="text-xs font-light text-gate-800/60 truncate">{p.country}</span>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gate-800/50 truncate">{subjectName}</span>
+                <span className="text-xs font-light text-foreground/60 truncate">{p.country}</span>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-foreground/50 truncate">{subjectName}</span>
 
                 {rounds.map((r) => {
                   const res = p.results.find((x) => x.roundId === r.id);
                   if (!res) {
                     return (
-                      <span key={r.id} className="text-[10px] font-light text-gate-800/25">—</span>
+                      <span key={r.id} className="text-[10px] font-light text-foreground/25">—</span>
                     );
                   }
                   return (
                     <div key={r.id} className="flex flex-col gap-0.5">
-                      <span className="text-xs font-light text-gate-800">
+                      <span className="text-xs font-light text-foreground">
                         {res.score ?? "—"}{res.maxScore ? `/${res.maxScore}` : ""}
                       </span>
                       {res.rank && (
-                        <span className="text-[9px] font-semibold text-gate-800/40">#{res.rank}</span>
+                        <span className="text-[9px] font-semibold text-foreground/40">#{res.rank}</span>
                       )}
                       {res.award && (
                         <span className={`text-[8px] font-semibold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-sm w-fit ${AWARD_COLOR[res.award] ?? ""}`}>
@@ -295,7 +295,7 @@ export function CycleParticipantsManager({
                   >
                     View
                   </Link>
-                  <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${isOpen ? "text-gate-800" : "text-gate-800/30"}`}>
+                  <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${isOpen ? "text-foreground" : "text-foreground/30"}`}>
                     {isOpen ? "▲" : "▼"}
                   </span>
                 </div>
@@ -303,13 +303,13 @@ export function CycleParticipantsManager({
 
               {/* Expanded result editor */}
               {isOpen && (
-                <div className="border-t border-gate-fog/40 bg-gate-fog/20 px-4 py-4 flex flex-col gap-4">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50">
+                <div className="border-t border-border bg-muted/20 px-4 py-4 flex flex-col gap-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50">
                     Edit Results — {p.fullName}
                   </p>
 
                   {rounds.length === 0 && (
-                    <p className="text-xs font-light text-gate-800/40">No rounds defined for this cycle.</p>
+                    <p className="text-xs font-light text-foreground/40">No rounds defined for this cycle.</p>
                   )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -318,9 +318,9 @@ export function CycleParticipantsManager({
                       const effectiveSubjectId = existing?.subjectId ?? subjectId;
 
                       return (
-                        <div key={r.id} className="border border-gate-fog bg-white p-4 flex flex-col gap-3">
+                        <div key={r.id} className="border border-border bg-card p-4 flex flex-col gap-3">
                           <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground">
                               {r.name}
                             </p>
                             {existing && (
@@ -347,11 +347,11 @@ export function CycleParticipantsManager({
 
                             {cycleSubjects.length > 1 && (
                               <div className="flex flex-col gap-1.5">
-                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Subject</label>
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Subject</label>
                                 <select
                                   name="subjectId"
                                   defaultValue={effectiveSubjectId}
-                                  className="h-9 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                                  className="h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   {cycleSubjects.map((s) => (
                                     <option key={s.id} value={s.id}>{s.name}</option>
@@ -362,26 +362,26 @@ export function CycleParticipantsManager({
 
                             <div className="grid grid-cols-2 gap-2">
                               <div className="flex flex-col gap-1.5">
-                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Score</label>
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Score</label>
                                 <Input name="score" defaultValue={existing?.score ?? ""} placeholder="e.g. 87.5" className="h-8 text-sm" />
                               </div>
                               <div className="flex flex-col gap-1.5">
-                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Max Score</label>
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Max Score</label>
                                 <Input name="maxScore" defaultValue={existing?.maxScore ?? ""} placeholder="e.g. 100" className="h-8 text-sm" />
                               </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-2">
                               <div className="flex flex-col gap-1.5">
-                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Rank</label>
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Rank</label>
                                 <Input name="rank" type="number" min="1" defaultValue={existing?.rank ?? ""} placeholder="e.g. 3" className="h-8 text-sm" />
                               </div>
                               <div className="flex flex-col gap-1.5">
-                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Award</label>
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Award</label>
                                 <select
                                   name="award"
                                   defaultValue={existing?.award ?? ""}
-                                  className="h-9 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                                  className="h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   <option value="">— None —</option>
                                   <option value="gold">Gold</option>
@@ -394,7 +394,7 @@ export function CycleParticipantsManager({
                             </div>
 
                             <div className="flex flex-col gap-1.5">
-                              <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">Published At</label>
+                              <label className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Published At</label>
                               <Input
                                 name="publishedAt"
                                 type="datetime-local"

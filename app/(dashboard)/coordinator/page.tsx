@@ -1,4 +1,4 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -11,7 +11,7 @@ export default async function CoordinatorDashboard() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Coordinator Portal
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">
+        <h1 className="font-serif text-4xl font-light text-foreground">
           Coordinator Dashboard
         </h1>
       </div>
@@ -25,12 +25,12 @@ export default async function CoordinatorDashboard() {
         ].map((stat) => (
           <div
             key={stat.label}
-            className="border border-gate-fog bg-white p-6 flex flex-col gap-3 shadow-sm"
+            className="border border-border bg-card p-6 flex flex-col gap-3 shadow-sm"
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/60">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/60">
               {stat.label}
             </p>
-            <p className="text-3xl font-serif font-light text-gate-800">
+            <p className="text-3xl font-serif font-light text-foreground">
               {stat.value}
             </p>
           </div>
@@ -66,12 +66,12 @@ export default async function CoordinatorDashboard() {
         ].map((item) => (
           <div
             key={item.title}
-            className="border border-gate-fog bg-white p-6 flex flex-col gap-4 shadow-sm"
+            className="border border-border bg-card p-6 flex flex-col gap-4 shadow-sm"
           >
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gate-800">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground">
               {item.title}
             </h2>
-            <p className="text-sm font-light text-gate-800/60 leading-[1.8] flex-1">
+            <p className="text-sm font-light text-foreground/60 leading-[1.8] flex-1">
               {item.desc}
             </p>
             <Button variant="outline" size="sm" asChild className="w-fit">
@@ -83,4 +83,3 @@ export default async function CoordinatorDashboard() {
     </div>
   );
 }
-

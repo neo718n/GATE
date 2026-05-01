@@ -53,37 +53,37 @@ export default async function SettingsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Super Admin
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">System Settings</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">System Settings</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Environment and integration status.
         </p>
       </div>
 
       <div className="flex flex-col gap-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
           Integration Status
         </p>
         {checks.map((c) => (
-          <div key={c.label} className="flex items-start gap-4 py-3 border-b border-gate-fog/40 last:border-0">
+          <div key={c.label} className="flex items-start gap-4 py-3 border-b border-border last:border-0">
             <span
               className={`mt-0.5 h-2 w-2 rounded-full shrink-0 ${c.status ? "bg-green-500" : "bg-red-400"}`}
             />
             <div className="flex flex-col gap-0.5">
-              <p className="text-sm font-semibold text-gate-800">{c.label}</p>
-              <p className="text-xs font-light text-gate-800/55">{c.detail}</p>
+              <p className="text-sm font-semibold text-foreground">{c.label}</p>
+              <p className="text-xs font-light text-foreground/55">{c.detail}</p>
             </div>
           </div>
         ))}
       </div>
 
       <div className="flex flex-col gap-3">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
           Pending Setup Items
         </p>
         {todos.map((t) => (
-          <div key={t} className="flex items-start gap-3 py-2 border-b border-gate-fog/40 last:border-0">
+          <div key={t} className="flex items-start gap-3 py-2 border-b border-border last:border-0">
             <span className="mt-2 h-px w-4 shrink-0 bg-gate-gold/40" />
-            <p className="text-sm font-light text-gate-800/65">{t}</p>
+            <p className="text-sm font-light text-foreground/65">{t}</p>
           </div>
         ))}
       </div>

@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Montserrat, Cormorant_Garamond } from "next/font/google";
+import Script from "next/script";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -57,11 +59,22 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      data-scroll-behavior="smooth"
+      suppressHydrationWarning
       className={`${montserrat.variable} ${cormorant.variable} h-full antialiased`}
     >
-      <body suppressHydrationWarning className="flex min-h-full flex-col bg-background text-foreground">
-        {children}
+
+      <body
+        suppressHydrationWarning
+        className="flex min-h-full flex-col bg-background text-foreground"
+      >
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('gate-theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})()`,
+          }}
+        />
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

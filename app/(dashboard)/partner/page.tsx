@@ -11,7 +11,7 @@ export default async function PartnerDashboard() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Partner Portal
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">
+        <h1 className="font-serif text-4xl font-light text-foreground">
           Partner Dashboard
         </h1>
       </div>
@@ -20,7 +20,7 @@ export default async function PartnerDashboard() {
         <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
           Partnership Status
         </p>
-        <p className="text-sm font-light text-gate-800/65">
+        <p className="text-sm font-light text-foreground/65">
           Your partnership application is currently under review. You will be
           notified by email once a decision has been made.
         </p>
@@ -55,12 +55,12 @@ export default async function PartnerDashboard() {
         ].map((item) => (
           <div
             key={item.title}
-            className="border border-gate-fog bg-white p-6 flex flex-col gap-4 shadow-sm"
+            className="border border-border bg-card p-6 flex flex-col gap-4 shadow-sm"
           >
-            <h2 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gate-800">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground">
               {item.title}
             </h2>
-            <p className="text-sm font-light text-gate-800/60 leading-[1.8] flex-1">
+            <p className="text-sm font-light text-foreground/60 leading-[1.8] flex-1">
               {item.desc}
             </p>
             <Button variant="outline" size="sm" asChild className="w-fit">

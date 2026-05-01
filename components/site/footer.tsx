@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Logo } from "@/components/brand/logo";
+import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 
 const ASSESSMENT_LINKS = [
   { href: "/about", label: "About G.A.T.E." },
@@ -59,14 +59,14 @@ const SOCIAL_LINKS = [
 
 export function SiteFooter() {
   return (
-    <footer className="bg-gate-white border-t border-gate-fog">
+    <footer className="bg-card border-t border-border">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
 
         {/* Brand row */}
-        <div className="pt-16 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-gate-fog/60">
+        <div className="pt-16 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border">
           <div className="flex flex-col gap-5">
-            <Logo size="sm" variant="light" showTagline={false} />
-            <p className="text-sm font-light text-gate-800/55 max-w-xs leading-[1.9]">
+            <ThemeAwareLogo size="sm" showTagline={false} />
+            <p className="text-sm font-light text-foreground/55 max-w-xs leading-[1.9]">
               An international academic assessment across six disciplines —
               from a global online preliminary to an invitation-only final at
               Xidian University, Hangzhou.
@@ -76,7 +76,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-4">
             <a
               href="mailto:info@gate-assessment.org"
-              className="text-sm font-light text-gate-800/65 hover:text-gate-800 transition-colors"
+              className="text-sm font-light text-foreground/65 hover:text-foreground transition-colors"
             >
               info@gate-assessment.org
             </a>
@@ -88,7 +88,7 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="text-gate-800/30 hover:text-gate-800/65 transition-colors"
+                  className="text-foreground/30 hover:text-foreground/65 transition-colors"
                 >
                   {s.icon}
                 </a>
@@ -99,67 +99,37 @@ export function SiteFooter() {
 
         {/* Links grid */}
         <div className="py-12 grid grid-cols-2 md:grid-cols-3 gap-10">
-          <div className="flex flex-col gap-5">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800/50">
-              Assessment
-            </span>
-            <ul className="flex flex-col gap-3.5">
-              {ASSESSMENT_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm font-light text-gate-800/60 hover:text-gate-800 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800/50">
-              Participate
-            </span>
-            <ul className="flex flex-col gap-3.5">
-              {PARTICIPATE_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm font-light text-gate-800/60 hover:text-gate-800 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800/50">
-              Legal
-            </span>
-            <ul className="flex flex-col gap-3.5">
-              {LEGAL_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm font-light text-gate-800/60 hover:text-gate-800 transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {[
+            { heading: "Assessment", links: ASSESSMENT_LINKS },
+            { heading: "Participate", links: PARTICIPATE_LINKS },
+            { heading: "Legal", links: LEGAL_LINKS },
+          ].map(({ heading, links }) => (
+            <div key={heading} className="flex flex-col gap-5">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-foreground/50">
+                {heading}
+              </span>
+              <ul className="flex flex-col gap-3.5">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm font-light text-foreground/60 hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 border-t border-gate-fog/50 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-[10px] font-light tracking-[0.12em] text-gate-800/40">
+        <div className="py-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p className="text-[10px] font-light tracking-[0.12em] text-foreground/40">
             © G.A.T.E. Assessment 2026
           </p>
-          <p className="text-[10px] font-light tracking-[0.08em] text-gate-800/35">
+          <p className="text-[10px] font-light tracking-[0.08em] text-foreground/35">
             Global Academic &amp; Theoretical Excellence Assessment
           </p>
         </div>

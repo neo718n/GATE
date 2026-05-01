@@ -47,19 +47,19 @@ export function ParticipantDocumentsList({
   return (
     <div className="flex flex-col gap-6">
       {/* Upload panel */}
-      <div className="border border-gate-fog bg-white p-5 flex flex-col gap-4">
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+      <div className="border border-border bg-card p-5 flex flex-col gap-4">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
           Upload New Document
         </h2>
         <div className="flex items-end gap-4">
           <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
+            <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
               Document Type
             </label>
             <select
               value={selectedType}
               onChange={(e) => setSelectedType(e.target.value)}
-              className="h-9 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+              className="h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
             >
               {DOC_TYPES.map((t) => (
                 <option key={t} value={t}>
@@ -78,17 +78,17 @@ export function ParticipantDocumentsList({
       </div>
 
       {/* Active documents */}
-      <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40">
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 px-5 py-3 bg-gate-fog/30">
+      <div className="flex flex-col gap-0 border border-border bg-card divide-y divide-border">
+        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 px-5 py-3 bg-muted/30">
           {["File", "Type", "Size", "Uploaded", ""].map((h) => (
-            <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
+            <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
               {h}
             </span>
           ))}
         </div>
 
         {active.length === 0 && (
-          <p className="px-5 py-8 text-sm font-light text-gate-800/40">
+          <p className="px-5 py-8 text-sm font-light text-foreground/40">
             No documents uploaded yet.
           </p>
         )}
@@ -99,11 +99,11 @@ export function ParticipantDocumentsList({
       </div>
 
       {archived.length > 0 && (
-        <details className="border border-gate-fog bg-white">
-          <summary className="px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40 cursor-pointer">
+        <details className="border border-border bg-card">
+          <summary className="px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/40 cursor-pointer">
             Archived ({archived.length})
           </summary>
-          <div className="divide-y divide-gate-fog/40 opacity-50">
+          <div className="divide-y divide-border opacity-50">
             {archived.map((doc) => (
               <DocRow key={doc.id} doc={doc} formatSize={formatSize} onArchive={handleArchive} archived />
             ))}
@@ -135,15 +135,15 @@ function DocRow({
       <button
         type="button"
         onClick={handleDownload}
-        className="text-sm font-light text-gate-800 hover:text-gate-gold text-left truncate transition-colors"
+        className="text-sm font-light text-foreground hover:text-gate-gold text-left truncate transition-colors"
       >
         {doc.name}
       </button>
-      <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gate-800/50">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-foreground/50">
         {TYPE_LABEL[doc.type] ?? doc.type}
       </span>
-      <span className="text-xs font-light text-gate-800/50">{formatSize(doc.size)}</span>
-      <span className="text-[11px] font-light text-gate-800/40">
+      <span className="text-xs font-light text-foreground/50">{formatSize(doc.size)}</span>
+      <span className="text-[11px] font-light text-foreground/40">
         {new Date(doc.uploadedAt).toLocaleDateString()}
       </span>
       {!archived && (

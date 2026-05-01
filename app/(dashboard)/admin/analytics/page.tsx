@@ -43,14 +43,14 @@ export default async function AnalyticsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Super Admin
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Analytics</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">Platform-wide statistics.</p>
+        <h1 className="font-serif text-4xl font-light text-foreground">Analytics</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">Platform-wide statistics.</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <div key={s.label} className="border border-gate-fog bg-white p-6 flex flex-col gap-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/60">
+          <div key={s.label} className="border border-border bg-card p-6 flex flex-col gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/60">
               {s.label}
             </p>
             <p className="font-serif text-4xl font-light text-gate-gold">{s.value}</p>
@@ -58,8 +58,8 @@ export default async function AnalyticsPage() {
         ))}
       </div>
 
-      <div className="border border-gate-fog bg-gate-fog/30 p-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 mb-3">
+      <div className="border border-border bg-muted/30 p-6">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 mb-3">
           Conversion Funnel
         </p>
         <div className="flex flex-col gap-2">
@@ -70,14 +70,14 @@ export default async function AnalyticsPage() {
             { label: "Paid / Enrolled", val: paid, pct: totalParticipants ? Math.round((paid / totalParticipants) * 100) : 0 },
           ].map((row) => (
             <div key={row.label} className="flex items-center gap-4">
-              <span className="text-xs font-light text-gate-800/60 w-48 shrink-0">{row.label}</span>
-              <div className="flex-1 h-2 bg-gate-fog rounded-full overflow-hidden">
+              <span className="text-xs font-light text-foreground/60 w-48 shrink-0">{row.label}</span>
+              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gate-gold/60 transition-all"
                   style={{ width: `${row.pct}%` }}
                 />
               </div>
-              <span className="text-xs font-semibold text-gate-800 w-16 text-right">
+              <span className="text-xs font-semibold text-foreground w-16 text-right">
                 {row.val} ({row.pct}%)
               </span>
             </div>

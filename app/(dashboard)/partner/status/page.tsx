@@ -35,10 +35,10 @@ export default async function PartnerStatusPage() {
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             Partner Portal
           </span>
-          <h1 className="font-serif text-4xl font-light text-gate-800">Partnership Status</h1>
+          <h1 className="font-serif text-4xl font-light text-foreground">Partnership Status</h1>
         </div>
-        <div className="border border-gate-fog bg-gate-fog/30 p-8">
-          <p className="text-sm font-light text-gate-800/60">No partner record found for this account.</p>
+        <div className="border border-border bg-muted/30 p-8">
+          <p className="text-sm font-light text-foreground/60">No partner record found for this account.</p>
         </div>
       </div>
     );
@@ -52,7 +52,7 @@ export default async function PartnerStatusPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Partner Portal
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Partnership Status</h1>
+        <h1 className="font-serif text-4xl font-light text-foreground">Partnership Status</h1>
       </div>
 
       <div className={`border px-6 py-5 flex flex-col gap-3 ${config.color}`}>
@@ -61,17 +61,17 @@ export default async function PartnerStatusPage() {
       </div>
 
       {partner.status === "approved" && (
-        <div className="flex flex-col gap-0 border border-gate-fog bg-white">
+        <div className="flex flex-col gap-0 border border-border bg-card">
           {[
             { label: "Organization", value: partner.organizationName },
             { label: "Approved Since", value: new Date(partner.updatedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) },
             { label: "Cooperation Type", value: partner.cooperationType ?? "TBD" },
           ].map((row) => (
-            <div key={row.label} className="flex gap-6 border-b border-gate-fog/60 px-6 py-4 last:border-0">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 w-36 shrink-0 pt-0.5">
+            <div key={row.label} className="flex gap-6 border-b border-border px-6 py-4 last:border-0">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50 w-36 shrink-0 pt-0.5">
                 {row.label}
               </span>
-              <span className="text-sm font-light text-gate-800/80">{row.value}</span>
+              <span className="text-sm font-light text-foreground/80">{row.value}</span>
             </div>
           ))}
         </div>

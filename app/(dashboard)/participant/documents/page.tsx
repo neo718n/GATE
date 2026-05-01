@@ -22,8 +22,8 @@ export default async function MyDocumentsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           My Documents
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Documents</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Documents</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Upload and manage your documents. Accepted: PDF, JPG, PNG, DOC (max 10 MB).
         </p>
       </div>

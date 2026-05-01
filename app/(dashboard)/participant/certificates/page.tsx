@@ -1,4 +1,4 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, results } from "@/lib/db/schema";
 import { eq, and, isNotNull } from "drizzle-orm";
@@ -31,18 +31,18 @@ export default async function CertificatesPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           My Certificates
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Certificates</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Certificates</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Verifiable certificates for all completed assessment rounds.
         </p>
       </div>
 
       {!participant || participant.paymentStatus !== "paid" ? (
-        <div className="border border-gate-fog bg-gate-fog/30 p-8 flex flex-col gap-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60">
+        <div className="border border-border bg-muted/30 p-8 flex flex-col gap-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
             Enrollment Required
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">
             Certificates will be issued once you complete an assessment round.
           </p>
           <Button variant="outline" size="sm" asChild className="w-fit">
@@ -50,11 +50,11 @@ export default async function CertificatesPage() {
           </Button>
         </div>
       ) : !hasCertificates ? (
-        <div className="border border-gate-fog bg-gate-fog/30 p-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60 mb-2">
+        <div className="border border-border bg-muted/30 p-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60 mb-2">
             No Certificates Issued
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">
             Certificates are issued after results are published. A Certificate of Participation will
             be issued to all participants who complete the Preliminary Round.
           </p>
@@ -62,17 +62,17 @@ export default async function CertificatesPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {certResults.map((r) => (
-            <div key={r.id} className="border border-gate-fog bg-white p-6 flex items-center justify-between gap-4">
+            <div key={r.id} className="border border-border bg-card p-6 flex items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
                   {r.award
                     ? r.award.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())
                     : "Certificate of Participation"}
                 </p>
-                <p className="text-sm font-light text-gate-800">
-                  {r.subject?.name} вЂ” {r.cycle?.name}
+                <p className="text-sm font-light text-foreground">
+                  {r.subject?.name} &mdash; {r.cycle?.name}
                 </p>
-                <p className="text-xs font-light text-gate-800/50">
+                <p className="text-xs font-light text-foreground/50">
                   {r.round?.name ?? "Assessment Round"}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export default async function CertificatesPage() {
                     </a>
                   </Button>
                 ) : (
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/40">
                     Pending
                   </span>
                 )}
@@ -96,4 +96,3 @@ export default async function CertificatesPage() {
     </div>
   );
 }
-

@@ -58,13 +58,13 @@ export default async function EnrollmentPage({
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             Subject Enrollment
           </span>
-          <h1 className="font-serif text-4xl font-light text-gate-800">Enrollment</h1>
+          <h1 className="font-serif text-4xl font-light text-foreground">Enrollment</h1>
         </div>
-        <div className="border border-gate-fog bg-gate-fog/30 p-8 flex flex-col gap-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60">
+        <div className="border border-border bg-muted/30 p-8 flex flex-col gap-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
             Profile Required
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">
             You must complete your participant profile before selecting a subject area.
           </p>
           <Button variant="gold" size="sm" asChild className="w-fit">
@@ -104,7 +104,7 @@ export default async function EnrollmentPage({
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Subject Enrollment
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">
+        <h1 className="font-serif text-4xl font-light text-foreground">
           Enrollment &amp; Payment
         </h1>
       </div>
@@ -121,22 +121,22 @@ export default async function EnrollmentPage({
       )}
 
       {sp.payment === "cancelled" && (
-        <div className="border border-gate-fog bg-gate-fog/30 px-5 py-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60">
+        <div className="border border-border bg-muted/30 px-5 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
             Payment Cancelled
           </p>
-          <p className="text-sm font-light text-gate-800/65 mt-1">
+          <p className="text-sm font-light text-foreground/65 mt-1">
             Your payment was not completed. Your selections are saved — you can pay below.
           </p>
         </div>
       )}
 
       {!activeCycle && (
-        <div className="border border-gate-fog bg-gate-fog/30 p-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60 mb-2">
+        <div className="border border-border bg-muted/30 p-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60 mb-2">
             Registration Not Open
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">
             There is no active registration cycle at this time. Check back when the next cycle opens.
           </p>
         </div>
@@ -147,13 +147,13 @@ export default async function EnrollmentPage({
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
             Enrolled
           </p>
-          <p className="text-sm font-light text-gate-800">
+          <p className="text-sm font-light text-foreground">
             Round: <span className="font-semibold">{selectedRound?.name ?? "—"}</span>
           </p>
-          <p className="text-sm font-light text-gate-800">
+          <p className="text-sm font-light text-foreground">
             Subject: <span className="font-semibold">{selectedSubject?.name ?? "—"}</span>
           </p>
-          <p className="text-sm font-light text-gate-800/60">
+          <p className="text-sm font-light text-foreground/60">
             Payment confirmed. Your enrollment is complete.
           </p>
         </div>
@@ -163,12 +163,12 @@ export default async function EnrollmentPage({
         <>
           {/* Round selection */}
           <div className="flex flex-col gap-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
               Select Round
             </p>
             {openRounds.length === 0 ? (
-              <div className="border border-gate-fog bg-gate-fog/30 p-5">
-                <p className="text-sm font-light text-gate-800/60">
+              <div className="border border-border bg-muted/30 p-5">
+                <p className="text-sm font-light text-foreground/60">
                   No rounds are currently open for registration.
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default async function EnrollmentPage({
                   {openRounds.map((r) => (
                     <label
                       key={r.id}
-                      className="flex items-start gap-3 border border-gate-fog p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
+                      className="flex items-start gap-3 border border-border p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
                     >
                       <input
                         type="radio"
@@ -190,20 +190,20 @@ export default async function EnrollmentPage({
                       />
                       <div className="flex flex-col gap-0.5 flex-1">
                         <div className="flex items-center justify-between gap-4">
-                          <span className="text-sm font-semibold text-gate-800">{r.name}</span>
-                          <span className="text-sm font-light text-gate-800">
+                          <span className="text-sm font-semibold text-foreground">{r.name}</span>
+                          <span className="text-sm font-light text-foreground">
                             {r.feeUsd > 0 ? `$${(r.feeUsd / 100).toFixed(2)}` : "Free"}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 flex-wrap">
-                          <span className="text-xs font-light text-gate-800/50 capitalize">{r.format}</span>
+                          <span className="text-xs font-light text-foreground/50 capitalize">{r.format}</span>
                           {r.startDate && (
-                            <span className="text-xs font-light text-gate-800/50">
+                            <span className="text-xs font-light text-foreground/50">
                               <LocalDate date={r.startDate} />
                             </span>
                           )}
                           {r.venue && (
-                            <span className="text-xs font-light text-gate-800/50">{r.venue}</span>
+                            <span className="text-xs font-light text-foreground/50">{r.venue}</span>
                           )}
                         </div>
                       </div>
@@ -222,7 +222,7 @@ export default async function EnrollmentPage({
           {/* Subject selection */}
           {activeCycle.subjects.length > 0 && (
             <div className="flex flex-col gap-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
                 Select Subject
               </p>
               <form action={selectSubject} className="flex flex-col gap-3">
@@ -232,7 +232,7 @@ export default async function EnrollmentPage({
                     s ? (
                       <label
                         key={s.id}
-                        className="flex items-start gap-3 border border-gate-fog p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
+                        className="flex items-start gap-3 border border-border p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
                       >
                         <input
                           type="radio"
@@ -242,9 +242,9 @@ export default async function EnrollmentPage({
                           className="mt-1 accent-[#C9993A]"
                         />
                         <div className="flex flex-col gap-0.5">
-                          <span className="text-sm font-semibold text-gate-800">{s.name}</span>
+                          <span className="text-sm font-semibold text-foreground">{s.name}</span>
                           {s.description && (
-                            <span className="text-xs font-light text-gate-800/55 leading-[1.7]">
+                            <span className="text-xs font-light text-foreground/55 leading-[1.7]">
                               {s.description}
                             </span>
                           )}
@@ -264,33 +264,33 @@ export default async function EnrollmentPage({
 
           {/* Payment */}
           {selectedRoundId && selectedSubjectId && (
-            <div className="border border-gate-fog p-6 flex flex-col gap-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+            <div className="border border-border p-6 flex flex-col gap-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
                 Payment
               </p>
               {selectedRound && selectedRound.feeUsd > 0 ? (
                 <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-between text-sm font-light text-gate-800/65">
+                  <div className="flex items-center justify-between text-sm font-light text-foreground/65">
                     <span>Registration fee</span>
                     <span>${(selectedRound.feeUsd / 100).toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm font-light text-gate-800/50">
+                  <div className="flex items-center justify-between text-sm font-light text-foreground/50">
                     <span>Service fee</span>
                     <span>${(feeAmount / 100).toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm font-semibold text-gate-800 border-t border-gate-fog pt-2 mt-1">
+                  <div className="flex items-center justify-between text-sm font-semibold text-foreground border-t border-border pt-2 mt-1">
                     <span>Total</span>
                     <span>${(grossAmount / 100).toFixed(2)} USD</span>
                   </div>
-                  <p className="text-xs font-light text-gate-800/40 mt-1">
+                  <p className="text-xs font-light text-foreground/40 mt-1">
                     Round:{" "}
-                    <span className="text-gate-800/65">{selectedRound.name}</span>
+                    <span className="text-foreground/65">{selectedRound.name}</span>
                     {" · "}Subject:{" "}
-                    <span className="text-gate-800/65">{selectedSubject?.name}</span>
+                    <span className="text-foreground/65">{selectedSubject?.name}</span>
                   </p>
                 </div>
               ) : (
-                <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+                <p className="text-sm font-light text-foreground/65 leading-[1.9]">
                   This round has no registration fee. Click below to confirm enrollment.
                 </p>
               )}

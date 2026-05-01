@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, results } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -49,15 +49,15 @@ export default async function CycleDetailPage({
       <div className="flex flex-col gap-1.5">
         <Link
           href="/admin/cycles"
-          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/40 hover:text-gate-gold transition-colors"
+          className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/40 hover:text-gate-gold transition-colors"
         >
           ← Cycles
         </Link>
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold mt-2">
           {cycle.year}
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">{cycle.name}</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">{cycle.name}</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           {participantList.length} participant{participantList.length !== 1 ? "s" : ""} ·{" "}
           {cycle.rounds.length} round{cycle.rounds.length !== 1 ? "s" : ""} ·{" "}
           <span className="capitalize text-gate-gold/80">{cycle.status.replace(/_/g, " ")}</span>

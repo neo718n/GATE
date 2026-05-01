@@ -40,12 +40,12 @@ export function DashboardMobileNav({
       </button>
 
       {open && (
-        <div className="fixed inset-0 top-[57px] z-40 bg-white border-t border-gate-fog flex flex-col">
-          <div className="px-5 py-3 border-b border-gate-fog">
+        <div className="fixed inset-0 top-[57px] z-40 bg-card border-t border-border flex flex-col">
+          <div className="px-5 py-3 border-b border-border">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
               {roleLabel}
             </p>
-            <p className="text-xs font-light text-gate-800/50 mt-0.5 truncate">{email}</p>
+            <p className="text-xs font-light text-foreground/50 mt-0.5 truncate">{email}</p>
           </div>
           <nav className="flex-1 overflow-y-auto py-3">
             {links.map((link) => {
@@ -58,7 +58,7 @@ export function DashboardMobileNav({
                   className={`flex items-center px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.2em] border-l-2 transition-colors ${
                     active
                       ? "border-gate-gold text-gate-gold"
-                      : "border-transparent text-gate-800/50 hover:text-gate-800"
+                      : "border-transparent text-foreground/50 hover:text-foreground"
                   }`}
                 >
                   {link.label}

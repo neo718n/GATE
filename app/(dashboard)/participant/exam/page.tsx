@@ -1,4 +1,4 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { participants, cycles } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
@@ -27,17 +27,17 @@ export default async function ExamPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Exam Instructions
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">
+        <h1 className="font-serif text-4xl font-light text-foreground">
           Examination Guide
         </h1>
       </div>
 
       {!isPaid ? (
-        <div className="border border-gate-fog bg-gate-fog/30 p-8 flex flex-col gap-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60">
+        <div className="border border-border bg-muted/30 p-8 flex flex-col gap-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
             Enrollment Required
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">
             Exam instructions are available once your enrollment is confirmed and payment is received.
           </p>
           <Button variant="outline" size="sm" asChild className="w-fit">
@@ -51,7 +51,7 @@ export default async function ExamPage() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
                 You Are Enrolled
               </p>
-              <p className="text-sm font-light text-gate-800">
+              <p className="text-sm font-light text-foreground">
                 Subject:{" "}
                 <span className="font-semibold">
                   {participant?.subjects[0]?.subject?.name ?? "—"}
@@ -60,8 +60,8 @@ export default async function ExamPage() {
               {activeCycle.rounds.length > 0 && (
                 <div className="flex flex-col gap-1 pt-1 border-t border-gate-gold/20">
                   {activeCycle.rounds.map((r) => (
-                    <p key={r.id} className="text-sm font-light text-gate-800/60">
-                      <span className="font-medium text-gate-800">{r.name}</span>
+                    <p key={r.id} className="text-sm font-light text-foreground/60">
+                      <span className="font-medium text-foreground">{r.name}</span>
                       {r.startDate
                         ? ` — ${new Date(r.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
                         : ""}
@@ -100,11 +100,11 @@ export default async function ExamPage() {
                 body: "Examinations are independently scored by subject-matter experts. Results are published in your portal. Participants who achieve the qualifying threshold receive an official invitation to the next round.",
               },
             ].map((item) => (
-              <div key={item.heading} className="flex flex-col gap-2 border-b border-gate-fog pb-6 last:border-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+              <div key={item.heading} className="flex flex-col gap-2 border-b border-border pb-6 last:border-0">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground">
                   {item.heading}
                 </p>
-                <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{item.body}</p>
+                <p className="text-sm font-light text-foreground/65 leading-[1.9]">{item.body}</p>
               </div>
             ))}
           </div>

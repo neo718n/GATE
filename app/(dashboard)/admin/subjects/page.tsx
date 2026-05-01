@@ -21,18 +21,18 @@ export default async function SubjectsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Super Admin
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">
+        <h1 className="font-serif text-4xl font-light text-foreground">
           Subjects &amp; Disciplines
         </h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <p className="text-sm font-light text-foreground/60 mt-1">
           {allSubjects.length} subjects configured ·{" "}
           {allSubjects.filter((s) => s.active).length} active
         </p>
       </div>
 
       {allSubjects.length === 0 && (
-        <div className="border border-gate-fog bg-gate-fog/30 p-6 flex items-center justify-between gap-4">
-          <p className="text-sm font-light text-gate-800/65">
+        <div className="border border-border bg-muted/30 p-6 flex items-center justify-between gap-4">
+          <p className="text-sm font-light text-foreground/65">
             No subjects yet. Seed the 6 default disciplines or add custom ones below.
           </p>
           <form action={seedDefaultSubjects}>
@@ -44,18 +44,18 @@ export default async function SubjectsPage() {
       )}
 
       {allSubjects.length > 0 && (
-        <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40">
+        <div className="flex flex-col gap-0 border border-border bg-card divide-y divide-border">
           {allSubjects.map((s) => (
             <div key={s.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-3">
-                  <p className="text-sm font-light text-gate-800">{s.name}</p>
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-gate-800/40">
+                  <p className="text-sm font-light text-foreground">{s.name}</p>
+                  <span className="text-[9px] font-semibold uppercase tracking-[0.2em] text-foreground/40">
                     {s.slug}
                   </span>
                 </div>
                 {s.description && (
-                  <p className="text-xs font-light text-gate-800/50">{s.description}</p>
+                  <p className="text-xs font-light text-foreground/50">{s.description}</p>
                 )}
               </div>
               <form action={toggleSubjectActive}>
@@ -74,11 +74,11 @@ export default async function SubjectsPage() {
         </div>
       )}
 
-      <details className="border border-gate-fog bg-white">
-        <summary className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800 cursor-pointer hover:bg-gate-fog/30 transition-colors list-none">
+      <details className="border border-border bg-card">
+        <summary className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground cursor-pointer hover:bg-muted/30 transition-colors list-none">
           + Add Custom Subject
         </summary>
-        <form action={createSubject} className="p-6 border-t border-gate-fog flex flex-col gap-4">
+        <form action={createSubject} className="p-6 border-t border-border flex flex-col gap-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="name">Name *</Label>

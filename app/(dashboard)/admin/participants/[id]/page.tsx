@@ -38,7 +38,7 @@ export default async function ParticipantDetailPage({
     paid: "text-green-700",
     pending: "text-yellow-700",
     failed: "text-red-600",
-    refunded: "text-gate-800/40",
+    refunded: "text-foreground/40",
   };
 
   return (
@@ -49,22 +49,22 @@ export default async function ParticipantDetailPage({
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             Admin / Participant
           </span>
-          <h1 className="font-serif text-4xl font-light text-gate-800">
+          <h1 className="font-serif text-4xl font-light text-foreground">
             {participant.fullName}
           </h1>
-          <p className="text-sm font-light text-gate-800/60">{participant.user.email}</p>
+          <p className="text-sm font-light text-foreground/60">{participant.user.email}</p>
         </div>
         <Link
           href="/admin/participants"
-          className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 hover:text-gate-800 transition-colors"
+          className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50 hover:text-foreground transition-colors"
         >
           ← Back
         </Link>
       </div>
 
       {/* Personal Info */}
-      <section className="border border-gate-fog bg-white p-6 flex flex-col gap-4">
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+      <section className="border border-border bg-card p-6 flex flex-col gap-4">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
           Personal Information
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
@@ -83,36 +83,36 @@ export default async function ParticipantDetailPage({
             ["Cycle", participant.cycle?.name ?? "—"],
           ].map(([label, value]) => (
             <div key={label}>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 mb-0.5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50 mb-0.5">
                 {label}
               </p>
-              <p className="text-sm font-light text-gate-800">{value}</p>
+              <p className="text-sm font-light text-foreground">{value}</p>
             </div>
           ))}
         </div>
         {participant.notes && (
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 mb-0.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50 mb-0.5">
               Notes
             </p>
-            <p className="text-sm font-light text-gate-800">{participant.notes}</p>
+            <p className="text-sm font-light text-foreground">{participant.notes}</p>
           </div>
         )}
       </section>
 
       {/* Subjects */}
-      <section className="border border-gate-fog bg-white p-6 flex flex-col gap-4">
-        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+      <section className="border border-border bg-card p-6 flex flex-col gap-4">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
           Enrolled Subjects
         </h2>
         {participant.subjects.length === 0 ? (
-          <p className="text-sm font-light text-gate-800/40">No subjects enrolled.</p>
+          <p className="text-sm font-light text-foreground/40">No subjects enrolled.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
             {participant.subjects.map((ps) => (
               <span
                 key={ps.subjectId}
-                className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] border border-gate-fog text-gate-800/70"
+                className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] border border-border text-foreground/70"
               >
                 {ps.subject.name}
               </span>
@@ -123,17 +123,17 @@ export default async function ParticipantDetailPage({
 
       {/* Results */}
       {participant.results.length > 0 && (
-        <section className="border border-gate-fog bg-white p-6 flex flex-col gap-4">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+        <section className="border border-border bg-card p-6 flex flex-col gap-4">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
             Results
           </h2>
-          <div className="flex flex-col gap-0 divide-y divide-gate-fog/40">
+          <div className="flex flex-col gap-0 divide-y divide-border">
             {participant.results.map((r) => (
               <div key={r.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 py-3 items-center">
-                <p className="text-sm font-light text-gate-800">{r.subject.name}</p>
-                <p className="text-xs font-light text-gate-800/60">{r.round?.name ?? "—"}</p>
-                <p className="text-sm text-gate-800">{r.score ?? "—"} / {r.maxScore ?? "—"}</p>
-                <p className="text-xs font-light text-gate-800/60">Rank #{r.rank ?? "—"}</p>
+                <p className="text-sm font-light text-foreground">{r.subject.name}</p>
+                <p className="text-xs font-light text-foreground/60">{r.round?.name ?? "—"}</p>
+                <p className="text-sm text-foreground">{r.score ?? "—"} / {r.maxScore ?? "—"}</p>
+                <p className="text-xs font-light text-foreground/60">Rank #{r.rank ?? "—"}</p>
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-gate-gold">
                   {r.award ?? "—"}
                 </p>
@@ -144,9 +144,9 @@ export default async function ParticipantDetailPage({
       )}
 
       {/* Transaction History */}
-      <section className="border border-gate-fog bg-white p-6 flex flex-col gap-4">
+      <section className="border border-border bg-card p-6 flex flex-col gap-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">
+          <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
             Transaction History
           </h2>
           <span className="text-[11px] font-semibold text-gate-gold">
@@ -154,25 +154,25 @@ export default async function ParticipantDetailPage({
           </span>
         </div>
         {participant.payments.length === 0 ? (
-          <p className="text-sm font-light text-gate-800/40">No payments recorded.</p>
+          <p className="text-sm font-light text-foreground/40">No payments recorded.</p>
         ) : (
-          <div className="flex flex-col gap-0 divide-y divide-gate-fog/40">
+          <div className="flex flex-col gap-0 divide-y divide-border">
             <div className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_100px] gap-4 pb-2">
               {["Cycle", "Round", "Amount", "Status", "Date", "Invoice"].map((h) => (
-                <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
+                <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
                   {h}
                 </span>
               ))}
             </div>
             {participant.payments.map((p) => (
               <div key={p.id} className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_100px] gap-4 py-3 items-center">
-                <p className="text-sm font-light text-gate-800">{p.cycle?.name ?? "—"}</p>
-                <p className="text-xs font-light text-gate-800/60">{p.round?.name ?? "—"}</p>
-                <p className="text-sm text-gate-800">${(p.amountCents / 100).toFixed(2)}</p>
+                <p className="text-sm font-light text-foreground">{p.cycle?.name ?? "—"}</p>
+                <p className="text-xs font-light text-foreground/60">{p.round?.name ?? "—"}</p>
+                <p className="text-sm text-foreground">${(p.amountCents / 100).toFixed(2)}</p>
                 <span className={`text-[10px] font-semibold uppercase tracking-[0.12em] ${STATUS_COLOR[p.status] ?? ""}`}>
                   {p.status}
                 </span>
-                <p className="text-[11px] font-light text-gate-800/50">
+                <p className="text-[11px] font-light text-foreground/50">
                   {new Date(p.createdAt).toLocaleDateString()}
                 </p>
                 <InvoiceDownloadButton paymentId={p.id} />

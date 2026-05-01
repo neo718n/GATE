@@ -20,10 +20,10 @@ export default async function ProfilePage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           My Profile
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">
+        <h1 className="font-serif text-4xl font-light text-foreground">
           Participant Profile
         </h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Complete your profile to proceed with subject enrollment and registration.
         </p>
       </div>
@@ -33,7 +33,7 @@ export default async function ProfilePage() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
             Profile Saved
           </p>
-          <p className="text-sm font-light text-gate-800/65 mt-1">
+          <p className="text-sm font-light text-foreground/65 mt-1">
             Your profile is on file. Update any details below and save again.
           </p>
         </div>
@@ -41,7 +41,7 @@ export default async function ProfilePage() {
 
       <form action={saveParticipantProfile} className="flex flex-col gap-8">
         <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Personal Information
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,7 +87,7 @@ export default async function ProfilePage() {
         </fieldset>
 
         <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Academic Information
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -113,7 +113,7 @@ export default async function ProfilePage() {
         </fieldset>
 
         <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 pb-1 border-b border-gate-fog">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Guardian / Emergency Contact
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

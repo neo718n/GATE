@@ -1,4 +1,4 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { cycles, subjects } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
@@ -70,17 +70,17 @@ export default async function CyclesPage() {
     <div className="flex flex-col gap-10 max-w-5xl">
       <div className="flex flex-col gap-1.5">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Admin</span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Assessment Cycles</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Assessment Cycles</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Create and manage competition cycles, rounds, subjects, and participant results.
         </p>
       </div>
 
-      <details className="border border-gate-fog bg-white">
-        <summary className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800 cursor-pointer hover:bg-gate-fog/30 transition-colors list-none flex items-center justify-between">
+      <details className="border border-border bg-card">
+        <summary className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground cursor-pointer hover:bg-muted/30 transition-colors list-none flex items-center justify-between">
           <span>+ Create New Cycle</span>
         </summary>
-        <form action={createCycle} className="p-6 border-t border-gate-fog flex flex-col gap-5">
+        <form action={createCycle} className="p-6 border-t border-border flex flex-col gap-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="c-name">Cycle Name *</Label>
@@ -100,8 +100,8 @@ export default async function CyclesPage() {
       </details>
 
       {allCycles.length === 0 ? (
-        <div className="border border-gate-fog bg-gate-fog/30 p-8 text-center">
-          <p className="text-sm font-light text-gate-800/60">No cycles yet.</p>
+        <div className="border border-border bg-muted/30 p-8 text-center">
+          <p className="text-sm font-light text-foreground/60">No cycles yet.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-6">
@@ -112,12 +112,12 @@ export default async function CyclesPage() {
             const participantCount = cycle.participants?.length ?? 0;
 
             return (
-              <div key={cycle.id} className="border border-gate-fog bg-white">
+              <div key={cycle.id} className="border border-border bg-card">
                 {/* Header */}
-                <div className="p-6 flex items-start justify-between flex-wrap gap-4 border-b border-gate-fog/60">
+                <div className="p-6 flex items-start justify-between flex-wrap gap-4 border-b border-border">
                   <div className="flex flex-col gap-1">
-                    <h2 className="text-base font-semibold text-gate-800">{cycle.name}</h2>
-                    <p className="text-xs font-light text-gate-800/50">
+                    <h2 className="text-base font-semibold text-foreground">{cycle.name}</h2>
+                    <p className="text-xs font-light text-foreground/50">
                       {cycle.year}
                       {cycle.description ? ` · ${cycle.description}` : ""}
                       {" · "}
@@ -138,11 +138,11 @@ export default async function CyclesPage() {
                 </div>
 
                 {/* Edit cycle */}
-                <details className="border-b border-gate-fog/60">
-                  <summary className="px-6 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40 cursor-pointer hover:bg-gate-fog/20 list-none">
+                <details className="border-b border-border">
+                  <summary className="px-6 py-2.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/40 cursor-pointer hover:bg-muted/20 list-none">
                     ✎ Edit Cycle Details
                   </summary>
-                  <div className="px-6 py-4 border-t border-gate-fog/40 flex flex-col gap-5">
+                  <div className="px-6 py-4 border-t border-border flex flex-col gap-5">
                     <form action={updateCycle} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <input type="hidden" name="id" value={cycle.id} />
                       <div className="flex flex-col gap-2">
@@ -170,7 +170,7 @@ export default async function CyclesPage() {
                         <select
                           name="status"
                           defaultValue={cycle.status}
-                          className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                          className="h-11 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                         >
                           {Object.entries(STATUS_LABELS).map(([v, l]) => (
                             <option key={v} value={v}>{l}</option>
@@ -182,9 +182,9 @@ export default async function CyclesPage() {
                       </div>
                     </form>
                     {participantCount === 0 && (
-                      <div className="pt-4 border-t border-gate-fog/40 flex items-center gap-3">
+                      <div className="pt-4 border-t border-border flex items-center gap-3">
                         <ConfirmDeleteCycle cycleId={cycle.id} cycleName={cycle.name} />
-                        <span className="text-[10px] text-gate-800/30">No participants — safe to delete</span>
+                        <span className="text-[10px] text-foreground/30">No participants — safe to delete</span>
                       </div>
                     )}
                   </div>
@@ -192,8 +192,8 @@ export default async function CyclesPage() {
 
                 {/* Quick status transitions */}
                 {nextStatuses.length > 0 && (
-                  <div className="px-6 py-3 border-b border-gate-fog/60 flex flex-wrap gap-2 items-center">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/40">
+                  <div className="px-6 py-3 border-b border-border flex flex-wrap gap-2 items-center">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/40">
                       Move to:
                     </span>
                     {nextStatuses.map((s) => {
@@ -212,20 +212,20 @@ export default async function CyclesPage() {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gate-fog/60">
+                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-border">
                   {/* Rounds */}
                   <div className="p-5 flex flex-col gap-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/50">Rounds</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/50">Rounds</p>
                     {cycle.rounds.length === 0 ? (
-                      <p className="text-xs font-light text-gate-800/40">No rounds yet.</p>
+                      <p className="text-xs font-light text-foreground/40">No rounds yet.</p>
                     ) : (
                       <div className="flex flex-col gap-2">
                         {cycle.rounds.map((r) => (
-                          <details key={r.id} className="border border-gate-fog/60">
-                            <summary className="flex items-start justify-between gap-3 px-3 py-2.5 cursor-pointer list-none hover:bg-gate-fog/20">
+                          <details key={r.id} className="border border-border">
+                            <summary className="flex items-start justify-between gap-3 px-3 py-2.5 cursor-pointer list-none hover:bg-muted/20">
                               <div className="flex flex-col gap-0.5">
-                                <p className="text-sm font-light text-gate-800">{r.name}</p>
-                                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">
+                                <p className="text-sm font-light text-foreground">{r.name}</p>
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-foreground/40">
                                   {FORMAT_LABELS[r.format]}
                                   {r.feeUsd > 0 ? ` · $${(r.feeUsd / 100).toFixed(2)}` : ""}
                                   {" · "}
@@ -234,13 +234,13 @@ export default async function CyclesPage() {
                                 </p>
                               </div>
                               <div className="flex items-center gap-2 shrink-0 mt-0.5">
-                                <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${r.registrationStatus === "open" ? "text-green-600" : r.registrationStatus === "soon" ? "text-amber-500" : "text-gate-800/30"}`}>
+                                <span className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${r.registrationStatus === "open" ? "text-green-600" : r.registrationStatus === "soon" ? "text-amber-500" : "text-foreground/30"}`}>
                                   {r.registrationStatus === "open" ? "Open" : r.registrationStatus === "soon" ? "Soon" : "Closed"}
                                 </span>
                                 <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-gold/70">Edit</span>
                               </div>
                             </summary>
-                            <form action={updateRound} className="px-3 py-3 border-t border-gate-fog/40 flex flex-col gap-3">
+                            <form action={updateRound} className="px-3 py-3 border-t border-border flex flex-col gap-3">
                               <input type="hidden" name="id" value={r.id} />
                               <Input name="name" required defaultValue={r.name} placeholder="Round name" />
                               <div className="grid grid-cols-2 gap-2">
@@ -248,7 +248,7 @@ export default async function CyclesPage() {
                                 <select
                                   name="format"
                                   defaultValue={r.format}
-                                  className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                                  className="h-11 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   <option value="online">Online</option>
                                   <option value="onsite">Onsite</option>
@@ -257,30 +257,30 @@ export default async function CyclesPage() {
                               </div>
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col gap-1">
-                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Start Date</label>
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Start Date</label>
                                   <Input name="startDate" type="datetime-local" defaultValue={toDatetimeLocal(r.startDate)} />
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">End Date</label>
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">End Date</label>
                                   <Input name="endDate" type="datetime-local" defaultValue={toDatetimeLocal(r.endDate)} />
                                 </div>
                               </div>
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col gap-1">
-                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Round Fee (cents USD)</label>
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Round Fee (cents USD)</label>
                                   <Input name="feeUsd" type="number" min="0" defaultValue={r.feeUsd} placeholder="0 = free" />
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Venue</label>
+                                  <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Venue</label>
                                   <Input name="venue" defaultValue={r.venue ?? ""} placeholder="Venue" />
                                 </div>
                               </div>
                               <div className="flex flex-col gap-1">
-                                <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Registration Status</label>
+                                <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Registration Status</label>
                                 <select
                                   name="registrationStatus"
                                   defaultValue={r.registrationStatus}
-                                  className="h-11 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                                  className="h-11 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   <option value="closed">Closed</option>
                                   <option value="soon">Soon</option>
@@ -301,16 +301,16 @@ export default async function CyclesPage() {
                         ))}
                       </div>
                     )}
-                    <details className="border border-gate-fog/60">
-                      <summary className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 cursor-pointer hover:bg-gate-fog/20 list-none">
+                    <details className="border border-border">
+                      <summary className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50 cursor-pointer hover:bg-muted/20 list-none">
                         + Add Round
                       </summary>
-                      <form action={createRound} className="p-3 border-t border-gate-fog/60 flex flex-col gap-3">
+                      <form action={createRound} className="p-3 border-t border-border flex flex-col gap-3">
                         <input type="hidden" name="cycleId" value={cycle.id} />
                         <Input name="name" required placeholder="Round name (e.g. Preliminary)" />
                         <div className="grid grid-cols-2 gap-2">
                           <Input name="order" type="number" min="1" placeholder="Order" defaultValue="1" />
-                          <select name="format" className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none">
+                          <select name="format" className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none">
                             <option value="online">Online</option>
                             <option value="onsite">Onsite</option>
                             <option value="hybrid">Hybrid</option>
@@ -318,30 +318,30 @@ export default async function CyclesPage() {
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Start Date (optional)</label>
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Start Date (optional)</label>
                             <Input name="startDate" type="datetime-local" />
                           </div>
                           <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">End Date (optional)</label>
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">End Date (optional)</label>
                             <Input name="endDate" type="datetime-local" />
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Round Fee (cents USD)</label>
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Round Fee (cents USD)</label>
                             <Input name="feeUsd" type="number" min="0" placeholder="0 = free" />
                           </div>
                           <div className="flex flex-col gap-1">
-                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Venue</label>
+                            <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Venue</label>
                             <Input name="venue" placeholder="Venue" />
                           </div>
                         </div>
                         <div className="flex flex-col gap-1">
-                          <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-800/40">Registration Status</label>
+                          <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Registration Status</label>
                           <select
                             name="registrationStatus"
                             defaultValue="closed"
-                            className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                            className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                           >
                             <option value="closed">Closed</option>
                             <option value="soon">Soon</option>
@@ -355,16 +355,16 @@ export default async function CyclesPage() {
 
                   {/* Subjects */}
                   <div className="p-5 flex flex-col gap-4">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/50">Offered Subjects</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/50">Offered Subjects</p>
                     {cycle.subjects.length === 0 ? (
-                      <p className="text-xs font-light text-gate-800/40">No subjects selected.</p>
+                      <p className="text-xs font-light text-foreground/40">No subjects selected.</p>
                     ) : (
                       <div className="flex flex-wrap gap-2">
                         {cycle.subjects.map((cs) => (
-                          <form key={cs.subjectId} action={removeCycleSubject} className="flex items-center gap-1.5 border border-gate-fog/60 pl-3 pr-2 py-1.5">
+                          <form key={cs.subjectId} action={removeCycleSubject} className="flex items-center gap-1.5 border border-border pl-3 pr-2 py-1.5">
                             <input type="hidden" name="cycleId" value={cycle.id} />
                             <input type="hidden" name="subjectId" value={cs.subjectId} />
-                            <span className="text-xs font-light text-gate-800">{cs.subject?.name}</span>
+                            <span className="text-xs font-light text-foreground">{cs.subject?.name}</span>
                             <button type="submit" className="text-[10px] font-semibold text-red-400 hover:text-red-600 transition-colors">×</button>
                           </form>
                         ))}
@@ -373,7 +373,7 @@ export default async function CyclesPage() {
                     {availableToAdd.length > 0 && (
                       <form action={addCycleSubject} className="flex items-center gap-2">
                         <input type="hidden" name="cycleId" value={cycle.id} />
-                        <select name="subjectId" className="flex-1 h-9 border border-gate-800/20 bg-white px-3 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none">
+                        <select name="subjectId" className="flex-1 h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none">
                           {availableToAdd.map((s) => (
                             <option key={s.id} value={s.id}>{s.name}</option>
                           ))}

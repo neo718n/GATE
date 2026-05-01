@@ -31,16 +31,16 @@ export default async function CoordinatorReportsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Coordinator
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Reports</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Reports</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Registration and enrollment summary.
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <div key={s.label} className="border border-gate-fog bg-white p-6 flex flex-col gap-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gate-800/60">
+          <div key={s.label} className="border border-border bg-card p-6 flex flex-col gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/60">
               {s.label}
             </p>
             <p className="font-serif text-4xl font-light text-gate-gold">{s.value}</p>
@@ -48,11 +48,11 @@ export default async function CoordinatorReportsPage() {
         ))}
       </div>
 
-      <div className="border border-gate-fog bg-gate-fog/30 p-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 mb-3">
+      <div className="border border-border bg-muted/30 p-6">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 mb-3">
           Report Export
         </p>
-        <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+        <p className="text-sm font-light text-foreground/65 leading-[1.9]">
           Detailed participant reports in CSV/Excel format — available in a future release.
           Contact the admin team for an immediate data export.
         </p>

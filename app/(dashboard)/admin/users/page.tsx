@@ -37,16 +37,16 @@ export default async function UsersPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Super Admin
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Users &amp; Roles</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Users &amp; Roles</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           {allUsers.length} registered accounts
         </p>
       </div>
 
-      <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40">
-        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_180px_80px] gap-4 px-5 py-3 bg-gate-fog/30">
+      <div className="flex flex-col gap-0 border border-border bg-card divide-y divide-border">
+        <div className="grid grid-cols-[2fr_2fr_1fr_1fr_180px_80px] gap-4 px-5 py-3 bg-muted/30">
           {["Name", "Email", "Role", "Verified", "Change Role", ""].map((h) => (
-            <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
+            <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
               {h}
             </span>
           ))}
@@ -56,14 +56,14 @@ export default async function UsersPage() {
             key={u.id}
             className="grid grid-cols-[2fr_2fr_1fr_1fr_180px_80px] gap-4 px-5 py-4 items-center"
           >
-            <p className="text-sm font-light text-gate-800 truncate">{u.name}</p>
-            <p className="text-xs font-light text-gate-800/55 truncate">{u.email}</p>
+            <p className="text-sm font-light text-foreground truncate">{u.name}</p>
+            <p className="text-xs font-light text-foreground/55 truncate">{u.email}</p>
             <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-gate-gold">
               {ROLE_LABELS[u.role] ?? u.role}
             </span>
             <span
               className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${
-                u.emailVerified ? "text-green-700" : "text-gate-800/40"
+                u.emailVerified ? "text-green-700" : "text-foreground/40"
               }`}
             >
               {u.emailVerified ? "Yes" : "No"}
@@ -74,7 +74,7 @@ export default async function UsersPage() {
                 <select
                   name="role"
                   defaultValue={u.role}
-                  className="flex-1 h-9 border border-gate-800/20 bg-white px-2 text-xs font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                  className="flex-1 h-9 border border-border bg-input px-2 text-xs font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                 >
                   {ROLES.map((r) => (
                     <option key={r} value={r}>
@@ -87,7 +87,7 @@ export default async function UsersPage() {
                 </Button>
               </form>
             ) : (
-              <span className="text-[10px] font-light text-gate-800/30">(you)</span>
+              <span className="text-[10px] font-light text-foreground/30">(you)</span>
             )}
             {u.id !== session.user.id ? (
               <DeleteUserButton userId={u.id} name={u.name} />

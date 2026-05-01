@@ -19,13 +19,13 @@ export default async function PartnerProfilePage() {
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             Partner Portal
           </span>
-          <h1 className="font-serif text-4xl font-light text-gate-800">Organization Profile</h1>
+          <h1 className="font-serif text-4xl font-light text-foreground">Organization Profile</h1>
         </div>
-        <div className="border border-gate-fog bg-gate-fog/30 p-8 flex flex-col gap-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/60">
+        <div className="border border-border bg-muted/30 p-8 flex flex-col gap-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
             No Profile Found
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">
             Your account is registered as a partner contact but no organization profile was found.
             Please contact the GATE administration team.
           </p>
@@ -43,10 +43,10 @@ export default async function PartnerProfilePage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Partner Portal
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Organization Profile</h1>
+        <h1 className="font-serif text-4xl font-light text-foreground">Organization Profile</h1>
       </div>
 
-      <div className="flex flex-col gap-0 border border-gate-fog bg-white">
+      <div className="flex flex-col gap-0 border border-border bg-card">
         {[
           { label: "Organization", value: partner.organizationName },
           { label: "Type", value: partner.type.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase()) },
@@ -58,21 +58,21 @@ export default async function PartnerProfilePage() {
           { label: "Contact Phone", value: partner.contactPhone ?? "—" },
           { label: "Cooperation Type", value: partner.cooperationType ?? "—" },
         ].map((row) => (
-          <div key={row.label} className="flex gap-6 border-b border-gate-fog/60 px-6 py-4 last:border-0">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50 w-36 shrink-0 pt-0.5">
+          <div key={row.label} className="flex gap-6 border-b border-border px-6 py-4 last:border-0">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50 w-36 shrink-0 pt-0.5">
               {row.label}
             </span>
-            <span className="text-sm font-light text-gate-800/80">{row.value}</span>
+            <span className="text-sm font-light text-foreground/80">{row.value}</span>
           </div>
         ))}
       </div>
 
       {partner.message && (
-        <div className="border border-gate-fog bg-gate-fog/30 p-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800/50 mb-2">
+        <div className="border border-border bg-muted/30 p-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 mb-2">
             Application Message
           </p>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{partner.message}</p>
+          <p className="text-sm font-light text-foreground/65 leading-[1.9]">{partner.message}</p>
         </div>
       )}
     </div>

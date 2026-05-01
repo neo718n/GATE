@@ -1,4 +1,4 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { results, participants, subjects, cycles, rounds } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
@@ -29,17 +29,17 @@ export default async function ResultsPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
           Admin
         </span>
-        <h1 className="font-serif text-4xl font-light text-gate-800">Results</h1>
-        <p className="text-sm font-light text-gate-800/60 mt-1">
+        <h1 className="font-serif text-4xl font-light text-foreground">Results</h1>
+        <p className="text-sm font-light text-foreground/60 mt-1">
           Input and publish examination results.
         </p>
       </div>
 
-      <details className="border border-gate-fog bg-white">
-        <summary className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-800 cursor-pointer hover:bg-gate-fog/30 transition-colors list-none">
+      <details className="border border-border bg-card">
+        <summary className="px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground cursor-pointer hover:bg-muted/30 transition-colors list-none">
           + Add Result
         </summary>
-        <form action={addResult} className="p-6 border-t border-gate-fog flex flex-col gap-5">
+        <form action={addResult} className="p-6 border-t border-border flex flex-col gap-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
               <Label htmlFor="participantId">Participant *</Label>
@@ -47,7 +47,7 @@ export default async function ResultsPage() {
                 id="participantId"
                 name="participantId"
                 required
-                className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
               >
                 <option value="">Select participant...</option>
                 {allParticipants.map((p) => (
@@ -63,7 +63,7 @@ export default async function ResultsPage() {
                 id="subjectId"
                 name="subjectId"
                 required
-                className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
               >
                 <option value="">Select subject...</option>
                 {allSubjects.map((s) => (
@@ -77,7 +77,7 @@ export default async function ResultsPage() {
                 id="cycleId"
                 name="cycleId"
                 required
-                className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
               >
                 <option value="">Select cycle...</option>
                 {allCycles.map((c) => (
@@ -90,7 +90,7 @@ export default async function ResultsPage() {
               <select
                 id="roundId"
                 name="roundId"
-                className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
               >
                 <option value="">No specific round</option>
                 {allCycles.flatMap((c) =>
@@ -119,7 +119,7 @@ export default async function ResultsPage() {
               <select
                 id="award"
                 name="award"
-                className="flex h-11 w-full border border-gate-800/20 bg-white px-3 py-2 text-sm font-light text-gate-800 focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
               >
                 <option value="">No award</option>
                 <option value="gold">Gold Medal</option>
@@ -137,14 +137,14 @@ export default async function ResultsPage() {
       </details>
 
       {allResults.length === 0 ? (
-        <div className="border border-gate-fog bg-gate-fog/30 p-8 text-center">
-          <p className="text-sm font-light text-gate-800/60">No results yet. Add one above.</p>
+        <div className="border border-border bg-muted/30 p-8 text-center">
+          <p className="text-sm font-light text-foreground/60">No results yet. Add one above.</p>
         </div>
       ) : (
-        <div className="flex flex-col gap-0 border border-gate-fog bg-white divide-y divide-gate-fog/40">
-          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_80px_80px_100px] gap-3 px-5 py-3 bg-gate-fog/30">
+        <div className="flex flex-col gap-0 border border-border bg-card divide-y divide-border">
+          <div className="grid grid-cols-[2fr_1fr_1fr_1fr_80px_80px_100px] gap-3 px-5 py-3 bg-muted/30">
             {["Participant", "Subject", "Cycle", "Round", "Score", "Rank", "Award"].map((h) => (
-              <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-800/50">
+              <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
                 {h}
               </span>
             ))}
@@ -154,16 +154,16 @@ export default async function ResultsPage() {
               key={r.id}
               className="grid grid-cols-[2fr_1fr_1fr_1fr_80px_80px_100px] gap-3 px-5 py-3 items-center"
             >
-              <p className="text-sm font-light text-gate-800 truncate">
+              <p className="text-sm font-light text-foreground truncate">
                 {r.participant?.fullName ?? "—"}
               </p>
-              <p className="text-xs font-light text-gate-800/70">{r.subject?.name ?? "—"}</p>
-              <p className="text-xs font-light text-gate-800/70">{r.cycle?.name ?? "—"}</p>
-              <p className="text-xs font-light text-gate-800/70">{r.round?.name ?? "—"}</p>
-              <p className="text-xs font-light text-gate-800">
+              <p className="text-xs font-light text-foreground/70">{r.subject?.name ?? "—"}</p>
+              <p className="text-xs font-light text-foreground/70">{r.cycle?.name ?? "—"}</p>
+              <p className="text-xs font-light text-foreground/70">{r.round?.name ?? "—"}</p>
+              <p className="text-xs font-light text-foreground">
                 {r.score !== null ? `${r.score}${r.maxScore ? `/${r.maxScore}` : ""}` : "—"}
               </p>
-              <p className="text-xs font-light text-gate-800">
+              <p className="text-xs font-light text-foreground">
                 {r.rank !== null ? `#${r.rank}` : "—"}
               </p>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gate-gold">
