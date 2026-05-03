@@ -67,26 +67,28 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1 mb-2">
-        <h1 className="font-serif text-3xl font-light text-gate-800">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div className="flex flex-col gap-1 mb-1">
+        <h1 className="font-serif text-3xl font-light text-foreground">
           Sign In
         </h1>
-        <p className="text-sm font-light text-gate-800/65">
+        <p className="text-sm font-light text-muted-foreground">
           Access your G.A.T.E. Assessment account
         </p>
       </div>
 
       {verified && !error && (
-        <p className="text-xs text-green-700 border border-green-200 bg-green-50 px-4 py-3">
-          Email verified. Sign in to continue.
-        </p>
+        <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 dark:border-green-800/40 dark:bg-green-900/20">
+          <p className="text-xs text-green-700 dark:text-green-400">
+            Email verified. Sign in to continue.
+          </p>
+        </div>
       )}
 
       {error && (
-        <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
-          {error}
-        </p>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800/40 dark:bg-red-900/20">
+          <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+        </div>
       )}
 
       <div className="flex flex-col gap-2">
@@ -96,7 +98,7 @@ export function LoginForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          placeholder="lena.mueller@gymnasium.de"
           autoComplete="email"
           required
         />
@@ -115,13 +117,13 @@ export function LoginForm() {
         />
       </div>
 
-      <Button type="submit" variant="gold" size="md" disabled={pending}>
+      <Button type="submit" variant="gold" size="md" disabled={pending} className="mt-1">
         {pending ? "Signing in…" : "Sign In"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-800/60">
+      <p className="text-center text-xs font-light text-muted-foreground">
         No account?{" "}
-        <Link href="/register" className="text-gate-gold hover:underline">
+        <Link href="/register" className="text-gate-gold hover:underline font-medium">
           Apply Now
         </Link>
       </p>

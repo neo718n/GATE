@@ -6,7 +6,10 @@ import Link from "next/link";
 import { signUp, authClient } from "@/lib/auth-client";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { COUNTRIES } from "@/lib/data/countries";
+import { GRADES } from "@/lib/data/grades";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -17,6 +20,7 @@ export function RegisterForm() {
     email: "",
     password: "",
     country: "",
+    grade: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -59,29 +63,29 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1 mb-2">
-        <h1 className="font-serif text-3xl font-light text-gate-800">
+      <div className="flex flex-col gap-1 mb-1">
+        <h1 className="font-serif text-3xl font-light text-foreground">
           Apply Now
         </h1>
-        <p className="text-sm font-light text-gate-800/65">
+        <p className="text-sm font-light text-muted-foreground">
           Create your G.A.T.E. Assessment account
         </p>
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
-          {error}
-        </p>
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 dark:border-red-800/40 dark:bg-red-900/20">
+          <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+        </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <div className="flex flex-col gap-2">
           <Label htmlFor="firstName">First Name</Label>
           <Input
             id="firstName"
             value={form.firstName}
             onChange={set("firstName")}
-            placeholder="Jane"
+            placeholder="Kenji"
             autoComplete="given-name"
             required
           />
@@ -92,7 +96,7 @@ export function RegisterForm() {
             id="lastName"
             value={form.lastName}
             onChange={set("lastName")}
-            placeholder="Smith"
+            placeholder="Nakamura"
             autoComplete="family-name"
             required
           />
@@ -106,7 +110,7 @@ export function RegisterForm() {
           type="email"
           value={form.email}
           onChange={set("email")}
-          placeholder="you@example.com"
+          placeholder="k.nakamura@sekolah.edu.sg"
           autoComplete="email"
           required
         />
@@ -114,14 +118,36 @@ export function RegisterForm() {
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="country">Country</Label>
-        <Input
+        <Select
           id="country"
           value={form.country}
           onChange={set("country")}
-          placeholder="e.g. United States"
-          autoComplete="country-name"
           required
-        />
+        >
+          <option value="" disabled>Select your country…</option>
+          {COUNTRIES.map((c) => (
+            <option key={c.code} value={c.code}>
+              {c.name}
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="grade">Current Grade</Label>
+        <Select
+          id="grade"
+          value={form.grade}
+          onChange={set("grade")}
+          required
+        >
+          <option value="" disabled>Select your grade…</option>
+          {GRADES.map((g) => (
+            <option key={g.value} value={g.value}>
+              {g.label}
+            </option>
+          ))}
+        </Select>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -142,9 +168,9 @@ export function RegisterForm() {
         {pending ? "Creating account…" : "Create Account"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-800/60">
+      <p className="text-center text-xs font-light text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-gate-gold hover:underline">
+        <Link href="/login" className="text-gate-gold hover:underline font-medium">
           Sign In
         </Link>
       </p>
