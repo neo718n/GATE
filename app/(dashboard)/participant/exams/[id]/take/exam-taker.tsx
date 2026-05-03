@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { saveAnswer, submitExam, logTabSwitch } from "@/lib/actions/exam";
 import { Flag, ChevronLeft, ChevronRight, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { MathContent } from "@/components/ui/math-content";
 
 type Question = {
   id: number;
@@ -234,9 +235,9 @@ export function ExamTaker({
           </div>
 
           {/* Question text */}
-          <div
+          <MathContent
+            html={q.content}
             className="text-base font-light text-foreground leading-relaxed [&_p]:mb-3 [&_img]:max-w-full [&_img]:rounded-lg prose prose-sm max-w-none"
-            dangerouslySetInnerHTML={{ __html: q.content }}
           />
 
           {/* Answer input */}

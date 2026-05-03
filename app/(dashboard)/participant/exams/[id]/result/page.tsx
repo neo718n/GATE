@@ -5,6 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { MathContent } from "@/components/ui/math-content";
 
 export default async function ExamResultPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
@@ -116,7 +117,7 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
                   )}
                   {isPending && <span className="text-[10px] font-semibold text-foreground/40">Pending review</span>}
                 </div>
-                <div className="text-sm font-light text-foreground" dangerouslySetInnerHTML={{ __html: q.content }} />
+                <MathContent html={q.content} className="text-sm font-light text-foreground prose prose-sm max-w-none" />
                 {ans?.answer && (
                   <p className="text-xs font-light text-foreground/60">Your answer: <span className="text-foreground">{ans.answer}</span></p>
                 )}
