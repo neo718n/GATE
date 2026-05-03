@@ -110,6 +110,12 @@ export const documentTypeEnum = pgEnum("document_type", [
   "other",
 ]);
 
+export const genderEnum = pgEnum("gender", [
+  "male",
+  "female",
+  "prefer_not_to_say",
+]);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Better Auth core tables
 // ────────────────────────────────────────────────────────────────────────────
@@ -240,9 +246,8 @@ export const participants = pgTable("participants", {
   city: text("city"),
   school: text("school"),
   grade: text("grade"),
-  guardianName: text("guardian_name"),
-  guardianEmail: text("guardian_email"),
-  guardianPhone: text("guardian_phone"),
+  phone: text("phone"),
+  gender: genderEnum("gender"),
   registrationStatus: registrationStatusEnum("registration_status")
     .notNull()
     .default("draft"),

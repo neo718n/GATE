@@ -11,20 +11,37 @@ import { stripe } from "@/lib/stripe";
 export async function saveParticipantProfile(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
 
-  const fullName = (formData.get("fullName") as string)?.trim();
+  const firstName = (formData.get("firstName") as string)?.trim();
+  const lastName = (formData.get("lastName") as string)?.trim();
   const country = (formData.get("country") as string)?.trim();
-  if (!fullName || !country) throw new Error("Full name and country are required");
+  const school = (formData.get("school") as string)?.trim();
+  const grade = (formData.get("grade") as string)?.trim();
+
+  if (!firstName || !lastName || !country || !school || !grade) {
+    throw new Error("First name, last name, country, school, and grade are required");
+  }
+
+  const fullName = `${firstName} ${lastName}`;
+
+  const phoneCode = (formData.get("phoneCode") as string)?.trim() ?? "";
+  const phoneNumber = (formData.get("phoneNumber") as string)?.trim() ?? "";
+  const rawCode = phoneCode.replace(/\s*\(.*\)/, "");
+  const phone = phoneNumber ? `${rawCode}${phoneNumber}` : null;
+
+  const genderRaw = (formData.get("gender") as string)?.trim();
+  const gender = (genderRaw === "male" || genderRaw === "female" || genderRaw === "prefer_not_to_say")
+    ? (genderRaw as "male" | "female" | "prefer_not_to_say")
+    : null;
 
   const data = {
     fullName,
     dateOfBirth: (formData.get("dateOfBirth") as string) || null,
     country,
     city: (formData.get("city") as string)?.trim() || null,
-    school: (formData.get("school") as string)?.trim() || null,
-    grade: (formData.get("grade") as string)?.trim() || null,
-    guardianName: (formData.get("guardianName") as string)?.trim() || null,
-    guardianEmail: (formData.get("guardianEmail") as string)?.trim() || null,
-    guardianPhone: (formData.get("guardianPhone") as string)?.trim() || null,
+    school,
+    grade,
+    phone,
+    gender,
     registrationStatus: "submitted" as const,
     updatedAt: new Date(),
   };
