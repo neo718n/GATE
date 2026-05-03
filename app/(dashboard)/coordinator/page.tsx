@@ -1,9 +1,34 @@
 import { requireRole } from "@/lib/authz";
+import { db } from "@/lib/db";
+import { participants, results } from "@/lib/db/schema";
+import { eq, isNotNull, count, or } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default async function CoordinatorDashboard() {
   await requireRole(["coordinator", "admin", "super_admin"]);
+
+  const [[{ total }], [{ pending }], [{ confirmed }], [{ qualified }]] =
+    await Promise.all([
+      db.select({ total: count() }).from(participants),
+      db
+        .select({ pending: count() })
+        .from(participants)
+        .where(eq(participants.registrationStatus, "submitted")),
+      db
+        .select({ confirmed: count() })
+        .from(participants)
+        .where(
+          or(
+            eq(participants.paymentStatus, "paid"),
+            eq(participants.paymentStatus, "waived"),
+          ),
+        ),
+      db
+        .select({ qualified: count() })
+        .from(results)
+        .where(isNotNull(results.publishedAt)),
+    ]);
 
   return (
     <div className="flex flex-col gap-10 max-w-5xl">
@@ -18,10 +43,10 @@ export default async function CoordinatorDashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Assigned Participants", value: "—" },
-          { label: "Pending Verification", value: "—" },
-          { label: "Confirmed", value: "—" },
-          { label: "Round II Qualified", value: "—" },
+          { label: "Total Participants", value: total },
+          { label: "Pending Verification", value: pending },
+          { label: "Confirmed", value: confirmed },
+          { label: "Published Results", value: qualified },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -44,18 +69,6 @@ export default async function CoordinatorDashboard() {
             desc: "View and manage all participants assigned to you. Verify registrations, check document status, and update participant records.",
             href: "/coordinator/participants",
             action: "View Participants",
-          },
-          {
-            title: "Status Tracking",
-            desc: "Track participant registration status, verification progress, and payment confirmation across your assigned group.",
-            href: "/coordinator/status",
-            action: "View Status",
-          },
-          {
-            title: "Communication",
-            desc: "Send and receive messages to and from assigned participants. Share updates on registration deadlines and examination information.",
-            href: "/coordinator/messages",
-            action: "Messages",
           },
           {
             title: "Reports",

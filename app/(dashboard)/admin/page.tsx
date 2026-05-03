@@ -1,9 +1,29 @@
-﻿import { requireRole } from "@/lib/authz";
+import { requireRole } from "@/lib/authz";
+import { db } from "@/lib/db";
+import { participants, results, partners } from "@/lib/db/schema";
+import { eq, isNotNull, count } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default async function AdminDashboard() {
   await requireRole(["admin", "super_admin"]);
+
+  const [[{ total }], [{ pending }], [{ published }], [{ pendingPartners }]] =
+    await Promise.all([
+      db.select({ total: count() }).from(participants),
+      db
+        .select({ pending: count() })
+        .from(participants)
+        .where(eq(participants.registrationStatus, "submitted")),
+      db
+        .select({ published: count() })
+        .from(results)
+        .where(isNotNull(results.publishedAt)),
+      db
+        .select({ pendingPartners: count() })
+        .from(partners)
+        .where(eq(partners.status, "pending")),
+    ]);
 
   return (
     <div className="flex flex-col gap-10 max-w-5xl">
@@ -18,10 +38,10 @@ export default async function AdminDashboard() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Total Participants", value: "—" },
-          { label: "Pending Verification", value: "—" },
-          { label: "Published Results", value: "—" },
-          { label: "Open Inquiries", value: "—" },
+          { label: "Total Participants", value: total },
+          { label: "Pending Verification", value: pending },
+          { label: "Published Results", value: published },
+          { label: "Pending Partners", value: pendingPartners },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -83,4 +103,3 @@ export default async function AdminDashboard() {
     </div>
   );
 }
-

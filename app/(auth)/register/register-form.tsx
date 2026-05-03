@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { COUNTRIES } from "@/lib/data/countries";
-import { GRADES } from "@/lib/data/grades";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -20,7 +19,6 @@ export function RegisterForm() {
     email: "",
     password: "",
     country: "",
-    grade: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -40,7 +38,10 @@ export function RegisterForm() {
         email: form.email,
         password: form.password,
         name: `${form.firstName} ${form.lastName}`.trim(),
-      });
+        firstName: form.firstName,
+        lastName: form.lastName,
+        country: form.country,
+      } as Parameters<typeof signUp.email>[0]);
 
       if (err) {
         setError(err.message ?? "Registration failed. Please try again.");
@@ -124,27 +125,10 @@ export function RegisterForm() {
           onChange={set("country")}
           required
         >
-          <option value="" disabled>Select your country…</option>
+          <option value="" disabled>Select your country...</option>
           {COUNTRIES.map((c) => (
             <option key={c.code} value={c.code}>
               {c.name}
-            </option>
-          ))}
-        </Select>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="grade">Current Grade</Label>
-        <Select
-          id="grade"
-          value={form.grade}
-          onChange={set("grade")}
-          required
-        >
-          <option value="" disabled>Select your grade…</option>
-          {GRADES.map((g) => (
-            <option key={g.value} value={g.value}>
-              {g.label}
             </option>
           ))}
         </Select>
@@ -165,7 +149,7 @@ export function RegisterForm() {
       </div>
 
       <Button type="submit" variant="gold" size="md" disabled={pending} className="mt-1">
-        {pending ? "Creating account…" : "Create Account"}
+        {pending ? "Creating account..." : "Create Account"}
       </Button>
 
       <p className="text-center text-xs font-light text-muted-foreground">
