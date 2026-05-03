@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, Fragment } from "react";
 import { authClient, signIn } from "@/lib/auth-client";
@@ -93,8 +93,8 @@ export function VerifyEmailForm({ email }: { email: string }) {
           </svg>
         </div>
         <div className="flex flex-col gap-1">
-          <h2 className="font-serif text-2xl font-light text-gate-800">Email Verified</h2>
-          <p className="text-sm font-light text-gate-800/65">Redirecting to your dashboard…</p>
+          <h2 className="font-serif text-2xl font-light text-foreground">Email Verified</h2>
+          <p className="text-sm font-light text-muted-foreground">Redirecting to your dashboard…</p>
         </div>
       </div>
     );
@@ -103,15 +103,15 @@ export function VerifyEmailForm({ email }: { email: string }) {
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-col gap-1">
-        <h1 className="font-serif text-3xl font-light text-gate-800">Verify Your Email</h1>
-        <p className="text-sm font-light text-gate-800/55 mt-1 leading-relaxed">
+        <h1 className="font-serif text-3xl font-light text-foreground">Verify Your Email</h1>
+        <p className="text-sm font-light text-muted-foreground mt-1 leading-relaxed">
           Enter the 6-digit code sent to{" "}
-          <span className="font-medium text-gate-800">{email}</span>
+          <span className="font-medium text-foreground">{email}</span>
         </p>
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 border border-red-200 bg-red-50 px-4 py-3">
+        <p className="text-xs text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/40 bg-red-50 dark:bg-red-900/20 px-4 py-3">
           {error}
         </p>
       )}
@@ -123,14 +123,14 @@ export function VerifyEmailForm({ email }: { email: string }) {
       )}
 
       <div className="flex flex-col gap-3">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground">
           Verification Code
         </span>
         <div className="flex items-center gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <Fragment key={i}>
               {i === 3 && (
-                <span className="text-gate-fog shrink-0 select-none px-0.5">—</span>
+                <span className="text-border shrink-0 select-none px-0.5">—</span>
               )}
               <input
                 ref={(el) => { refs.current[i] = el; }}
@@ -142,7 +142,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
                 onKeyDown={(e) => onKey(i, e)}
                 onPaste={i === 0 ? onPaste : undefined}
                 disabled={pending}
-                className="w-11 h-14 text-center text-xl font-light text-gate-800 border border-gate-fog bg-gate-white focus:outline-none focus:border-gate-gold transition-colors disabled:opacity-40 shrink-0"
+                className="w-11 h-14 text-center text-xl font-light text-foreground border border-border bg-card focus:outline-none focus:border-gate-gold transition-colors disabled:opacity-40 shrink-0"
               />
             </Fragment>
           ))}
@@ -158,10 +158,10 @@ export function VerifyEmailForm({ email }: { email: string }) {
         {pending ? "Verifying…" : "Verify Email"}
       </Button>
 
-      <p className="text-center text-xs font-light text-gate-800/55">
+      <p className="text-center text-xs font-light text-muted-foreground">
         Didn&apos;t receive the code?{" "}
         {countdown > 0 ? (
-          <span className="text-gate-gray">Resend in {countdown}s</span>
+          <span className="text-muted-foreground">Resend in {countdown}s</span>
         ) : (
           <button type="button" onClick={resend} className="text-gate-gold hover:underline">
             {resendDone ? "Resend again" : "Resend"}
