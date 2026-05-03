@@ -14,30 +14,30 @@ export async function saveParticipantProfile(formData: FormData) {
   const firstName = (formData.get("firstName") as string)?.trim();
   const lastName = (formData.get("lastName") as string)?.trim();
   const country = (formData.get("country") as string)?.trim();
+  const city = (formData.get("city") as string)?.trim();
   const school = (formData.get("school") as string)?.trim();
   const grade = (formData.get("grade") as string)?.trim();
+  const dateOfBirth = (formData.get("dateOfBirth") as string) || null;
+  const phoneCode = (formData.get("phoneCode") as string)?.trim() ?? "";
+  const phoneNumber = (formData.get("phoneNumber") as string)?.trim();
+  const genderRaw = (formData.get("gender") as string)?.trim();
 
-  if (!firstName || !lastName || !country || !school || !grade) {
-    throw new Error("First name, last name, country, school, and grade are required");
+  if (!firstName || !lastName || !country || !city || !school || !grade || !dateOfBirth || !phoneNumber || !genderRaw) {
+    throw new Error("All fields are required");
   }
 
   const fullName = `${firstName} ${lastName}`;
-
-  const phoneCode = (formData.get("phoneCode") as string)?.trim() ?? "";
-  const phoneNumber = (formData.get("phoneNumber") as string)?.trim() ?? "";
   const rawCode = phoneCode.replace(/\s*\(.*\)/, "");
-  const phone = phoneNumber ? `${rawCode}${phoneNumber}` : null;
-
-  const genderRaw = (formData.get("gender") as string)?.trim();
+  const phone = `${rawCode}${phoneNumber}`;
   const gender = (genderRaw === "male" || genderRaw === "female" || genderRaw === "prefer_not_to_say")
     ? (genderRaw as "male" | "female" | "prefer_not_to_say")
     : null;
 
   const data = {
     fullName,
-    dateOfBirth: (formData.get("dateOfBirth") as string) || null,
+    dateOfBirth,
     country,
-    city: (formData.get("city") as string)?.trim() || null,
+    city,
     school,
     grade,
     phone,

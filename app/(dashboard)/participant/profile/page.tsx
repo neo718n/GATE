@@ -7,11 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { saveParticipantProfile } from "@/lib/actions/participant";
 import { PhoneCodeSelect } from "./phone-code-select";
+import { CustomSelect } from "./custom-select";
 
-const GRADE_OPTIONS = Array.from({ length: 12 }, (_, i) => ({
-  value: String(i + 1),
-  label: `Grade ${i + 1}`,
-}));
 
 const PHONE_CODES = [
   { country: "Uzbekistan", dial: "+998", flag: "🇺🇿", iso: "UZ" },
@@ -63,8 +60,32 @@ const PHONE_CODES = [
   { country: "Afghanistan", dial: "+93", flag: "🇦🇫", iso: "AF" },
 ];
 
-const SELECT_CLS =
-  "flex h-12 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-light text-foreground focus-visible:outline-none focus:border-gate-gold focus:ring-2 focus:ring-gate-gold/15 transition-all duration-200";
+const GRADE_OPTIONS_SELECT = Array.from({ length: 12 }, (_, i) => ({
+  value: String(i + 1),
+  label: `Grade ${i + 1}`,
+}));
+
+const GENDER_OPTIONS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+];
+
+const COUNTRIES = [
+  "Afghanistan","Albania","Algeria","Argentina","Armenia","Australia",
+  "Austria","Azerbaijan","Bangladesh","Belarus","Belgium","Bolivia",
+  "Brazil","Bulgaria","Cambodia","Canada","Chile","China","Colombia",
+  "Croatia","Cuba","Czech Republic","Denmark","Ecuador","Egypt",
+  "Ethiopia","Finland","France","Georgia","Germany","Ghana","Greece",
+  "Hungary","India","Indonesia","Iran","Iraq","Ireland","Israel",
+  "Italy","Japan","Kazakhstan","Kenya","Kyrgyzstan","Malaysia","Mexico",
+  "Mongolia","Morocco","Myanmar","Netherlands","New Zealand","Nigeria",
+  "Norway","Pakistan","Peru","Philippines","Poland","Portugal",
+  "Romania","Russia","Saudi Arabia","Serbia","Singapore","South Africa",
+  "South Korea","Spain","Sweden","Switzerland","Tajikistan","Thailand",
+  "Turkey","Turkmenistan","Ukraine","United Arab Emirates",
+  "United Kingdom","United States","Uzbekistan","Venezuela","Vietnam",
+  "Zimbabwe",
+].map((c) => ({ value: c, label: c }));
 
 function splitPhone(stored: string | null, country?: string | null): { code: string; number: string } {
   if (!stored) {
@@ -151,26 +172,23 @@ export default async function ProfilePage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="dateOfBirth">Date of Birth</Label>
+              <Label htmlFor="dateOfBirth">Date of Birth *</Label>
               <Input
                 id="dateOfBirth"
                 name="dateOfBirth"
                 type="date"
+                required
                 defaultValue={participant?.dateOfBirth ?? ""}
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="gender">Gender</Label>
-              <select
-                id="gender"
+              <Label>Gender *</Label>
+              <CustomSelect
                 name="gender"
                 defaultValue={participant?.gender ?? ""}
-                className={SELECT_CLS}
-              >
-                <option value="" disabled>Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
+                options={GENDER_OPTIONS}
+                placeholder="Select gender"
+              />
             </div>
             <div className="flex flex-col gap-2 md:col-span-2">
               <Label>Phone</Label>
@@ -180,26 +198,28 @@ export default async function ProfilePage() {
                   id="phoneNumber"
                   name="phoneNumber"
                   type="tel"
+                  required
                   placeholder="90 123 45 67"
                   defaultValue={phoneNumber}
                 />
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="country">Country *</Label>
-              <Input
-                id="country"
+              <Label>Country *</Label>
+              <CustomSelect
                 name="country"
-                required
-                placeholder="e.g. Kazakhstan, South Korea, Brazil"
                 defaultValue={participant?.country ?? ""}
+                options={COUNTRIES}
+                placeholder="Select country"
+                searchable
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="city">City</Label>
+              <Label htmlFor="city">City *</Label>
               <Input
                 id="city"
                 name="city"
+                required
                 placeholder="e.g. London, Seoul, Almaty"
                 defaultValue={participant?.city ?? ""}
               />
@@ -224,23 +244,13 @@ export default async function ProfilePage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="grade">Grade / Year *</Label>
-              <select
-                id="grade"
+              <Label>Grade / Year *</Label>
+              <CustomSelect
                 name="grade"
-                required
                 defaultValue={participant?.grade ?? ""}
-                className={SELECT_CLS}
-              >
-                <option value="" disabled>
-                  Select grade
-                </option>
-                {GRADE_OPTIONS.map((g) => (
-                  <option key={g.value} value={g.value}>
-                    {g.label}
-                  </option>
-                ))}
-              </select>
+                options={GRADE_OPTIONS_SELECT}
+                placeholder="Select grade"
+              />
             </div>
           </div>
         </fieldset>

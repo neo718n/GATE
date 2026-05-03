@@ -63,7 +63,7 @@ export function PhoneCodeSelect({
           alt={selected.iso}
           width={20}
           height={15}
-          className="rounded-sm object-cover shrink-0"
+          className="rounded-none object-cover shrink-0"
         />
         <ChevronDown
           className={`h-3.5 w-3.5 text-foreground/40 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
@@ -106,7 +106,7 @@ export function PhoneCodeSelect({
                     alt={c.iso}
                     width={20}
                     height={15}
-                    className="rounded-sm object-cover shrink-0"
+                    className="rounded-none object-cover shrink-0"
                   />
                   <span
                     className={`text-[11px] font-semibold w-7 shrink-0 tracking-wide ${
