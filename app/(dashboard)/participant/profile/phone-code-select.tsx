@@ -57,8 +57,7 @@ export function PhoneCodeSelect({
         onClick={() => setOpen((o) => !o)}
         className="h-12 rounded-xl border border-border bg-card px-3 text-sm font-light text-foreground focus:outline-none focus:border-gate-gold focus:ring-2 focus:ring-gate-gold/15 transition-all duration-200 flex items-center gap-1.5 min-w-[90px]"
       >
-        <span className="text-base leading-none">{selected.flag}</span>
-        <span className="font-semibold tracking-wide text-xs">{selected.iso}</span>
+        <span className="text-xl leading-none">{selected.flag}</span>
         <ChevronDown
           className={`h-3.5 w-3.5 text-foreground/40 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
         />
