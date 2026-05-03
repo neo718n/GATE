@@ -45,7 +45,7 @@ export default async function ParticipantDashboard() {
   const isVerified = participant?.registrationStatus === "verified";
   const isPending = participant?.registrationStatus === "submitted";
 
-  const currentStep = isPaid ? 4 : hasSubject ? 3 : profileComplete ? 2 : 1;
+  const currentStep = isPaid ? 3 : hasSubject ? 2 : profileComplete ? 1 : 0;
 
   const firstName = session.user.name?.split(" ")[0] ?? "Welcome";
   const initial = session.user.name?.charAt(0).toUpperCase() ?? "U";

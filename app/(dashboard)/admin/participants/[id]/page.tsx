@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ParticipantDocuments } from "./participant-documents";
 import { InvoiceDownloadButton } from "./invoice-download-button";
+import { updateParticipantStatus } from "@/lib/actions/admin";
+import { Button } from "@/components/ui/button";
 
 export default async function ParticipantDetailPage({
   params,
@@ -41,6 +43,13 @@ export default async function ParticipantDetailPage({
     refunded: "text-foreground/40",
   };
 
+  const REG_STATUS_COLOR: Record<string, string> = {
+    draft: "text-foreground/40",
+    submitted: "text-yellow-700",
+    verified: "text-green-700",
+    rejected: "text-red-600",
+  };
+
   return (
     <div className="flex flex-col gap-8 max-w-5xl">
       {/* Header */}
@@ -61,6 +70,60 @@ export default async function ParticipantDetailPage({
           ← Back
         </Link>
       </div>
+
+      {/* Verification Panel */}
+      {(participant.registrationStatus === "submitted" || participant.registrationStatus === "verified" || participant.registrationStatus === "rejected") && (
+        <section className="border border-border bg-card p-6 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground">
+              Registration Verification
+            </h2>
+            <span className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${REG_STATUS_COLOR[participant.registrationStatus] ?? ""}`}>
+              {participant.registrationStatus}
+            </span>
+          </div>
+          <p className="text-sm font-light text-foreground/55">
+            Review the participant&apos;s documents and personal information, then verify or reject their registration.
+          </p>
+          <div className="flex items-center gap-3">
+            <form action={updateParticipantStatus}>
+              <input type="hidden" name="id" value={participant.id} />
+              <input type="hidden" name="status" value="verified" />
+              <Button
+                type="submit"
+                variant="outline"
+                size="sm"
+                className="border-green-600 text-green-700 hover:bg-green-50 dark:hover:bg-green-950"
+                disabled={participant.registrationStatus === "verified"}
+              >
+                Verify
+              </Button>
+            </form>
+            <form action={updateParticipantStatus}>
+              <input type="hidden" name="id" value={participant.id} />
+              <input type="hidden" name="status" value="rejected" />
+              <Button
+                type="submit"
+                variant="outline"
+                size="sm"
+                className="border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                disabled={participant.registrationStatus === "rejected"}
+              >
+                Reject
+              </Button>
+            </form>
+            {participant.registrationStatus !== "submitted" && (
+              <form action={updateParticipantStatus}>
+                <input type="hidden" name="id" value={participant.id} />
+                <input type="hidden" name="status" value="submitted" />
+                <Button type="submit" variant="outline" size="sm">
+                  Reset to Submitted
+                </Button>
+              </form>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Personal Info */}
       <section className="border border-border bg-card p-6 flex flex-col gap-4">
