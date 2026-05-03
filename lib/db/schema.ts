@@ -3,6 +3,7 @@ import {
   boolean,
   date,
   integer,
+  jsonb,
   numeric,
   pgEnum,
   pgTable,
@@ -10,6 +11,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
 } from "drizzle-orm/pg-core";
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -396,6 +398,97 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const examTypeEnum = pgEnum("exam_type", ["practice", "exam"]);
+
+export const questionTypeEnum = pgEnum("question_type", ["mcq", "numeric", "open"]);
+
+export const examSessionStatusEnum = pgEnum("exam_session_status", [
+  "active",
+  "submitted",
+  "timed_out",
+]);
+
+export const exams = pgTable("exams", {
+  id: serial("id").primaryKey(),
+  roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
+  subjectId: integer("subject_id").references(() => subjects.id, { onDelete: "set null" }),
+  title: text("title").notNull(),
+  type: examTypeEnum("type").notNull().default("exam"),
+  instructions: text("instructions"),
+  durationMinutes: integer("duration_minutes"),
+  windowStart: timestamp("window_start"),
+  windowEnd: timestamp("window_end"),
+  shuffleQuestions: boolean("shuffle_questions").notNull().default(true),
+  questionsPerSession: integer("questions_per_session"),
+  published: boolean("published").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const questions = pgTable("questions", {
+  id: serial("id").primaryKey(),
+  examId: integer("exam_id")
+    .notNull()
+    .references(() => exams.id, { onDelete: "cascade" }),
+  type: questionTypeEnum("type").notNull().default("mcq"),
+  order: integer("order").notNull().default(0),
+  content: text("content").notNull(),
+  options: jsonb("options").$type<{ id: string; text: string }[]>(),
+  correctAnswer: text("correct_answer"),
+  tolerance: numeric("tolerance"),
+  points: integer("points").notNull().default(1),
+  explanation: text("explanation"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const examSessions = pgTable("exam_sessions", {
+  id: serial("id").primaryKey(),
+  examId: integer("exam_id")
+    .notNull()
+    .references(() => exams.id, { onDelete: "cascade" }),
+  participantId: integer("participant_id")
+    .notNull()
+    .references(() => participants.id, { onDelete: "cascade" }),
+  questionOrder: jsonb("question_order").$type<number[]>(),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  deadlineAt: timestamp("deadline_at"),
+  submittedAt: timestamp("submitted_at"),
+  status: examSessionStatusEnum("status").notNull().default("active"),
+  score: numeric("score"),
+  tabSwitchCount: integer("tab_switch_count").notNull().default(0),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const examAnswers = pgTable(
+  "exam_answers",
+  {
+    id: serial("id").primaryKey(),
+    sessionId: integer("session_id")
+      .notNull()
+      .references(() => examSessions.id, { onDelete: "cascade" }),
+    questionId: integer("question_id")
+      .notNull()
+      .references(() => questions.id, { onDelete: "cascade" }),
+    answer: text("answer"),
+    isCorrect: boolean("is_correct"),
+    pointsAwarded: numeric("points_awarded"),
+    flagged: boolean("flagged").notNull().default(false),
+    answeredAt: timestamp("answered_at"),
+    gradedAt: timestamp("graded_at"),
+    gradedByUserId: text("graded_by_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    sessionQuestion: unique().on(t.sessionId, t.questionId),
+  }),
+);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Relations
 // ────────────────────────────────────────────────────────────────────────────
@@ -543,6 +636,42 @@ export const documentRelations = relations(documents, ({ one }) => ({
   }),
 }));
 
+export const examRelations = relations(exams, ({ one, many }) => ({
+  round: one(rounds, { fields: [exams.roundId], references: [rounds.id] }),
+  subject: one(subjects, { fields: [exams.subjectId], references: [subjects.id] }),
+  questions: many(questions),
+  sessions: many(examSessions),
+}));
+
+export const questionRelations = relations(questions, ({ one, many }) => ({
+  exam: one(exams, { fields: [questions.examId], references: [exams.id] }),
+  answers: many(examAnswers),
+}));
+
+export const examSessionRelations = relations(examSessions, ({ one, many }) => ({
+  exam: one(exams, { fields: [examSessions.examId], references: [exams.id] }),
+  participant: one(participants, {
+    fields: [examSessions.participantId],
+    references: [participants.id],
+  }),
+  answers: many(examAnswers),
+}));
+
+export const examAnswerRelations = relations(examAnswers, ({ one }) => ({
+  session: one(examSessions, {
+    fields: [examAnswers.sessionId],
+    references: [examSessions.id],
+  }),
+  question: one(questions, {
+    fields: [examAnswers.questionId],
+    references: [questions.id],
+  }),
+  gradedBy: one(user, {
+    fields: [examAnswers.gradedByUserId],
+    references: [user.id],
+  }),
+}));
+
 // ────────────────────────────────────────────────────────────────────────────
 // Types
 // ────────────────────────────────────────────────────────────────────────────
@@ -562,3 +691,7 @@ export type CareerApplication = typeof careerApplications.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type Document = typeof documents.$inferSelect;
+export type Exam = typeof exams.$inferSelect;
+export type Question = typeof questions.$inferSelect;
+export type ExamSession = typeof examSessions.$inferSelect;
+export type ExamAnswer = typeof examAnswers.$inferSelect;
