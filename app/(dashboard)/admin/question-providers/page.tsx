@@ -2,7 +2,8 @@ import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { createQuestionProvider, deleteQuestionProvider } from "@/lib/actions/admin";
+import { createQuestionProvider } from "@/lib/actions/admin";
+import { DeleteQPButton } from "./delete-qp-button";
 import { Button } from "@/components/ui/button";
 
 export default async function QuestionProvidersPage() {
@@ -97,18 +98,7 @@ export default async function QuestionProvidersPage() {
             <p className="text-xs font-light text-foreground/40">
               {new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </p>
-            <form action={deleteQuestionProvider}>
-              <input type="hidden" name="userId" value={p.id} />
-              <button
-                type="submit"
-                className="text-xs text-destructive hover:underline"
-                onClick={(e) => {
-                  if (!confirm(`Delete account for ${p.name}?`)) e.preventDefault();
-                }}
-              >
-                Delete
-              </button>
-            </form>
+            <DeleteQPButton userId={p.id} name={p.name ?? p.email} />
           </div>
         ))}
       </div>
