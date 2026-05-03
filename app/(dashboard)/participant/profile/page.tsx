@@ -65,15 +65,20 @@ const PHONE_CODES = [
 const SELECT_CLS =
   "flex h-12 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-light text-foreground focus-visible:outline-none focus:border-gate-gold focus:ring-2 focus:ring-gate-gold/15 transition-all duration-200";
 
-function splitPhone(stored: string | null): { code: string; number: string } {
-  if (!stored) return { code: "+998", number: "" };
+function splitPhone(stored: string | null, country?: string | null): { code: string; number: string } {
+  if (!stored) {
+    const matched = PHONE_CODES.find(
+      (c) => c.country.toLowerCase() === (country ?? "").toLowerCase()
+    );
+    return { code: matched?.dial ?? "+86", number: "" };
+  }
   for (const c of PHONE_CODES) {
     const raw = c.dial.replace(/\s*\(.*\)/, "");
     if (stored.startsWith(raw)) {
       return { code: c.dial, number: stored.slice(raw.length).trim() };
     }
   }
-  return { code: "+998", number: stored };
+  return { code: "+86", number: stored };
 }
 
 export default async function ProfilePage() {
@@ -88,6 +93,7 @@ export default async function ProfilePage() {
     participant?.fullName?.split(" ").slice(1).join(" ") ?? "";
   const { code: phoneCode, number: phoneNumber } = splitPhone(
     participant?.phone ?? null,
+    participant?.country ?? null,
   );
 
   return (
