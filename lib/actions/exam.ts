@@ -214,7 +214,13 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
   });
   if (existing) {
     if (existing.status === "active") return { sessionId: existing.id };
-    return { error: "You have already completed this exam" };
+    if (exam.type === "practice") {
+      // Allow retake: wipe old session and answers
+      await db.delete(examAnswers).where(eq(examAnswers.sessionId, existing.id));
+      await db.delete(examSessions).where(eq(examSessions.id, existing.id));
+    } else {
+      return { error: "You have already completed this exam" };
+    }
   }
 
   let questionIds = exam.questions.map((q) => q.id);
