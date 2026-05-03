@@ -476,3 +476,47 @@ export async function deleteResult(formData: FormData) {
   if (cycleId) revalidatePath(`/admin/cycles/${cycleId}`);
   revalidatePath("/admin/cycles");
 }
+
+// ─── Question Provider Management ────────────────────────────────────────────
+
+export async function createQuestionProvider(formData: FormData) {
+  await requireRole("super_admin");
+  const email = (formData.get("email") as string).trim().toLowerCase();
+  const password = formData.get("password") as string;
+  const name = (formData.get("name") as string).trim();
+
+  if (!email || !password || !name) throw new Error("All fields required");
+  if (password.length < 8) throw new Error("Password must be at least 8 characters");
+
+  const { auth } = await import("@/lib/auth");
+  const baseUrl =
+    process.env.BETTER_AUTH_URL ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "http://localhost:3000";
+
+  const req = new Request(`${baseUrl}/api/auth/sign-up/email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, name }),
+  });
+  const res = await auth.handler(req);
+  if (!res.ok) {
+    const data = (await res.json()) as { message?: string };
+    throw new Error(data.message ?? "Failed to create account");
+  }
+
+  await db
+    .update(user)
+    .set({ role: "question_provider", emailVerified: true })
+    .where(eq(user.email, email));
+
+  revalidatePath("/admin/question-providers");
+}
+
+export async function deleteQuestionProvider(formData: FormData) {
+  await requireRole("super_admin");
+  const userId = formData.get("userId") as string;
+  if (!userId) return;
+  await db.delete(user).where(eq(user.id, userId));
+  revalidatePath("/admin/question-providers");
+}

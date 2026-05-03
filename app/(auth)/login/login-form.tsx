@@ -14,6 +14,7 @@ const ROLE_HOME: Record<string, string> = {
   coordinator: "/coordinator",
   partner_contact: "/partner",
   participant: "/participant",
+  question_provider: "/qp",
 };
 
 export function LoginForm() {

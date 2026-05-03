@@ -25,6 +25,7 @@ export const roleEnum = pgEnum("role", [
   "participant",
   "partner_contact",
   "career_applicant",
+  "question_provider",
 ]);
 
 export const cycleStatusEnum = pgEnum("cycle_status", [

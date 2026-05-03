@@ -13,8 +13,8 @@ import { QuestionEditor } from "@/components/admin/question-editor";
 import { MCQOptionsEditor } from "@/components/admin/mcq-options-editor";
 import { QuestionTypeToggle } from "@/components/admin/question-type-toggle";
 
-export default async function NewQuestionPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireRole(["admin", "super_admin"]);
+export default async function QpNewQuestionPage({ params }: { params: Promise<{ id: string }> }) {
+  await requireRole("question_provider");
   const { id } = await params;
   const examId = parseInt(id);
 
@@ -25,8 +25,8 @@ export default async function NewQuestionPage({ params }: { params: Promise<{ id
     <div className="flex flex-col gap-8 max-w-3xl">
       <div className="flex flex-col gap-1.5">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-          Admin · <Link href="/admin/exams" className="hover:opacity-70">Exams</Link> ·{" "}
-          <Link href={`/admin/exams/${examId}`} className="hover:opacity-70">{exam.title}</Link>
+          <Link href="/qp/exams" className="hover:opacity-70">Exams</Link> ·{" "}
+          <Link href={`/qp/exams/${examId}`} className="hover:opacity-70">{exam.title}</Link>
         </span>
         <h1 className="font-serif text-4xl font-light text-foreground">New Question</h1>
       </div>
@@ -51,7 +51,6 @@ export default async function NewQuestionPage({ params }: { params: Promise<{ id
           </div>
         </fieldset>
 
-        {/* MCQ Options — shown/hidden via JS by QuestionTypeToggle */}
         <fieldset id="mcq-section" className="flex flex-col gap-4 border-0 p-0 m-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Answer Options
@@ -60,7 +59,6 @@ export default async function NewQuestionPage({ params }: { params: Promise<{ id
           <MCQOptionsEditor />
         </fieldset>
 
-        {/* Numeric answer */}
         <fieldset id="numeric-section" className="hidden flex-col gap-4 border-0 p-0 m-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Correct Answer
@@ -77,7 +75,6 @@ export default async function NewQuestionPage({ params }: { params: Promise<{ id
           </div>
         </fieldset>
 
-        {/* Open answer has no correct answer */}
         <fieldset id="open-section" className="hidden flex-col gap-4 border-0 p-0 m-0">
           <div className="border border-border bg-muted/20 px-4 py-3 rounded-xl">
             <p className="text-xs font-light text-foreground/60">
@@ -104,7 +101,7 @@ export default async function NewQuestionPage({ params }: { params: Promise<{ id
 
         <div className="flex items-center gap-4 pt-2">
           <Button type="submit" variant="gold" size="md">Save Question</Button>
-          <Link href={`/admin/exams/${examId}`}>
+          <Link href={`/qp/exams/${examId}`}>
             <Button type="button" variant="outline" size="md">Cancel</Button>
           </Link>
         </div>

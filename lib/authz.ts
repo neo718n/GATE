@@ -37,4 +37,5 @@ export const ROLE_HOME: Record<Role, string> = {
   participant: "/participant",
   partner_contact: "/partner",
   career_applicant: "/",
+  question_provider: "/qp",
 };

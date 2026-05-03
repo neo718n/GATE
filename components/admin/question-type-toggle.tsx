@@ -10,8 +10,8 @@ const TYPES = [
 
 type QType = (typeof TYPES)[number]["value"];
 
-export function QuestionTypeToggle() {
-  const [type, setType] = useState<QType>("mcq");
+export function QuestionTypeToggle({ defaultType = "mcq" }: { defaultType?: QType }) {
+  const [type, setType] = useState<QType>(defaultType);
 
   const toggle = (t: QType) => {
     setType(t);

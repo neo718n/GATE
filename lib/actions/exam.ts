@@ -98,7 +98,7 @@ export async function deleteExam(formData: FormData) {
 // ─── Admin: Question CRUD ─────────────────────────────────────────────────────
 
 export async function createQuestion(formData: FormData) {
-  await requireRole(["admin", "super_admin"]);
+  const session = await requireRole(["admin", "super_admin", "question_provider"]);
 
   const examId = parseInt(formData.get("examId") as string);
   const type = formData.get("type") as "mcq" | "numeric" | "open";
@@ -135,11 +135,13 @@ export async function createQuestion(formData: FormData) {
   });
 
   revalidatePath(`/admin/exams/${examId}`);
-  redirect(`/admin/exams/${examId}`);
+  revalidatePath(`/qp/exams/${examId}`);
+  const role = (session.user as { role?: string }).role ?? "admin";
+  redirect(role === "question_provider" ? `/qp/exams/${examId}` : `/admin/exams/${examId}`);
 }
 
 export async function updateQuestion(formData: FormData) {
-  await requireRole(["admin", "super_admin"]);
+  const session = await requireRole(["admin", "super_admin", "question_provider"]);
 
   const questionId = parseInt(formData.get("questionId") as string);
   const examId = parseInt(formData.get("examId") as string);
@@ -169,15 +171,18 @@ export async function updateQuestion(formData: FormData) {
   }).where(eq(questions.id, questionId));
 
   revalidatePath(`/admin/exams/${examId}`);
-  redirect(`/admin/exams/${examId}`);
+  revalidatePath(`/qp/exams/${examId}`);
+  const role = (session.user as { role?: string }).role ?? "admin";
+  redirect(role === "question_provider" ? `/qp/exams/${examId}` : `/admin/exams/${examId}`);
 }
 
 export async function deleteQuestion(formData: FormData) {
-  await requireRole(["admin", "super_admin"]);
+  await requireRole(["admin", "super_admin", "question_provider"]);
   const questionId = parseInt(formData.get("questionId") as string);
   const examId = parseInt(formData.get("examId") as string);
   await db.delete(questions).where(eq(questions.id, questionId));
   revalidatePath(`/admin/exams/${examId}`);
+  revalidatePath(`/qp/exams/${examId}`);
 }
 
 // ─── Participant: Exam Sessions ───────────────────────────────────────────────

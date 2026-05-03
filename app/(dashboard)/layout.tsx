@@ -18,6 +18,7 @@ export default async function DashboardLayout({
     super_admin: [
       { href: "/admin", label: "Overview" },
       { href: "/admin/users", label: "Users & Roles" },
+      { href: "/admin/question-providers", label: "Question Providers" },
       { href: "/admin/participants", label: "Participants" },
       { href: "/admin/cycles", label: "Assessment Cycles" },
       { href: "/admin/subjects", label: "Subjects" },
