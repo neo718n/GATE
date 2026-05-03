@@ -160,10 +160,9 @@ export default async function ProfilePage() {
                 defaultValue={participant?.gender ?? ""}
                 className={SELECT_CLS}
               >
-                <option value="">Prefer not to say</option>
+                <option value="" disabled>Select gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="prefer_not_to_say">Prefer not to say</option>
               </select>
             </div>
             <div className="flex flex-col gap-2 md:col-span-2">
