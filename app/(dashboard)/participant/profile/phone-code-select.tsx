@@ -57,7 +57,14 @@ export function PhoneCodeSelect({
         onClick={() => setOpen((o) => !o)}
         className="h-12 rounded-xl border border-border bg-card px-3 text-sm font-light text-foreground focus:outline-none focus:border-gate-gold focus:ring-2 focus:ring-gate-gold/15 transition-all duration-200 flex items-center gap-1.5 min-w-[90px]"
       >
-        <span className="text-xl leading-none">{selected.flag}</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`https://flagcdn.com/w20/${selected.iso.toLowerCase()}.png`}
+          alt={selected.iso}
+          width={20}
+          height={15}
+          className="rounded-sm object-cover shrink-0"
+        />
         <ChevronDown
           className={`h-3.5 w-3.5 text-foreground/40 transition-transform duration-150 ${open ? "rotate-180" : ""}`}
         />
@@ -93,7 +100,14 @@ export function PhoneCodeSelect({
                       : ""
                   }`}
                 >
-                  <span className="text-base leading-none w-5 shrink-0">{c.flag}</span>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://flagcdn.com/w20/${c.iso.toLowerCase()}.png`}
+                    alt={c.iso}
+                    width={20}
+                    height={15}
+                    className="rounded-sm object-cover shrink-0"
+                  />
                   <span
                     className={`text-[11px] font-semibold w-7 shrink-0 tracking-wide ${
                       c.dial === value ? "text-gate-gold" : "text-foreground"
