@@ -4,7 +4,7 @@ import { exams } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { deleteQuestion } from "@/lib/actions/exam";
+import { DeleteQuestionButton } from "./delete-question-button";
 import { Button } from "@/components/ui/button";
 
 const TYPE_LABEL: Record<string, string> = { mcq: "MCQ", numeric: "Numeric", open: "Open" };
@@ -75,19 +75,7 @@ export default async function QpExamDetailPage({ params }: { params: Promise<{ i
               >
                 Edit
               </Link>
-              <form action={deleteQuestion}>
-                <input type="hidden" name="questionId" value={q.id} />
-                <input type="hidden" name="examId" value={examId} />
-                <button
-                  type="submit"
-                  className="text-xs text-destructive hover:underline"
-                  onClick={(e) => {
-                    if (!confirm("Delete this question?")) e.preventDefault();
-                  }}
-                >
-                  Delete
-                </button>
-              </form>
+              <DeleteQuestionButton questionId={q.id} examId={examId} />
             </div>
           </div>
         ))}
