@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { exams, examSessions, participants } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -33,7 +33,10 @@ export default async function ParticipantExamsPage() {
 
   const mySessionsRaw = participant
     ? await db.query.examSessions.findMany({
-        where: eq(examSessions.participantId, participant.id),
+        where: and(
+          eq(examSessions.participantId, participant.id),
+          sql`${examSessions.archivedAt} IS NULL`,
+        ),
       })
     : [];
   const mySessionMap = new Map(mySessionsRaw.map((s) => [s.examId, s]));
@@ -65,15 +68,28 @@ export default async function ParticipantExamsPage() {
         </div>
 
         <div className="shrink-0">
-          {status === "submitted" && (
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-green-600">Completed</span>
-          )}
-          {status === "timed_out" && (
-            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-destructive">Timed out</span>
-          )}
           {status === "active" && (
             <Link href={`/participant/exams/${e.id}/take`}>
               <Button variant="gold" size="sm">Resume</Button>
+            </Link>
+          )}
+          {(status === "submitted" || status === "timed_out") && e.type === "practice" && (
+            <div className="flex items-center gap-3">
+              <Link href={`/participant/exams/${e.id}/result`}>
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-green-600 hover:opacity-70 transition-opacity">
+                  {status === "timed_out" ? "Timed out" : "Completed"}
+                </span>
+              </Link>
+              <Link href={`/participant/exams/${e.id}`}>
+                <Button variant="outline" size="sm">Try Again</Button>
+              </Link>
+            </div>
+          )}
+          {(status === "submitted" || status === "timed_out") && e.type !== "practice" && (
+            <Link href={`/participant/exams/${e.id}/result`}>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-green-600 hover:opacity-70 transition-opacity">
+                {status === "timed_out" ? "Timed out" : "Completed"}
+              </span>
             </Link>
           )}
           {!status && (
