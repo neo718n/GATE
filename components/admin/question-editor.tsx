@@ -71,25 +71,36 @@ export function QuestionEditor({ name, defaultValue = "", placeholder }: Questio
     if (!editor) return;
     setUploading(true);
     try {
-      const res = await fetch("/api/upload/question-image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mimeType: file.type, size: file.size }),
-      });
+      let res: Response;
+      try {
+        res = await fetch("/api/upload/question-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mimeType: file.type, size: file.size }),
+        });
+      } catch {
+        alert("Upload API unreachable. Please refresh and try again.");
+        setUploading(false);
+        return;
+      }
       const data = await res.json();
       if (!res.ok) {
         alert(data.error ?? "Upload failed");
         return;
       }
       const { presignedUrl, publicUrl } = data;
-      const putRes = await fetch(presignedUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      let putRes: Response;
+      try {
+        putRes = await fetch(presignedUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      } catch {
+        alert("R2 storage upload failed (CORS). Add gate-assessment.org to R2 bucket CORS policy.");
+        return;
+      }
       if (!putRes.ok) {
-        alert("Failed to upload image to storage. Check R2 CORS settings.");
+        alert(`R2 upload failed (${putRes.status}). Check R2 CORS settings.`);
         return;
       }
       editor.chain().focus().setImage({ src: publicUrl }).run();
-    } catch (e) {
-      alert("Image upload error: " + (e instanceof Error ? e.message : String(e)));
     } finally {
       setUploading(false);
     }
