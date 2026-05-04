@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { r2, BUCKET } from "@/lib/r2";
 import { randomUUID } from "crypto";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const ALLOWED_TYPES = [
   "image/jpeg", "image/png", "image/webp",
@@ -29,6 +30,8 @@ const MAX_SIZE = 10 * 1024 * 1024;
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { ok } = checkRateLimit(`doc:${session.user.id}`, 50, 60 * 60 * 1000);
+  if (!ok) return NextResponse.json({ error: "Too many uploads. Try again later." }, { status: 429 });
 
   const body = await req.json();
   const { mimeType, size } = body;

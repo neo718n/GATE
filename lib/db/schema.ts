@@ -429,6 +429,7 @@ export const examSessionStatusEnum = pgEnum("exam_session_status", [
 
 export const exams = pgTable("exams", {
   id: serial("id").primaryKey(),
+  createdByUserId: text("created_by_user_id").references(() => user.id, { onDelete: "set null" }),
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
   subjectId: integer("subject_id").references(() => subjects.id, { onDelete: "set null" }),
   title: text("title").notNull(),
@@ -484,6 +485,7 @@ export const examSessions = pgTable("exam_sessions", {
   tabSwitchCount: integer("tab_switch_count").notNull().default(0),
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
+  archivedAt: timestamp("archived_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (t) => ({
   examIdIdx: index("exam_sessions_exam_id_idx").on(t.examId),
@@ -707,6 +709,25 @@ export const examAnswerRelations = relations(examAnswers, ({ one }) => ({
 // ────────────────────────────────────────────────────────────────────────────
 // Types
 // ────────────────────────────────────────────────────────────────────────────
+
+// ────────────────────────────────────────────────────────────────────────────
+// Audit log
+// ────────────────────────────────────────────────────────────────────────────
+
+export const auditLog = pgTable("audit_log", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  action: text("action").notNull(),
+  entityType: text("entity_type"),
+  entityId: text("entity_id"),
+  meta: jsonb("meta"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+}, (t) => ({
+  userIdIdx: index("audit_log_user_id_idx").on(t.userId),
+  createdAtIdx: index("audit_log_created_at_idx").on(t.createdAt),
+}));
+
+export type AuditLog = typeof auditLog.$inferSelect;
 
 export type Role = (typeof roleEnum.enumValues)[number];
 export type User = typeof user.$inferSelect;

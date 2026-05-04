@@ -4,6 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { requireRole } from "@/lib/authz";
 import { r2, BUCKET } from "@/lib/r2";
 import { randomUUID } from "crypto";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const ALLOWED_TYPES: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -16,7 +17,9 @@ const ALLOWED_TYPES: Record<string, string> = {
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function POST(req: NextRequest) {
-  await requireRole(["admin", "super_admin", "question_provider"]);
+  const auth = await requireRole(["admin", "super_admin", "question_provider"]);
+  const { ok } = checkRateLimit(`qimg:${auth.user.id}`, 30, 60 * 60 * 1000);
+  if (!ok) return NextResponse.json({ error: "Too many uploads. Try again later." }, { status: 429 });
 
   const { mimeType, size } = await req.json();
 

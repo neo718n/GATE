@@ -8,6 +8,7 @@ import {
   participants,
   subjects,
   user,
+  session as sessionTable,
   results,
   partners,
   careerApplications,
@@ -18,6 +19,7 @@ import { eq, and } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { resend, DEFAULT_FROM } from "@/lib/email";
+import { writeAuditLog } from "@/lib/audit";
 
 // ── Helpers ───────────────────────────────────────────────────────────────
 
@@ -158,14 +160,21 @@ export async function updateParticipantStatus(formData: FormData) {
 // ── Users ─────────────────────────────────────────────────────────────────
 
 export async function updateUserRole(formData: FormData) {
-  const session = await requireRole(["super_admin"]);
+  const authSession = await requireRole(["super_admin"]);
   const userId = formData.get("userId") as string;
-  if (!userId || userId === session.user.id) throw new Error("Invalid request");
+  if (!userId || userId === authSession.user.id) throw new Error("Invalid request");
   const role = assertEnum(formData.get("role") as string, USER_ROLES, "role");
+  const prevUser = await db.query.user.findFirst({ where: eq(user.id, userId) });
   await db
     .update(user)
     .set({ role })
     .where(eq(user.id, userId));
+  // Invalidate all active sessions so the role change takes effect immediately
+  await db.delete(sessionTable).where(eq(sessionTable.userId, userId));
+  await writeAuditLog(authSession.user.id, "update_user_role", "user", userId, {
+    from: prevUser?.role,
+    to: role,
+  });
   revalidatePath("/admin/users");
 }
 
@@ -173,7 +182,12 @@ export async function deleteUser(formData: FormData) {
   const session = await requireRole(["super_admin"]);
   const userId = formData.get("userId") as string;
   if (!userId || userId === session.user.id) return;
+  const target = await db.query.user.findFirst({ where: eq(user.id, userId) });
   await db.delete(user).where(eq(user.id, userId));
+  await writeAuditLog(session.user.id, "delete_user", "user", userId, {
+    email: target?.email,
+    role: target?.role,
+  });
   revalidatePath("/admin/users");
 }
 

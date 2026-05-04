@@ -107,7 +107,16 @@
       "Bash(sed -n '75,95p' \"c:\\\\\\\\Users\\\\\\\\nurbe\\\\\\\\Desktop\\\\\\\\projects\\\\\\\\GATE_project\\\\\\\\GATE\\\\\\\\app\\\\\\\\\\(dashboard\\)\\\\\\\\participant\\\\\\\\exams\\\\\\\\[id]\\\\\\\\take\\\\\\\\exam-taker.tsx\")",
       "Bash(Select-Object -First 200)",
       "Bash(Out-String)",
-      "Read(//c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\(dashboard\\)/participant/exams/**)"
+      "Read(//c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\(dashboard\\)/participant/exams/**)",
+      "Bash(rtk next *)",
+      "Bash(rtk proxy *)",
+      "Bash(xargs grep *)",
+      "Bash(Get-ChildItem -Recurse -Directory)",
+      "mcp__plugin_claude-mem_mcp-search__search",
+      "Bash(./node_modules/.bin/drizzle-kit generate *)",
+      "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/users/page.tsx)",
+      "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/payments/page.tsx)",
+      "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/exams/page.tsx)"
     ],
     "additionalDirectories": [
       "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms",

@@ -19,6 +19,9 @@ export async function requireSession() {
 export async function requireStaffSession() {
   const session = await getCurrentSession();
   if (!session) redirect("/staff");
+  const role = (session.user as { role?: Role }).role ?? "participant";
+  const staffRoles: Role[] = ["super_admin", "admin", "coordinator"];
+  if (!staffRoles.includes(role)) redirect("/");
   return session;
 }
 

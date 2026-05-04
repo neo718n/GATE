@@ -6,11 +6,12 @@ import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { writeAuditLog } from "@/lib/audit";
 
 // ─── Admin: Exam CRUD ─────────────────────────────────────────────────────────
 
 export async function createExam(formData: FormData) {
-  await requireRole(["admin", "super_admin"]);
+  const session = await requireRole(["admin", "super_admin", "question_provider"]);
 
   const title = (formData.get("title") as string)?.trim();
   const type = (formData.get("type") as string) as "exam" | "practice";
@@ -28,6 +29,7 @@ export async function createExam(formData: FormData) {
   const [exam] = await db.insert(exams).values({
     title,
     type: type === "practice" ? "practice" : "exam",
+    createdByUserId: session.user.id,
     subjectId,
     roundId,
     durationMinutes,
@@ -88,19 +90,33 @@ export async function togglePublishExam(formData: FormData) {
 }
 
 export async function deleteExam(formData: FormData) {
-  await requireRole(["admin", "super_admin"]);
+  const session = await requireRole(["admin", "super_admin"]);
   const examId = parseInt(formData.get("examId") as string);
+  const exam = await db.query.exams.findFirst({ where: eq(exams.id, examId) });
   await db.delete(exams).where(eq(exams.id, examId));
+  await writeAuditLog(session.user.id, "delete_exam", "exam", examId, { title: exam?.title });
   revalidatePath("/admin/exams");
   redirect("/admin/exams");
 }
 
 // ─── Admin: Question CRUD ─────────────────────────────────────────────────────
 
+async function assertExamOwnership(examId: number, userId: string, role: string) {
+  if (role === "question_provider") {
+    const exam = await db.query.exams.findFirst({ where: eq(exams.id, examId) });
+    if (!exam) throw new Error("Imtihon topilmadi");
+    if (exam.createdByUserId !== userId)
+      throw new Error("Bu imtihonni boshqarish huquqingiz yo'q");
+  }
+}
+
 export async function createQuestion(formData: FormData) {
   const session = await requireRole(["admin", "super_admin", "question_provider"]);
+  const role = (session.user as { role?: string }).role ?? "participant";
 
   const examId = parseInt(formData.get("examId") as string);
+  await assertExamOwnership(examId, session.user.id, role);
+
   const type = formData.get("type") as "mcq" | "numeric" | "open";
   const content = (formData.get("content") as string)?.trim();
   const optionsRaw = formData.get("options") as string | null;
@@ -136,15 +152,16 @@ export async function createQuestion(formData: FormData) {
 
   revalidatePath(`/admin/exams/${examId}`);
   revalidatePath(`/qp/exams/${examId}`);
-  const role = (session.user as { role?: string }).role ?? "admin";
   redirect(role === "question_provider" ? `/qp/exams/${examId}` : `/admin/exams/${examId}`);
 }
 
 export async function updateQuestion(formData: FormData) {
   const session = await requireRole(["admin", "super_admin", "question_provider"]);
+  const role = (session.user as { role?: string }).role ?? "participant";
 
   const questionId = parseInt(formData.get("questionId") as string);
   const examId = parseInt(formData.get("examId") as string);
+  await assertExamOwnership(examId, session.user.id, role);
   const type = formData.get("type") as "mcq" | "numeric" | "open";
   const content = (formData.get("content") as string)?.trim();
   const optionsRaw = formData.get("options") as string | null;
@@ -172,15 +189,24 @@ export async function updateQuestion(formData: FormData) {
 
   revalidatePath(`/admin/exams/${examId}`);
   revalidatePath(`/qp/exams/${examId}`);
-  const role = (session.user as { role?: string }).role ?? "admin";
   redirect(role === "question_provider" ? `/qp/exams/${examId}` : `/admin/exams/${examId}`);
 }
 
 export async function deleteQuestion(formData: FormData) {
-  await requireRole(["admin", "super_admin", "question_provider"]);
+  const session = await requireRole(["admin", "super_admin", "question_provider"]);
+  const role = (session.user as { role?: string }).role ?? "participant";
   const questionId = parseInt(formData.get("questionId") as string);
   const examId = parseInt(formData.get("examId") as string);
+  await assertExamOwnership(examId, session.user.id, role);
+
+  const answered = await db.query.examAnswers.findFirst({
+    where: eq(examAnswers.questionId, questionId),
+  });
+  if (answered)
+    throw new Error("Bu savolga participant javob bergan — o'chirib bo'lmaydi");
+
   await db.delete(questions).where(eq(questions.id, questionId));
+  await writeAuditLog(session.user.id, "delete_question", "question", questionId, { examId });
   revalidatePath(`/admin/exams/${examId}`);
   revalidatePath(`/qp/exams/${examId}`);
 }
@@ -218,19 +244,21 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
     }
   }
 
-  // Check existing active session
+  // Check existing non-archived session (archived = prior practice attempts)
   const existing = await db.query.examSessions.findFirst({
     where: and(
       eq(examSessions.examId, examId),
       eq(examSessions.participantId, participant.id),
+      sql`${examSessions.archivedAt} IS NULL`,
     ),
   });
   if (existing) {
     if (existing.status === "active") return { sessionId: existing.id };
     if (exam.type === "practice") {
-      // Allow retake: wipe old session and answers
-      await db.delete(examAnswers).where(eq(examAnswers.sessionId, existing.id));
-      await db.delete(examSessions).where(eq(examSessions.id, existing.id));
+      // Archive old session so participant can review prior attempts; don't delete
+      await db.update(examSessions)
+        .set({ archivedAt: new Date() })
+        .where(eq(examSessions.id, existing.id));
     } else {
       return { error: "You have already completed this exam" };
     }
