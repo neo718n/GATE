@@ -372,6 +372,7 @@ export async function gradeOpenAnswer(formData: FormData) {
 
   const answer = await db.query.examAnswers.findFirst({
     where: eq(examAnswers.id, answerId),
+    with: { session: true },
   });
-  if (answer) revalidatePath(`/admin/exams/${answer.sessionId}/results`);
+  if (answer) revalidatePath(`/admin/exams/${answer.session.examId}/results`);
 }

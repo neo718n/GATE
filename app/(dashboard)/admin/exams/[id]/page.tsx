@@ -5,6 +5,7 @@ import { eq, asc, desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { MathContent } from "@/components/ui/math-content";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -217,9 +218,9 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                   <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-gate-gold">{Q_TYPE[q.type]}</span>
                   <span className="text-[9px] text-foreground/35">{q.points} pt{q.points !== 1 ? "s" : ""}</span>
                 </div>
-                <div
+                <MathContent
+                  html={q.content}
                   className="text-sm font-light text-foreground line-clamp-2 [&_p]:inline [&_*]:text-sm"
-                  dangerouslySetInnerHTML={{ __html: q.content }}
                 />
               </div>
               <div className="flex items-center gap-2 shrink-0">

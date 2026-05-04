@@ -101,12 +101,12 @@ export default async function ExamResultsPage({ params }: { params: Promise<{ id
             <p className={`text-sm font-light ${(s.tabSwitchCount ?? 0) > 3 ? "text-yellow-600 font-medium" : "text-foreground/60"}`}>
               {s.tabSwitchCount ?? 0}
             </p>
-            <button
-              onClick={() => {}}
+            <Link
+              href={`/admin/exams/${examId}/results/${s.id}`}
               className="text-xs text-gate-gold hover:underline"
             >
               Details
-            </button>
+            </Link>
           </div>
         ))}
       </div>
