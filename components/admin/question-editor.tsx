@@ -76,9 +76,20 @@ export function QuestionEditor({ name, defaultValue = "", placeholder }: Questio
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mimeType: file.type, size: file.size }),
       });
-      const { presignedUrl, publicUrl } = await res.json();
-      await fetch(presignedUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error ?? "Upload failed");
+        return;
+      }
+      const { presignedUrl, publicUrl } = data;
+      const putRes = await fetch(presignedUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      if (!putRes.ok) {
+        alert("Failed to upload image to storage. Check R2 CORS settings.");
+        return;
+      }
       editor.chain().focus().setImage({ src: publicUrl }).run();
+    } catch (e) {
+      alert("Image upload error: " + (e instanceof Error ? e.message : String(e)));
     } finally {
       setUploading(false);
     }

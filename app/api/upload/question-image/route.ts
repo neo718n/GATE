@@ -16,7 +16,7 @@ const ALLOWED_TYPES: Record<string, string> = {
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function POST(req: NextRequest) {
-  await requireRole(["admin", "super_admin"]);
+  await requireRole(["admin", "super_admin", "question_provider"]);
 
   const { mimeType, size } = await req.json();
 
