@@ -7,11 +7,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { createQuestion } from "@/lib/actions/exam";
 import { QuestionEditor } from "@/components/admin/question-editor";
 import { MCQOptionsEditor } from "@/components/admin/mcq-options-editor";
 import { QuestionTypeToggle } from "@/components/admin/question-type-toggle";
+
+const GRADES = ["7", "8", "9", "10", "11"];
 
 export default async function QpNewQuestionPage({ params }: { params: Promise<{ id: string }> }) {
   await requireRole("question_provider");
@@ -43,6 +44,20 @@ export default async function QpNewQuestionPage({ params }: { params: Promise<{ 
 
         <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
+            Target Grades
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {GRADES.map((g) => (
+              <label key={g} className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="grades" value={g} className="w-4 h-4 rounded border-border accent-gate-gold" />
+                <span className="text-sm font-light text-foreground">{g} sinf</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Question Content
           </p>
           <div className="flex flex-col gap-2">
@@ -63,15 +78,9 @@ export default async function QpNewQuestionPage({ params }: { params: Promise<{ 
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Correct Answer
           </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="correctAnswer-num">Correct value</Label>
-              <Input id="correctAnswer-num" name="correctAnswer" type="number" step="any" placeholder="e.g. 42 or 3.14" />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="tolerance">Tolerance (±)</Label>
-              <Input id="tolerance" name="tolerance" type="number" step="any" min="0" placeholder="0" />
-            </div>
+          <div className="flex flex-col gap-2 max-w-xs">
+            <Label htmlFor="correctAnswer-num">Correct value</Label>
+            <Input id="correctAnswer-num" name="correctAnswer" type="number" step="any" placeholder="e.g. 42 or 3.14" />
           </div>
         </fieldset>
 
@@ -87,15 +96,13 @@ export default async function QpNewQuestionPage({ params }: { params: Promise<{ 
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Scoring & Explanation
           </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="points">Points</Label>
-              <Input id="points" name="points" type="number" min="1" defaultValue="1" />
-            </div>
+          <div className="flex flex-col gap-2 max-w-xs">
+            <Label htmlFor="points">Points</Label>
+            <Input id="points" name="points" type="number" min="1" defaultValue="1" />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="explanation">Explanation (shown after exam)</Label>
-            <Textarea id="explanation" name="explanation" rows={2} className="rounded-xl" placeholder="Optional: explain the correct answer..." />
+            <Label>Explanation (shown after practice exam)</Label>
+            <QuestionEditor name="explanation" placeholder="Optional: explain the correct answer..." />
           </div>
         </fieldset>
 

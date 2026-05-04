@@ -7,10 +7,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { updateQuestion } from "@/lib/actions/exam";
 import { QuestionEditor } from "@/components/admin/question-editor";
 import { MCQOptionsEditor } from "@/components/admin/mcq-options-editor";
+
+const GRADES = ["7", "8", "9", "10", "11"];
 
 export default async function QpEditQuestionPage({ params }: { params: Promise<{ id: string; qid: string }> }) {
   await requireRole("question_provider");
@@ -23,6 +24,8 @@ export default async function QpEditQuestionPage({ params }: { params: Promise<{
     db.query.questions.findFirst({ where: eq(questions.id, questionId) }),
   ]);
   if (!exam || !question) notFound();
+
+  const questionGrades = (question.grades as string[]) ?? [];
 
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
@@ -44,6 +47,26 @@ export default async function QpEditQuestionPage({ params }: { params: Promise<{
             Type: {question.type.toUpperCase()}
           </p>
         </div>
+
+        <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
+            Target Grades
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {GRADES.map((g) => (
+              <label key={g} className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="grades"
+                  value={g}
+                  defaultChecked={questionGrades.includes(g)}
+                  className="w-4 h-4 rounded border-border accent-gate-gold"
+                />
+                <span className="text-sm font-light text-foreground">{g} sinf</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
@@ -72,15 +95,9 @@ export default async function QpEditQuestionPage({ params }: { params: Promise<{
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
               Correct Answer
             </p>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="correctAnswer">Correct value</Label>
-                <Input id="correctAnswer" name="correctAnswer" type="number" step="any" defaultValue={question.correctAnswer ?? ""} />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="tolerance">Tolerance (±)</Label>
-                <Input id="tolerance" name="tolerance" type="number" step="any" min="0" defaultValue={question.tolerance ?? "0"} />
-              </div>
+            <div className="flex flex-col gap-2 max-w-xs">
+              <Label htmlFor="correctAnswer">Correct value</Label>
+              <Input id="correctAnswer" name="correctAnswer" type="number" step="any" defaultValue={question.correctAnswer ?? ""} />
             </div>
           </fieldset>
         )}
@@ -89,15 +106,13 @@ export default async function QpEditQuestionPage({ params }: { params: Promise<{
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Scoring & Explanation
           </p>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="points">Points</Label>
-              <Input id="points" name="points" type="number" min="1" defaultValue={question.points} />
-            </div>
+          <div className="flex flex-col gap-2 max-w-xs">
+            <Label htmlFor="points">Points</Label>
+            <Input id="points" name="points" type="number" min="1" defaultValue={question.points} />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="explanation">Explanation</Label>
-            <Textarea id="explanation" name="explanation" rows={2} className="rounded-xl" defaultValue={question.explanation ?? ""} />
+            <Label>Explanation (shown after practice exam)</Label>
+            <QuestionEditor name="explanation" defaultValue={question.explanation ?? ""} />
           </div>
         </fieldset>
 

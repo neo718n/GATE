@@ -272,7 +272,7 @@ export function ExamTaker({
                   }`}>
                     {opt.id}
                   </span>
-                  <span className="text-sm font-light text-foreground">{opt.text}</span>
+                  <MathContent html={opt.text} className="text-sm font-light text-foreground prose prose-sm max-w-none [&_p]:m-0 [&_img]:max-w-full [&_img]:inline" />
                   <input
                     type="radio"
                     className="sr-only"

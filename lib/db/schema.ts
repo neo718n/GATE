@@ -1,4 +1,4 @@
-﻿import { relations } from "drizzle-orm";
+﻿import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   date,
@@ -440,6 +440,7 @@ export const exams = pgTable("exams", {
   windowEnd: timestamp("window_end"),
   shuffleQuestions: boolean("shuffle_questions").notNull().default(true),
   questionsPerSession: integer("questions_per_session"),
+  targetGrades: text("target_grades").array().notNull().default(sql`ARRAY[]::text[]`),
   published: boolean("published").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -460,6 +461,7 @@ export const questions = pgTable("questions", {
   options: jsonb("options").$type<{ id: string; text: string }[]>(),
   correctAnswer: text("correct_answer"),
   tolerance: numeric("tolerance"),
+  grades: text("grades").array().notNull().default(sql`ARRAY[]::text[]`),
   points: integer("points").notNull().default(1),
   explanation: text("explanation"),
   createdAt: timestamp("created_at").notNull().defaultNow(),

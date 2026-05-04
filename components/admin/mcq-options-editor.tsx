@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import { OptionEditor } from "./option-editor";
 
 interface Option {
   id: string;
@@ -42,16 +43,16 @@ export function MCQOptionsEditor({ defaultOptions, defaultCorrect }: MCQOptionsE
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <input type="hidden" name="options" value={JSON.stringify(options)} />
       <input type="hidden" name="correctAnswer" value={correct} />
 
       {options.map((opt) => (
-        <div key={opt.id} className="flex items-center gap-3">
+        <div key={opt.id} className="flex items-start gap-3">
           <button
             type="button"
             onClick={() => setCorrect(opt.id)}
-            className={`w-7 h-7 rounded-full border-2 text-[11px] font-bold shrink-0 transition-all ${
+            className={`mt-2 w-7 h-7 rounded-full border-2 text-[11px] font-bold shrink-0 transition-all ${
               correct === opt.id
                 ? "border-gate-gold bg-gate-gold text-white"
                 : "border-border text-foreground/40 hover:border-gate-gold/50"
@@ -60,18 +61,16 @@ export function MCQOptionsEditor({ defaultOptions, defaultCorrect }: MCQOptionsE
           >
             {opt.id}
           </button>
-          <input
-            type="text"
+          <OptionEditor
             value={opt.text}
-            onChange={(e) => updateText(opt.id, e.target.value)}
+            onChange={(html) => updateText(opt.id, html)}
             placeholder={`Option ${opt.id}`}
-            className="flex-1 h-10 rounded-xl border border-border bg-card px-3 text-sm font-light text-foreground placeholder:text-foreground/35 focus:outline-none focus:border-gate-gold focus:ring-2 focus:ring-gate-gold/15 transition-all"
           />
           {options.length > 2 && (
             <button
               type="button"
               onClick={() => removeOption(opt.id)}
-              className="text-foreground/30 hover:text-destructive transition-colors"
+              className="mt-2 text-foreground/30 hover:text-destructive transition-colors shrink-0"
             >
               <Trash2 className="h-4 w-4" />
             </button>

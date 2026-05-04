@@ -36,6 +36,13 @@
       "when": 1777887787710,
       "tag": "0004_add_exam_session_archived_at",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1777918799297,
+      "tag": "0005_sad_speed",
+      "breakpoints": true
     }
   ]
 }

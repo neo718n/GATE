@@ -154,6 +154,23 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                 <Input id="windowEnd" name="windowEnd" type="datetime-local" defaultValue={fmt(exam.windowEnd)} />
               </div>
             </div>
+            <div className="flex flex-col gap-2">
+              <Label>Target Grades (empty = all grades)</Label>
+              <div className="flex flex-wrap gap-3">
+                {["7", "8", "9", "10", "11"].map((g) => (
+                  <label key={g} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="targetGrades"
+                      value={g}
+                      defaultChecked={(exam.targetGrades as string[] ?? []).includes(g)}
+                      className="w-4 h-4 rounded border-border accent-gate-gold"
+                    />
+                    <span className="text-sm font-light text-foreground">{g} sinf</span>
+                  </label>
+                ))}
+              </div>
+            </div>
             <label className="flex items-center gap-3 cursor-pointer">
               <input type="checkbox" name="shuffleQuestions" defaultChecked={exam.shuffleQuestions} className="w-4 h-4 accent-gate-gold" />
               <span className="text-sm font-light text-foreground">Shuffle questions</span>

@@ -116,7 +116,11 @@
       "Bash(./node_modules/.bin/drizzle-kit generate *)",
       "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/users/page.tsx)",
       "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/payments/page.tsx)",
-      "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/exams/page.tsx)"
+      "Bash(sed -n '1,35p' /c/Users/nurbe/Desktop/projects/GATE_project/GATE/app/\\\\\\(dashboard\\\\\\)/admin/exams/page.tsx)",
+      "PowerShell($content = Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\components\\\\admin\\\\question-editor.tsx\"; $start = \\($content | Select-String \"const handleImageUpload\"\\).LineNumber - 1; $content[$start..\\($start+15\\)])",
+      "PowerShell($content = Get-Content \"c:\\\\Users\\\\nurbe\\\\Desktop\\\\projects\\\\GATE_project\\\\GATE\\\\components\\\\admin\\\\question-editor.tsx\"; $start = \\($content | Select-String \"const handleImageUpload\"\\).LineNumber - 1; $content[$start..\\($start+50\\)])",
+      "Bash(awk '/^export async function updateQuestion/,/^}/' \"c:/Users/nurbe/Desktop/projects/GATE_project/GATE/lib/actions/exam.ts\")",
+      "Bash(awk '/^async function assertExamOwnership/,/^}/' \"c:/Users/nurbe/Desktop/projects/GATE_project/GATE/lib/actions/exam.ts\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\nurbe\\Desktop\\projects\\GATE_project\\GATE\\app\\(marketing)\\terms",

@@ -123,9 +123,9 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
                   <p className="text-xs font-light text-foreground/60">Your answer: <span className="text-foreground">{ans.answer}</span></p>
                 )}
                 {q.explanation && (
-                  <p className="text-xs font-light text-foreground/50 border-t border-border pt-2 mt-1">
-                    {q.explanation}
-                  </p>
+                  <div className="border-t border-border pt-2 mt-1">
+                    <MathContent html={q.explanation} className="text-xs font-light text-foreground/50 prose prose-sm max-w-none [&_p]:m-0 [&_img]:max-w-full [&_img]:rounded" />
+                  </div>
                 )}
               </div>
             );

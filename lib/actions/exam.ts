@@ -57,6 +57,7 @@ export async function updateExam(examId: number, formData: FormData) {
   const shuffleQuestions = formData.get("shuffleQuestions") === "on";
   const questionsPerSession = formData.get("questionsPerSession") ? parseInt(formData.get("questionsPerSession") as string) : null;
   const instructions = (formData.get("instructions") as string)?.trim() || null;
+  const targetGrades = formData.getAll("targetGrades") as string[];
 
   if (!title) throw new Error("Title is required");
 
@@ -71,6 +72,7 @@ export async function updateExam(examId: number, formData: FormData) {
     shuffleQuestions,
     questionsPerSession,
     instructions,
+    targetGrades,
     updatedAt: new Date(),
   }).where(eq(exams.id, examId));
 
@@ -125,10 +127,9 @@ export async function createQuestion(formData: FormData) {
   const content = (formData.get("content") as string)?.trim();
   const optionsRaw = formData.get("options") as string | null;
   const correctAnswer = (formData.get("correctAnswer") as string) || null;
-  const toleranceRaw = formData.get("tolerance") as string | null;
-  const tolerance = toleranceRaw ? parseFloat(toleranceRaw).toString() : null;
   const points = parseInt(formData.get("points") as string) || 1;
   const explanation = (formData.get("explanation") as string)?.trim() || null;
+  const grades = formData.getAll("grades") as string[];
 
   if (!content) throw new Error("Content is required");
 
@@ -148,7 +149,7 @@ export async function createQuestion(formData: FormData) {
     content,
     options,
     correctAnswer,
-    tolerance,
+    grades,
     points,
     explanation,
     order: maxOrder + 1,
@@ -170,10 +171,9 @@ export async function updateQuestion(formData: FormData) {
   const content = (formData.get("content") as string)?.trim();
   const optionsRaw = formData.get("options") as string | null;
   const correctAnswer = (formData.get("correctAnswer") as string) || null;
-  const toleranceRaw = formData.get("tolerance") as string | null;
-  const tolerance = toleranceRaw ? parseFloat(toleranceRaw).toString() : null;
   const points = parseInt(formData.get("points") as string) || 1;
   const explanation = (formData.get("explanation") as string)?.trim() || null;
+  const grades = formData.getAll("grades") as string[];
 
   let options = null;
   if (type === "mcq" && optionsRaw) {
@@ -185,7 +185,7 @@ export async function updateQuestion(formData: FormData) {
     content,
     options,
     correctAnswer,
-    tolerance,
+    grades,
     points,
     explanation,
     updatedAt: new Date(),
@@ -372,8 +372,7 @@ export async function submitExam(sessionId: number) {
       isCorrect = ans.answer === q.correctAnswer;
     } else if (q.type === "numeric" && q.correctAnswer) {
       const diff = Math.abs(parseFloat(ans.answer) - parseFloat(q.correctAnswer));
-      const tol = q.tolerance ? parseFloat(q.tolerance) : 0;
-      isCorrect = diff <= tol;
+      isCorrect = diff < 1e-9;
     }
 
     const awarded = isCorrect ? q.points : 0;

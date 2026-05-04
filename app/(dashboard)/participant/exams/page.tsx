@@ -22,14 +22,24 @@ export default async function ParticipantExamsPage() {
     with: { subject: true, round: true },
   });
 
+  const participantGrade = participant?.grade ?? null;
+
+  const gradeAllowed = (e: (typeof published)[0]) => {
+    const tg = e.targetGrades as string[] | null;
+    if (!tg || tg.length === 0) return true;
+    if (!participantGrade) return true;
+    return tg.includes(participantGrade);
+  };
+
   const now = new Date();
   const available = published.filter((e) => {
+    if (!gradeAllowed(e)) return false;
     if (e.windowStart && now < e.windowStart) return false;
     if (e.windowEnd && now > e.windowEnd) return false;
     return true;
   });
-  const upcoming = published.filter((e) => e.windowStart && now < e.windowStart);
-  const past = published.filter((e) => e.windowEnd && now > e.windowEnd);
+  const upcoming = published.filter((e) => gradeAllowed(e) && e.windowStart && now < e.windowStart);
+  const past = published.filter((e) => gradeAllowed(e) && e.windowEnd && now > e.windowEnd);
 
   const mySessionsRaw = participant
     ? await db.query.examSessions.findMany({
