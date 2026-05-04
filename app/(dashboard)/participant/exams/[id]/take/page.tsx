@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { exams, examSessions, examAnswers, participants } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import { ExamTaker } from "./exam-taker";
 
@@ -19,6 +19,7 @@ export default async function TakeExamPage({ params }: { params: Promise<{ id: s
     where: and(
       eq(examSessions.examId, examId),
       eq(examSessions.participantId, participant.id),
+      sql`${examSessions.archivedAt} IS NULL`,
     ),
   });
   if (!examSession) redirect(`/participant/exams/${examId}`);
