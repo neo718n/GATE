@@ -1,49 +1,42 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
-export function MathContent({ html, className }: { html: string; className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
+function renderMath(html: string): string {
+  let out = html;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    // Handle TipTap Mathematics nodes serialized as <span data-type="math">
-    el.querySelectorAll<HTMLElement>('[data-type="math"]').forEach((span) => {
-      let latex = span.textContent?.trim() ?? "";
-      const displayMode = latex.startsWith("$$") && latex.endsWith("$$");
-      if (displayMode) latex = latex.slice(2, -2);
+  // TipTap Mathematics nodes: <span data-type="math">...$latex$...</span>
+  out = out.replace(
+    /<span\b[^>]*data-type="math"[^>]*>([^<]*)<\/span>/g,
+    (_, inner: string) => {
+      let latex = inner.trim();
+      const display = latex.startsWith("$$") && latex.endsWith("$$");
+      if (display) latex = latex.slice(2, -2);
       else if (latex.startsWith("$") && latex.endsWith("$")) latex = latex.slice(1, -1);
-      if (!latex) return;
-      try {
-        katex.render(latex, span, { throwOnError: false, displayMode });
-      } catch { /* ignore */ }
-    });
+      return katex.renderToString(latex, { throwOnError: false, displayMode: display });
+    },
+  );
 
-    // Handle $...$ and $$...$$ delimiters in plain text via auto-render
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    import("katex/dist/contrib/auto-render.js" as any).then((mod: any) => {
-      const renderMathInElement = (mod.default ?? mod) as (el: HTMLElement, opts: object) => void;
-      renderMathInElement(el, {
-        delimiters: [
-          { left: "$$", right: "$$", display: true },
-          { left: "$",  right: "$",  display: false },
-          { left: "\\(", right: "\\)", display: false },
-          { left: "\\[", right: "\\]", display: true },
-        ],
-        throwOnError: false,
-      });
-    });
-  }, [html]);
+  // $$...$$ display math (must come before single $)
+  out = out.replace(/\$\$([\s\S]+?)\$\$/g, (_, latex: string) =>
+    katex.renderToString(latex.trim(), { throwOnError: false, displayMode: true }),
+  );
 
+  // $...$ inline math
+  out = out.replace(/\$([^$\n]+?)\$/g, (_, latex: string) =>
+    katex.renderToString(latex.trim(), { throwOnError: false, displayMode: false }),
+  );
+
+  return out;
+}
+
+export function MathContent({ html, className }: { html: string; className?: string }) {
   return (
     <div
-      ref={ref}
       className={className}
-      dangerouslySetInnerHTML={{ __html: html }}
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: renderMath(html) }}
     />
   );
 }
