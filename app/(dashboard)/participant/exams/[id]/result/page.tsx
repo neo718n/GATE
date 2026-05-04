@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { exams, examSessions, examAnswers, participants } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
     where: and(
       eq(examSessions.examId, examId),
       eq(examSessions.participantId, participant.id),
+      sql`${examSessions.archivedAt} IS NULL`,
     ),
     with: {
       answers: { with: { question: true } },
@@ -132,9 +133,16 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
         </div>
       )}
 
-      <Link href="/participant/exams">
-        <Button variant="outline" size="md">Back to Exams</Button>
-      </Link>
+      <div className="flex items-center gap-4">
+        {isPractice && (
+          <Link href={`/participant/exams/${examId}`}>
+            <Button variant="gold" size="md">Try Again</Button>
+          </Link>
+        )}
+        <Link href="/participant/exams">
+          <Button variant="outline" size="md">Back to Exams</Button>
+        </Link>
+      </div>
     </div>
   );
 }

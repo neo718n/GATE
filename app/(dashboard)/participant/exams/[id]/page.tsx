@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { exams, examSessions, participants } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -50,12 +50,13 @@ export default async function PreExamPage({ params }: { params: Promise<{ id: st
         where: and(
           eq(examSessions.examId, examId),
           eq(examSessions.participantId, participant.id),
+          sql`${examSessions.archivedAt} IS NULL`,
         ),
       })
     : null;
 
   if (existing?.status === "active") redirect(`/participant/exams/${examId}/take`);
-  if (existing?.status === "submitted" || existing?.status === "timed_out") {
+  if ((existing?.status === "submitted" || existing?.status === "timed_out") && exam.type !== "practice") {
     return (
       <div className="flex flex-col gap-4 max-w-xl">
         <h1 className="font-serif text-3xl font-light">{exam.title}</h1>
