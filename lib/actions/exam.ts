@@ -383,23 +383,22 @@ export async function submitExam(sessionId: number) {
 
   const score = totalPoints > 0 ? ((earnedPoints / totalPoints) * 100).toFixed(2) : null;
 
-  await db.transaction(async (tx) => {
-    await Promise.all(
-      scoreUpdates.map(({ answerId, isCorrect, awarded }) =>
-        tx.update(examAnswers).set({
-          isCorrect,
-          pointsAwarded: awarded.toString(),
-          updatedAt: new Date(),
-        }).where(eq(examAnswers.id, answerId))
-      )
-    );
+  // Neon HTTP driver does not support transactions — run sequentially
+  await Promise.all(
+    scoreUpdates.map(({ answerId, isCorrect, awarded }) =>
+      db.update(examAnswers).set({
+        isCorrect,
+        pointsAwarded: awarded.toString(),
+        updatedAt: new Date(),
+      }).where(eq(examAnswers.id, answerId))
+    )
+  );
 
-    await tx.update(examSessions).set({
-      status: "submitted",
-      submittedAt: new Date(),
-      score,
-    }).where(eq(examSessions.id, sessionId));
-  });
+  await db.update(examSessions).set({
+    status: "submitted",
+    submittedAt: new Date(),
+    score,
+  }).where(eq(examSessions.id, sessionId));
 
   return { ok: true, score };
 }
