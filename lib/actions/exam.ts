@@ -105,8 +105,12 @@ async function assertExamOwnership(examId: number, userId: string, role: string)
   if (role === "question_provider") {
     const exam = await db.query.exams.findFirst({ where: eq(exams.id, examId) });
     if (!exam) throw new Error("Imtihon topilmadi");
-    if (exam.createdByUserId !== userId)
+    if (exam.createdByUserId === null) {
+      // Exam predates ownership tracking — claim it for this QP
+      await db.update(exams).set({ createdByUserId: userId }).where(eq(exams.id, examId));
+    } else if (exam.createdByUserId !== userId) {
       throw new Error("Bu imtihonni boshqarish huquqingiz yo'q");
+    }
   }
 }
 
