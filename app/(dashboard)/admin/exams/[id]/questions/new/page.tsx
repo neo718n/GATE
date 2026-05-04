@@ -12,7 +12,7 @@ import { QuestionEditor } from "@/components/admin/question-editor";
 import { MCQOptionsEditor } from "@/components/admin/mcq-options-editor";
 import { QuestionTypeToggle } from "@/components/admin/question-type-toggle";
 
-const GRADES = ["7", "8", "9", "10", "11"];
+const GRADES = Array.from({ length: 12 }, (_, i) => String(i + 1));
 
 export default async function NewQuestionPage({ params }: { params: Promise<{ id: string }> }) {
   await requireRole(["admin", "super_admin"]);
@@ -50,7 +50,7 @@ export default async function NewQuestionPage({ params }: { params: Promise<{ id
             {GRADES.map((g) => (
               <label key={g} className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="grades" value={g} className="w-4 h-4 rounded border-border accent-gate-gold" />
-                <span className="text-sm font-light text-foreground">{g} sinf</span>
+                <span className="text-sm font-light text-foreground">Grade {g}</span>
               </label>
             ))}
           </div>

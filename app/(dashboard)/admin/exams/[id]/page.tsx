@@ -157,7 +157,7 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
             <div className="flex flex-col gap-2">
               <Label>Target Grades (empty = all grades)</Label>
               <div className="flex flex-wrap gap-3">
-                {["7", "8", "9", "10", "11"].map((g) => (
+                {Array.from({ length: 12 }, (_, i) => String(i + 1)).map((g) => (
                   <label key={g} className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
@@ -166,7 +166,7 @@ export default async function ExamDetailPage({ params }: { params: Promise<{ id:
                       defaultChecked={(exam.targetGrades as string[] ?? []).includes(g)}
                       className="w-4 h-4 rounded border-border accent-gate-gold"
                     />
-                    <span className="text-sm font-light text-foreground">{g} sinf</span>
+                    <span className="text-sm font-light text-foreground">Grade {g}</span>
                   </label>
                 ))}
               </div>
