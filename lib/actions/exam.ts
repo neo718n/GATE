@@ -373,10 +373,28 @@ export async function submitExam(sessionId: number) {
 }
 
 export async function logTabSwitch(sessionId: number) {
+  const auth = await requireRole(["participant", "admin", "super_admin"]);
+  const role = (auth.user as { role?: string }).role ?? "participant";
+
+  let participantIdFilter: ReturnType<typeof eq> | undefined;
+  if (role === "participant") {
+    const participant = await db.query.participants.findFirst({
+      where: (p, { eq: peq }) => peq(p.userId, auth.user.id),
+    });
+    if (!participant) return;
+    participantIdFilter = eq(examSessions.participantId, participant.id);
+  }
+
   await db
     .update(examSessions)
     .set({ tabSwitchCount: sql`${examSessions.tabSwitchCount} + 1` })
-    .where(and(eq(examSessions.id, sessionId), eq(examSessions.status, "active")));
+    .where(
+      and(
+        eq(examSessions.id, sessionId),
+        eq(examSessions.status, "active"),
+        participantIdFilter
+      )
+    );
 }
 
 // ─── Admin: Grading ───────────────────────────────────────────────────────────
