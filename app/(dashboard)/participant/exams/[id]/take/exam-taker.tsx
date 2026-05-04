@@ -67,17 +67,26 @@ export function ExamTaker({
   const [submitting, setSubmitting] = useState(false);
   const [submitConfirm, setSubmitConfirm] = useState(false);
   const [lastSaved, setLastSaved] = useState<string>("");
+  const [tabSwitchCount, setTabSwitchCount] = useState(0);
+  const [showTabWarning, setShowTabWarning] = useState(false);
   const router = useRouter();
   const remaining = useCountdown(deadlineAt);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const handleSubmitRef = useRef<(auto?: boolean) => Promise<void>>(async () => {});
 
   const q = questions[current];
 
-  // Tab switch detection
+  // Tab switch detection — logs to server and shows warning on return
   useEffect(() => {
     if (!isExam) return;
     const onVisibility = () => {
-      if (document.hidden) logTabSwitch(sessionId);
+      if (document.hidden) {
+        logTabSwitch(sessionId);
+        setTabSwitchCount((c) => c + 1);
+      } else {
+        // User returned to the tab — show warning
+        setShowTabWarning(true);
+      }
     };
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
@@ -97,9 +106,9 @@ export function ExamTaker({
     return () => { if (autoSaveRef.current) clearInterval(autoSaveRef.current); };
   }, [q.id, answers, saveCurrentAnswer]);
 
-  // Auto-submit when time runs out
+  // Auto-submit when time runs out — uses ref to avoid stale closure
   useEffect(() => {
-    if (remaining === 0) handleSubmit(true);
+    if (remaining === 0) handleSubmitRef.current(true);
   }, [remaining]);
 
   const setAnswer = (qId: number, answer: string | null) => {
@@ -125,10 +134,9 @@ export function ExamTaker({
     if (current > 0) setCurrent((c) => c - 1);
   };
 
-  const handleSubmit = async (auto = false) => {
+  const handleSubmit = useCallback(async (auto = false) => {
     if (!auto && !submitConfirm) { setSubmitConfirm(true); return; }
     setSubmitting(true);
-    // Save all answers first
     await Promise.all(
       questions.map((qq) => {
         const a = answers[qq.id];
@@ -137,7 +145,12 @@ export function ExamTaker({
     );
     await submitExam(sessionId);
     router.push(`/participant/exams/${examId}/result`);
-  };
+  }, [submitConfirm, questions, answers, sessionId, examId, router]);
+
+  // Keep ref in sync so the auto-submit useEffect always calls the latest version
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
 
   const answeredCount = questions.filter((qq) => answers[qq.id]?.answer).length;
   const isWarning = remaining !== null && remaining < 5 * 60 * 1000;
@@ -315,6 +328,31 @@ export function ExamTaker({
           </div>
         </div>
       </div>
+
+      {/* Tab-switch warning overlay */}
+      {showTabWarning && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="border border-yellow-400 bg-card p-8 max-w-sm w-full flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <p className="font-serif text-2xl font-light text-yellow-600">Tab switch detected</p>
+              <p className="text-sm font-light text-foreground/70">
+                Leaving the exam window is recorded and may affect your result.
+              </p>
+              <p className="text-xs font-semibold text-yellow-600 uppercase tracking-[0.15em]">
+                {tabSwitchCount} switch{tabSwitchCount !== 1 ? "es" : ""} recorded this session
+              </p>
+            </div>
+            <Button
+              onClick={() => setShowTabWarning(false)}
+              variant="outline"
+              size="sm"
+              className="border-yellow-400 text-yellow-700 hover:bg-yellow-50"
+            >
+              I understand — continue exam
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Submit confirmation overlay */}
       {submitConfirm && (

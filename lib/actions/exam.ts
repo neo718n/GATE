@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { exams, questions, examSessions, examAnswers, subjects, rounds } from "@/lib/db/schema";
-import { eq, desc, and, asc } from "drizzle-orm";
+import { eq, desc, and, asc, sql } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -202,8 +202,21 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
 
   const participant = await db.query.participants.findFirst({
     where: (p, { eq }) => eq(p.userId, session.user.id),
+    with: { subjects: true },
   });
   if (!participant) return { error: "Participant profile not found" };
+
+  // Admins bypass enrollment checks; participants must be enrolled in the exam's round and subject
+  const userRole = (session.user as { role?: string }).role ?? "participant";
+  if (userRole === "participant") {
+    if (exam.roundId && participant.roundId !== exam.roundId) {
+      return { error: "You are not enrolled in the round for this exam" };
+    }
+    if (exam.subjectId) {
+      const enrolled = participant.subjects.some((s) => s.subjectId === exam.subjectId);
+      if (!enrolled) return { error: "You are not enrolled in the subject for this exam" };
+    }
+  }
 
   // Check existing active session
   const existing = await db.query.examSessions.findFirst({
@@ -251,38 +264,44 @@ export async function saveAnswer(
   answer: string | null,
   flagged: boolean = false,
 ) {
-  await requireRole(["participant", "admin", "super_admin"]);
+  const authSession = await requireRole(["participant", "admin", "super_admin"]);
 
-  const session = await db.query.examSessions.findFirst({
+  const dbSession = await db.query.examSessions.findFirst({
     where: eq(examSessions.id, sessionId),
   });
-  if (!session || session.status !== "active") return { error: "Session not active" };
-  if (session.deadlineAt && new Date() > session.deadlineAt) {
+  if (!dbSession || dbSession.status !== "active") return { error: "Session not active" };
+
+  // Ownership check — participants can only save answers to their own sessions
+  const role = (authSession.user as { role?: string }).role ?? "participant";
+  if (role === "participant") {
+    const participant = await db.query.participants.findFirst({
+      where: (p, { eq }) => eq(p.userId, authSession.user.id),
+    });
+    if (!participant || dbSession.participantId !== participant.id) {
+      return { error: "Unauthorized" };
+    }
+  }
+
+  if (dbSession.deadlineAt && new Date() > dbSession.deadlineAt) {
     await db.update(examSessions).set({ status: "timed_out" }).where(eq(examSessions.id, sessionId));
     return { error: "Time expired" };
   }
 
-  // Upsert answer
-  const existing = await db.query.examAnswers.findFirst({
-    where: and(eq(examAnswers.sessionId, sessionId), eq(examAnswers.questionId, questionId)),
-  });
-
-  if (existing) {
-    await db.update(examAnswers).set({
+  await db.insert(examAnswers).values({
+    sessionId,
+    questionId,
+    answer,
+    flagged,
+    answeredAt: answer ? new Date() : null,
+  }).onConflictDoUpdate({
+    target: [examAnswers.sessionId, examAnswers.questionId],
+    set: {
       answer,
       flagged,
-      answeredAt: answer ? new Date() : existing.answeredAt,
+      answeredAt: answer ? new Date() : sql`${examAnswers.answeredAt}`,
       updatedAt: new Date(),
-    }).where(eq(examAnswers.id, existing.id));
-  } else {
-    await db.insert(examAnswers).values({
-      sessionId,
-      questionId,
-      answer,
-      flagged,
-      answeredAt: answer ? new Date() : null,
-    });
-  }
+    },
+  });
 
   return { ok: true };
 }
@@ -299,18 +318,24 @@ export async function submitExam(sessionId: number) {
   });
   if (!session || session.status !== "active") return { error: "Session not active" };
 
-  // Auto-score MCQ and numeric
+  // Auto-score MCQ and numeric — only questions assigned to this session
+  const sessionQuestionIds = new Set<number>(
+    Array.isArray(session.questionOrder)
+      ? (session.questionOrder as number[])
+      : session.exam.questions.map((q) => q.id)
+  );
+  const sessionQuestions = session.exam.questions.filter((q) => sessionQuestionIds.has(q.id));
+
   let totalPoints = 0;
   let earnedPoints = 0;
+  const scoreUpdates: { answerId: number; isCorrect: boolean; awarded: number }[] = [];
 
-  for (const q of session.exam.questions) {
+  for (const q of sessionQuestions) {
     totalPoints += q.points;
     const ans = session.answers.find((a) => a.questionId === q.id);
-    if (!ans?.answer) continue;
+    if (!ans?.answer || q.type === "open") continue;
 
     let isCorrect = false;
-    let awarded = 0;
-
     if (q.type === "mcq") {
       isCorrect = ans.answer === q.correctAnswer;
     } else if (q.type === "numeric" && q.correctAnswer) {
@@ -319,38 +344,39 @@ export async function submitExam(sessionId: number) {
       isCorrect = diff <= tol;
     }
 
-    if (isCorrect) awarded = q.points;
+    const awarded = isCorrect ? q.points : 0;
     earnedPoints += awarded;
-
-    if (q.type !== "open") {
-      await db.update(examAnswers).set({
-        isCorrect,
-        pointsAwarded: awarded.toString(),
-        updatedAt: new Date(),
-      }).where(eq(examAnswers.id, ans.id));
-    }
+    scoreUpdates.push({ answerId: ans.id, isCorrect, awarded });
   }
 
   const score = totalPoints > 0 ? ((earnedPoints / totalPoints) * 100).toFixed(2) : null;
 
-  await db.update(examSessions).set({
-    status: "submitted",
-    submittedAt: new Date(),
-    score,
-  }).where(eq(examSessions.id, sessionId));
+  await db.transaction(async (tx) => {
+    await Promise.all(
+      scoreUpdates.map(({ answerId, isCorrect, awarded }) =>
+        tx.update(examAnswers).set({
+          isCorrect,
+          pointsAwarded: awarded.toString(),
+          updatedAt: new Date(),
+        }).where(eq(examAnswers.id, answerId))
+      )
+    );
+
+    await tx.update(examSessions).set({
+      status: "submitted",
+      submittedAt: new Date(),
+      score,
+    }).where(eq(examSessions.id, sessionId));
+  });
 
   return { ok: true, score };
 }
 
 export async function logTabSwitch(sessionId: number) {
-  const session = await db.query.examSessions.findFirst({
-    where: eq(examSessions.id, sessionId),
-  });
-  if (!session || session.status !== "active") return;
-
-  await db.update(examSessions).set({
-    tabSwitchCount: (session.tabSwitchCount ?? 0) + 1,
-  }).where(eq(examSessions.id, sessionId));
+  await db
+    .update(examSessions)
+    .set({ tabSwitchCount: sql`${examSessions.tabSwitchCount} + 1` })
+    .where(and(eq(examSessions.id, sessionId), eq(examSessions.status, "active")));
 }
 
 // ─── Admin: Grading ───────────────────────────────────────────────────────────
@@ -370,9 +396,32 @@ export async function gradeOpenAnswer(formData: FormData) {
     updatedAt: new Date(),
   }).where(eq(examAnswers.id, answerId));
 
+  // Reload answer with session to recalculate total score
   const answer = await db.query.examAnswers.findFirst({
     where: eq(examAnswers.id, answerId),
-    with: { session: true },
+    with: { session: { with: { exam: { with: { questions: true } } } } },
   });
-  if (answer) revalidatePath(`/admin/exams/${answer.session.examId}/results`);
+  if (!answer) return;
+
+  // Recalculate session score including newly graded open answers
+  const allAnswers = await db.query.examAnswers.findMany({
+    where: eq(examAnswers.sessionId, answer.sessionId),
+  });
+
+  const sessionQIds = new Set<number>(
+    Array.isArray(answer.session.questionOrder)
+      ? (answer.session.questionOrder as number[])
+      : answer.session.exam.questions.map((q) => q.id)
+  );
+  const sessionQuestions = answer.session.exam.questions.filter((q) => sessionQIds.has(q.id));
+  const totalPts = sessionQuestions.reduce((sum, q) => sum + q.points, 0);
+  const earnedPts = allAnswers.reduce((sum, a) => sum + (parseFloat(a.pointsAwarded ?? "0") || 0), 0);
+  const newScore = totalPts > 0 ? ((earnedPts / totalPts) * 100).toFixed(2) : null;
+
+  await db.update(examSessions)
+    .set({ score: newScore })
+    .where(eq(examSessions.id, answer.sessionId));
+
+  revalidatePath(`/admin/exams/${answer.session.examId}/results`);
+  revalidatePath(`/admin/exams/${answer.session.examId}/results/${answer.sessionId}`);
 }

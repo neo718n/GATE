@@ -1,9 +1,12 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { payments } from "@/lib/db/schema";
-import { desc } from "drizzle-orm";
+import { desc, count } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { updatePaymentStatus } from "@/lib/actions/admin";
+import Link from "next/link";
+
+const PAGE_SIZE = 30;
 
 const STATUS_LABEL: Record<string, string> = {
   pending: "Pending",
@@ -19,24 +22,36 @@ const STATUS_COLOR: Record<string, string> = {
   refunded: "text-foreground/40",
 };
 
-export default async function PaymentsPage() {
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   await requireRole(["super_admin", "admin"]);
 
-  const allPayments = await db.query.payments.findMany({
-    orderBy: desc(payments.createdAt),
-    with: {
-      user: true,
-      cycle: true,
-      round: true,
-    },
-  });
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, parseInt(pageParam ?? "1") || 1);
 
-  const paid = allPayments.filter((p) => p.status === "paid").length;
-  const pending = allPayments.filter((p) => p.status === "pending").length;
-  const failed = allPayments.filter((p) => p.status === "failed").length;
-  const totalCents = allPayments
+  const [allStats, totalResult, pagePayments] = await Promise.all([
+    db.query.payments.findMany({ with: { user: true } }),
+    db.select({ count: count() }).from(payments),
+    db.query.payments.findMany({
+      orderBy: desc(payments.createdAt),
+      limit: PAGE_SIZE,
+      offset: (page - 1) * PAGE_SIZE,
+      with: { user: true, cycle: true, round: true },
+    }),
+  ]);
+
+  const paid = allStats.filter((p) => p.status === "paid").length;
+  const pending = allStats.filter((p) => p.status === "pending").length;
+  const failed = allStats.filter((p) => p.status === "failed").length;
+  const totalCents = allStats
     .filter((p) => p.status === "paid")
     .reduce((sum, p) => sum + p.amountCents, 0);
+
+  const total = totalResult[0]?.count ?? 0;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <div className="flex flex-col gap-8 max-w-6xl">
@@ -46,7 +61,7 @@ export default async function PaymentsPage() {
         </span>
         <h1 className="font-serif text-4xl font-light text-foreground">Payments</h1>
         <p className="text-sm font-light text-foreground/60 mt-1">
-          {allPayments.length} total payment records
+          {total} total payment records
         </p>
       </div>
 
@@ -70,45 +85,38 @@ export default async function PaymentsPage() {
       {/* Table */}
       <div className="flex flex-col gap-0 border border-border bg-card divide-y divide-border overflow-x-auto">
         <div className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr_1fr_110px_100px] gap-3 px-5 py-3 bg-muted/30 min-w-[900px]">
-          {["User", "Email", "Cycle", "Round", "Amount", "Status", "Date", "Action"].map(
-            (h) => (
-              <span
-                key={h}
-                className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50"
-              >
-                {h}
-              </span>
-            ),
-          )}
+          {["User", "Email", "Cycle", "Round", "Amount", "Status", "Date", "Action"].map((h) => (
+            <span key={h} className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
+              {h}
+            </span>
+          ))}
         </div>
 
-        {allPayments.length === 0 && (
+        {pagePayments.length === 0 && (
           <p className="px-5 py-10 text-sm font-light text-foreground/40 text-center">
             No payments recorded yet.
           </p>
         )}
 
-        {allPayments.map((p) => (
+        {pagePayments.map((p) => (
           <div
             key={p.id}
             className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr_1fr_110px_100px] gap-3 px-5 py-4 items-center min-w-[900px]"
           >
             <p className="text-sm font-light text-foreground truncate">
-              {p.user?.name ?? "—"}
+              {p.user?.name ?? "-"}
             </p>
             <p className="text-xs font-light text-foreground/55 truncate">
-              {p.user?.email ?? "—"}
+              {p.user?.email ?? "-"}
             </p>
             <p className="text-xs font-light text-foreground/70 truncate">
-              {p.cycle?.name ?? "—"}
+              {p.cycle?.name ?? "-"}
             </p>
             <p className="text-xs font-light text-foreground/70 truncate">
-              {p.round?.name ?? "—"}
+              {p.round?.name ?? "-"}
             </p>
             <p className="text-sm font-light text-foreground">${(p.amountCents / 100).toFixed(2)}</p>
-            <span
-              className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${STATUS_COLOR[p.status] ?? "text-foreground"}`}
-            >
+            <span className={`text-[10px] font-semibold uppercase tracking-[0.15em] ${STATUS_COLOR[p.status] ?? "text-foreground"}`}>
               {STATUS_LABEL[p.status] ?? p.status}
             </span>
             <p className="text-[11px] font-light text-foreground/50">
@@ -116,11 +124,7 @@ export default async function PaymentsPage() {
             </p>
             <form action={updatePaymentStatus}>
               <input type="hidden" name="id" value={p.id} />
-              <input
-                type="hidden"
-                name="status"
-                value={p.status === "paid" ? "refunded" : "paid"}
-              />
+              <input type="hidden" name="status" value={p.status === "paid" ? "refunded" : "paid"} />
               <Button
                 type="submit"
                 variant="outline"
@@ -137,6 +141,33 @@ export default async function PaymentsPage() {
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-light text-foreground/50">
+            Page {page} of {totalPages} &mdash; showing {pagePayments.length} of {total}
+          </p>
+          <div className="flex gap-2">
+            {page > 1 && (
+              <Link
+                href={`/admin/payments?page=${page - 1}`}
+                className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] border border-border text-foreground/60 hover:text-foreground hover:border-foreground/40 transition-colors"
+              >
+                Prev
+              </Link>
+            )}
+            {page < totalPages && (
+              <Link
+                href={`/admin/payments?page=${page + 1}`}
+                className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] border border-border text-foreground/60 hover:text-foreground hover:border-foreground/40 transition-colors"
+              >
+                Next
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

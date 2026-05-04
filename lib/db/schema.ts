@@ -2,6 +2,7 @@
 import {
   boolean,
   date,
+  index,
   integer,
   jsonb,
   numeric,
@@ -150,7 +151,9 @@ export const session = pgTable("session", {
   userAgent: text("userAgent"),
   createdAt: timestamp("createdAt").notNull().defaultNow(),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-});
+}, (t) => ({
+  userIdIdx: index("session_user_id_idx").on(t.userId),
+}));
 
 export const account = pgTable("account", {
   id: text("id").primaryKey(),
@@ -209,7 +212,9 @@ export const rounds = pgTable("rounds", {
   feeUsd: integer("fee_usd").notNull().default(0),
   registrationStatus: roundRegistrationStatusEnum("registration_status").notNull().default("closed"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  cycleIdIdx: index("rounds_cycle_id_idx").on(t.cycleId),
+}));
 
 export const cycleSubjects = pgTable(
   "cycle_subjects",
@@ -260,7 +265,12 @@ export const participants = pgTable("participants", {
   notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  cycleIdIdx: index("participants_cycle_id_idx").on(t.cycleId),
+  roundIdIdx: index("participants_round_id_idx").on(t.roundId),
+  registrationStatusIdx: index("participants_registration_status_idx").on(t.registrationStatus),
+  paymentStatusIdx: index("participants_payment_status_idx").on(t.paymentStatus),
+}));
 
 export const participantSubjects = pgTable(
   "participant_subjects",
@@ -296,7 +306,11 @@ export const results = pgTable("results", {
   certificateUrl: text("certificate_url"),
   publishedAt: timestamp("published_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  participantIdIdx: index("results_participant_id_idx").on(t.participantId),
+  cycleIdIdx: index("results_cycle_id_idx").on(t.cycleId),
+  subjectIdIdx: index("results_subject_id_idx").on(t.subjectId),
+}));
 
 export const partners = pgTable("partners", {
   id: serial("id").primaryKey(),
@@ -368,7 +382,11 @@ export const payments = pgTable("payments", {
   receiptPdfKey: text("receipt_pdf_key"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  userIdIdx: index("payments_user_id_idx").on(t.userId),
+  participantIdIdx: index("payments_participant_id_idx").on(t.participantId),
+  statusIdx: index("payments_status_idx").on(t.status),
+}));
 
 export const documents = pgTable("documents", {
   id: serial("id").primaryKey(),
@@ -424,7 +442,11 @@ export const exams = pgTable("exams", {
   published: boolean("published").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  roundIdIdx: index("exams_round_id_idx").on(t.roundId),
+  subjectIdIdx: index("exams_subject_id_idx").on(t.subjectId),
+  publishedIdx: index("exams_published_idx").on(t.published),
+}));
 
 export const questions = pgTable("questions", {
   id: serial("id").primaryKey(),
@@ -441,7 +463,9 @@ export const questions = pgTable("questions", {
   explanation: text("explanation"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  examIdOrderIdx: index("questions_exam_id_order_idx").on(t.examId, t.order),
+}));
 
 export const examSessions = pgTable("exam_sessions", {
   id: serial("id").primaryKey(),
@@ -461,7 +485,12 @@ export const examSessions = pgTable("exam_sessions", {
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+}, (t) => ({
+  examIdIdx: index("exam_sessions_exam_id_idx").on(t.examId),
+  participantIdIdx: index("exam_sessions_participant_id_idx").on(t.participantId),
+  examParticipantIdx: index("exam_sessions_exam_participant_idx").on(t.examId, t.participantId),
+  statusIdx: index("exam_sessions_status_idx").on(t.status),
+}));
 
 export const examAnswers = pgTable(
   "exam_answers",
@@ -487,6 +516,8 @@ export const examAnswers = pgTable(
   },
   (t) => ({
     sessionQuestion: unique().on(t.sessionId, t.questionId),
+    sessionIdIdx: index("exam_answers_session_id_idx").on(t.sessionId),
+    questionIdIdx: index("exam_answers_question_id_idx").on(t.questionId),
   }),
 );
 

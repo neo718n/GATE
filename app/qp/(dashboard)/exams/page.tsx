@@ -1,4 +1,4 @@
-import { requireRole } from "@/lib/authz";
+﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { exams } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
@@ -11,6 +11,7 @@ export default async function QpExamsPage() {
     orderBy: desc(exams.createdAt),
     with: {
       questions: { columns: { id: true } },
+      subject: { columns: { id: true, name: true } },
     },
   });
 
@@ -18,7 +19,7 @@ export default async function QpExamsPage() {
     <div className="flex flex-col gap-8 max-w-4xl">
       <div className="flex flex-col gap-1.5">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-          Question Provider · Exams
+          Question Provider &middot; Exams
         </span>
         <h1 className="font-serif text-4xl font-light text-foreground">Exams</h1>
         <p className="text-sm font-light text-foreground/60 mt-1">
@@ -50,8 +51,8 @@ export default async function QpExamsPage() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-foreground/50">
               {exam.type}
             </span>
-            <p className="text-xs font-light text-foreground/50">
-              {exam.subjectId ? `#${exam.subjectId}` : "—"}
+            <p className="text-xs font-light text-foreground/70 truncate">
+              {exam.subject?.name ?? "-"}
             </p>
             <p className="text-sm font-light text-foreground">
               {exam.questions.length}
