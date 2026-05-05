@@ -10,8 +10,7 @@ import { Label } from "@/components/ui/label";
 import { updateQuestion } from "@/lib/actions/exam";
 import { QuestionEditor } from "@/components/admin/question-editor";
 import { MCQOptionsEditor } from "@/components/admin/mcq-options-editor";
-
-const GRADES = Array.from({ length: 12 }, (_, i) => String(i + 1));
+import { GradesSelector } from "@/components/admin/grades-selector";
 
 export default async function EditQuestionPage({ params }: { params: Promise<{ id: string; qid: string }> }) {
   await requireRole(["admin", "super_admin"]);
@@ -51,20 +50,7 @@ export default async function EditQuestionPage({ params }: { params: Promise<{ i
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Target Grades
           </p>
-          <div className="flex flex-wrap gap-3">
-            {GRADES.map((g) => (
-              <label key={g} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="grades"
-                  value={g}
-                  defaultChecked={questionGrades.includes(g)}
-                  className="w-4 h-4 rounded border-border accent-gate-gold"
-                />
-                <span className="text-sm font-light text-foreground">Grade {g}</span>
-              </label>
-            ))}
-          </div>
+          <GradesSelector defaultGrades={questionGrades} />
         </fieldset>
 
         <fieldset className="flex flex-col gap-4 border-0 p-0 m-0">
