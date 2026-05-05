@@ -38,11 +38,18 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
 
   const isPractice = exam.type === "practice";
   const isTimedOut = examSession.status === "timed_out";
-  const totalPoints = exam.questions.reduce((s, q) => s + q.points, 0);
+
+  // Only show questions that were in this participant's session (grade-filtered subset)
+  const sessionQuestionIds = new Set(
+    (examSession.questionOrder as number[] | null) ?? exam.questions.map((q) => q.id),
+  );
+  const sessionQuestions = exam.questions.filter((q) => sessionQuestionIds.has(q.id));
+
+  const totalPoints = sessionQuestions.reduce((s, q) => s + q.points, 0);
   const earnedPoints = examSession.answers
     .reduce((s, a) => s + (a.pointsAwarded ? parseFloat(a.pointsAwarded) : 0), 0);
   const scorePercent = examSession.score ? parseFloat(examSession.score) : null;
-  const hasOpenQuestions = exam.questions.some((q) => q.type === "open");
+  const hasOpenQuestions = sessionQuestions.some((q) => q.type === "open");
   const pendingGrading = examSession.answers.some((a) => a.question.type === "open" && a.isCorrect === null && a.answer);
 
   return (
@@ -82,7 +89,7 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
         <div className="grid grid-cols-3 gap-4 pt-2 border-t border-border">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Questions</p>
-            <p className="text-lg font-light text-foreground mt-0.5">{exam.questions.length}</p>
+            <p className="text-lg font-light text-foreground mt-0.5">{sessionQuestions.length}</p>
           </div>
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Answered</p>
@@ -103,7 +110,7 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Review
           </p>
-          {exam.questions.map((q, idx) => {
+          {sessionQuestions.map((q, idx) => {
             const ans = examSession.answers.find((a) => a.questionId === q.id);
             const isCorrect = ans?.isCorrect;
             const isPending = q.type === "open" && isCorrect === null;
