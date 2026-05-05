@@ -34,9 +34,11 @@ export default async function TakeExamPage({ params }: { params: Promise<{ id: s
   if (!exam) notFound();
 
   // Apply session's question order (shuffled)
-  const orderedIds = (examSession.questionOrder as number[]) ?? exam.questions.map((q) => q.id);
+  const rawOrder = examSession.questionOrder as number[] | null;
+  const orderedIds = (rawOrder && rawOrder.length > 0) ? rawOrder : exam.questions.map((q) => q.id);
   const questionMap = new Map(exam.questions.map((q) => [q.id, q]));
   const orderedQuestions = orderedIds.map((id) => questionMap.get(id)).filter(Boolean) as typeof exam.questions;
+  if (orderedQuestions.length === 0) redirect(`/participant/exams/${examId}`);
 
   const savedAnswers = await db.query.examAnswers.findMany({
     where: eq(examAnswers.sessionId, examSession.id),

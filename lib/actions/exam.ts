@@ -283,6 +283,10 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
     questionIds = questionIds.slice(0, exam.questionsPerSession);
   }
 
+  if (questionIds.length === 0) {
+    return { error: "No questions are available for your grade level. Please update your profile or contact an administrator." };
+  }
+
   const deadlineAt = exam.durationMinutes
     ? new Date(now.getTime() + exam.durationMinutes * 60 * 1000)
     : null;
