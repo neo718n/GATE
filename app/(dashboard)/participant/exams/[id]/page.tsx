@@ -122,7 +122,7 @@ export default async function PreExamPage({ params }: { params: Promise<{ id: st
         </div>
       )}
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-end gap-4">
         <StartExamButton examId={examId} disabled={!participant} />
         <Link href="/participant/exams">
           <Button variant="outline" size="md">Cancel</Button>

@@ -24,7 +24,15 @@ export function StartExamButton({ examId, disabled }: { examId: number; disabled
   };
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-3">
+      {error && (
+        <div className="border border-destructive/30 bg-destructive/5 px-4 py-3 max-w-sm">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-destructive mb-1">
+            Cannot Start
+          </p>
+          <p className="text-xs font-light text-destructive/80">{error}</p>
+        </div>
+      )}
       <Button
         onClick={handleStart}
         disabled={disabled || loading}
@@ -38,7 +46,6 @@ export function StartExamButton({ examId, disabled }: { examId: number; disabled
           "I'm ready — Start"
         )}
       </Button>
-      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }

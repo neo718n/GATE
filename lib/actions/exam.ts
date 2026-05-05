@@ -284,7 +284,7 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
   }
 
   if (questionIds.length === 0) {
-    return { error: "No questions are available for your grade level. Please update your profile or contact an administrator." };
+    return { error: `No questions match Grade ${participantGrade ?? "your grade"}. Ask an administrator to assign questions for your grade level.` };
   }
 
   const deadlineAt = exam.durationMinutes
