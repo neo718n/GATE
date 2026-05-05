@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import { db } from "@/lib/db";
 import { participants, participantSubjects, cycles, rounds, payments } from "@/lib/db/schema";
@@ -62,8 +62,8 @@ export async function saveParticipantProfile(formData: FormData) {
 
   revalidatePath("/participant");
   revalidatePath("/participant/profile");
-  redirect("/participant/enrollment");
 }
+
 
 export async function selectRound(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
@@ -173,7 +173,7 @@ export async function initiatePayment(formData: FormData) {
         redirect(existingSession.url);
       }
     } catch {
-      // Session expired or invalid — fall through and create a new one
+      // Session expired or invalid вЂ” fall through and create a new one
     }
   }
 
@@ -195,7 +195,7 @@ export async function initiatePayment(formData: FormData) {
           currency: "usd",
           unit_amount: grossAmount,
           product_data: {
-            name: `${round.name} — Registration Fee`,
+            name: `${round.name} вЂ” Registration Fee`,
             description: `Includes $${(feeAmount / 100).toFixed(2)} service fee`,
           },
         },
@@ -224,3 +224,4 @@ export async function initiatePayment(formData: FormData) {
 
   redirect(checkoutSession.url!);
 }
+

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Toaster } from "sonner";
 import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { requireSession } from "@/lib/authz";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
@@ -128,6 +129,7 @@ export default async function DashboardLayout({
         </header>
 
         <main className="flex-1 p-5 md:p-8">{children}</main>
+        <Toaster position="top-right" richColors closeButton />
       </div>
     </div>
   );
