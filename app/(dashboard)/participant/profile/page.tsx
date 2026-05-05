@@ -2,23 +2,10 @@
 import { db } from "@/lib/db";
 import { participants } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { ProfileFormClient, PHONE_CODES } from "./profile-form";
+import { ProfileFormClient } from "./profile-form";
+import { splitPhone } from "./constants";
 
-function splitPhone(stored: string | null, country?: string | null): { code: string; number: string } {
-  if (!stored) {
-    const matched = PHONE_CODES.find(
-      (c) => c.country.toLowerCase() === (country ?? "").toLowerCase()
-    );
-    return { code: matched?.dial ?? "+86", number: "" };
-  }
-  for (const c of PHONE_CODES) {
-    const raw = c.dial.replace(/\s*\(.*\)/, "");
-    if (stored.startsWith(raw)) {
-      return { code: c.dial, number: stored.slice(raw.length).trim() };
-    }
-  }
-  return { code: "+86", number: stored };
-}
+
 
 export default async function ProfilePage() {
   const session = await requireRole(["participant", "admin", "super_admin"]);
