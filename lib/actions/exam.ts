@@ -268,7 +268,14 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
     }
   }
 
-  let questionIds = exam.questions.map((q) => q.id);
+  // Filter questions by participant's grade (empty grades array = all grades)
+  const participantGrade = participant.grade ?? null;
+  const gradeFiltered = exam.questions.filter((q) => {
+    const qGrades = (q.grades as string[] | null) ?? [];
+    return qGrades.length === 0 || (participantGrade !== null && qGrades.includes(participantGrade));
+  });
+
+  let questionIds = gradeFiltered.map((q) => q.id);
   if (exam.shuffleQuestions) {
     questionIds = questionIds.sort(() => Math.random() - 0.5);
   }
