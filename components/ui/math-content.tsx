@@ -3,6 +3,15 @@
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
+// Detect if string contains natural language words that wouldn't appear in pure LaTeX.
+// Used to avoid rendering entire question sentences as math when accidentally wrapped in $...$.
+const NATURAL_LANGUAGE_RE =
+  /\b(?:find|the|sum|of|and|or|let|solve|simplify|expand|given|that|what|which|when|where|write|show|prove|determine|evaluate|calculate|compute|express|value|is|are|was|has|have|if|then|else|for|with|from|into|over|under|between|such|so|by|on|an|a)\b/i;
+
+function isNaturalLanguage(s: string): boolean {
+  return NATURAL_LANGUAGE_RE.test(s);
+}
+
 function renderMath(html: string): string {
   let out = html;
 
@@ -16,6 +25,11 @@ function renderMath(html: string): string {
       const display = latex.startsWith("$$") && latex.endsWith("$$");
       if (display) latex = latex.slice(2, -2);
       else if (latex.startsWith("$") && latex.endsWith("$")) latex = latex.slice(1, -1);
+
+      // If this "math" span actually contains a full sentence (accidentally in math mode),
+      // render it as HTML so spaces and any inner $...$ formulas work correctly.
+      if (isNaturalLanguage(latex)) return renderMath(latex);
+
       const rendered = katex.renderToString(latex, { throwOnError: false, displayMode: display });
       if (display) return rendered;
       const before = str[offset - 1];
@@ -31,10 +45,11 @@ function renderMath(html: string): string {
     katex.renderToString(latex.trim(), { throwOnError: false, displayMode: true }),
   );
 
-  // $...$ inline math — inject spaces if adjacent to word characters
+  // $...$ inline math — skip if content is natural language, inject spaces otherwise
   out = out.replace(
     /\$([^$\n]+?)\$/g,
     (fullMatch: string, latex: string, offset: number, str: string) => {
+      if (isNaturalLanguage(latex)) return latex; // strip $ and show as plain text
       const rendered = katex.renderToString(latex.trim(), { throwOnError: false, displayMode: false });
       const before = str[offset - 1];
       const after = str[offset + fullMatch.length];
