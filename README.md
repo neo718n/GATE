@@ -17,6 +17,66 @@ The G.A.T.E. Assessment platform enables:
 - **Professional Certification** — Generate official certificates and award documentation (Gold Medal, Silver Medal, Bronze Medal) that recognize participant achievement
 - **Data-Driven Insights** — Deliver comprehensive analytics and reporting for administrators, educators, and participants to track performance and growth
 
+## User Roles
+
+The G.A.T.E. platform implements a comprehensive role-based access control system with seven distinct user roles, each designed to serve specific functions within the assessment ecosystem:
+
+### Super Admin
+**System-wide authority with unrestricted access**
+- Complete platform administration and configuration
+- User role management and permission assignment
+- System settings and global configuration
+- Database management and technical maintenance
+- Override capabilities for critical operations
+
+### Admin
+**Full administrative control over assessment operations**
+- Cycle and round creation, configuration, and management
+- User account management and verification
+- Payment administration and fee structure configuration
+- Partner organization approval and management
+- Analytics access and comprehensive reporting
+- Certificate generation and award distribution
+
+### Coordinator
+**Operational management for specific cycles or locations**
+- Round registration monitoring and participant management
+- Document verification and approval workflows
+- Local partner coordination and communication
+- Regional reporting and performance tracking
+- Support for participant inquiries and issues
+
+### Participant
+**Students taking G.A.T.E. assessments**
+- Profile creation and registration for assessment cycles
+- Round selection and registration fee payment
+- Assessment participation and completion
+- Results viewing and performance analytics
+- Certificate download and achievement portfolio access
+- Career opportunity exploration
+
+### Partner Contact
+**Representatives from educational institutions and organizations**
+- Partner organization profile management
+- Student registration oversight for affiliated participants
+- Institutional performance reporting
+- Bulk registration capabilities
+- Collaboration with G.A.T.E. coordinators
+
+### Career Applicant
+**Professionals applying for positions within the G.A.T.E. ecosystem**
+- CV and document submission
+- Application tracking and status monitoring
+- Profile management for career opportunities
+- Communication with hiring administrators
+
+### Question Provider
+**Subject matter experts contributing assessment content**
+- Question submission and content contribution
+- Assessment material review and feedback
+- Access to question development guidelines
+- Collaboration with assessment design team
+
 ## Key Features
 
 ### For Participants
