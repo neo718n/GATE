@@ -165,13 +165,98 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 
 ### Project Structure
 
+The G.A.T.E. platform follows Next.js 14 App Router conventions with a well-organized, feature-based directory structure:
+
 ```
-├── app/                   # Next.js App Router pages and layouts
-├── components/            # Reusable React components
-├── lib/                   # Utility functions and shared logic
-├── public/                # Static assets
-└── styles/                # Global styles and Tailwind configuration
+.
+├── app/                          # Next.js App Router - Pages, layouts, and route handlers
+│   ├── (auth)/                   # Authentication route group (login, register, verify-email)
+│   │   ├── login/                # User sign-in page with role-based redirects
+│   │   ├── register/             # New participant registration flow
+│   │   └── verify-email/         # Email verification landing page
+│   ├── (dashboard)/              # Protected dashboard route group (requires authentication)
+│   │   ├── dashboard/            # Main dashboard - role-based redirect hub
+│   │   ├── admin/                # Admin portal (cycle, user, payment management)
+│   │   ├── coordinator/          # Coordinator portal (participant verification, regional reports)
+│   │   ├── participant/          # Participant portal (registration, results, certificates)
+│   │   └── partner/              # Partner contact portal (institutional management)
+│   ├── (marketing)/              # Public marketing pages (no authentication required)
+│   │   ├── about/                # About G.A.T.E. Assessment program
+│   │   ├── subjects/             # Assessment subjects and curriculum
+│   │   ├── awards/               # Medal system and recognition levels
+│   │   ├── careers/              # Career opportunities and applications
+│   │   ├── partnerships/         # Partner organization information
+│   │   ├── contact/              # Contact form and support information
+│   │   └── [legal pages]/        # Terms, privacy, academic integrity policies
+│   ├── api/                      # API routes and webhooks
+│   │   ├── auth/[...all]/        # Better Auth API endpoints
+│   │   ├── stripe/webhook/       # Stripe payment webhook handler
+│   │   ├── upload/               # File upload endpoints (R2 integration)
+│   │   ├── invoice/[id]/         # Dynamic invoice PDF generation
+│   │   └── receipt/[id]/         # Dynamic receipt PDF generation
+│   ├── actions/                  # Server Actions (mutations, form handlers)
+│   ├── qp/                       # Question Provider portal (separate authentication)
+│   ├── staff/                    # Staff management portal
+│   ├── layout.tsx                # Root layout with global providers
+│   └── globals.css               # Global styles and Tailwind directives
+│
+├── components/                   # React components organized by feature
+│   ├── ui/                       # Shadcn/ui primitives (Button, Dialog, Table, etc.)
+│   ├── site/                     # Site-wide components (Navbar, Footer, Hero sections)
+│   ├── brand/                    # Brand-specific components (LogoIcon, CertificateTemplate)
+│   └── admin/                    # Admin-specific components (UserTable, CycleForm, etc.)
+│
+├── lib/                          # Shared utilities, types, and business logic
+│   ├── db/                       # Database layer
+│   │   ├── schema.ts             # Drizzle ORM schema definitions (all tables)
+│   │   └── index.ts              # Database client and connection configuration
+│   ├── actions/                  # Reusable server-side business logic
+│   ├── data/                     # Data fetching functions and queries
+│   ├── auth.ts                   # Better Auth configuration and session utilities
+│   ├── r2.ts                     # Cloudflare R2 storage client
+│   ├── stripe.ts                 # Stripe SDK configuration
+│   ├── email.ts                  # Resend email client and templates
+│   └── utils.ts                  # General utility functions (cn, formatters, etc.)
+│
+├── drizzle/                      # Database migrations
+│   ├── 0000_*.sql                # Initial schema migration
+│   ├── 0001_*.sql                # Subsequent migrations (chronological)
+│   └── meta/                     # Drizzle migration metadata
+│
+├── config/                       # Configuration files
+│   └── mcporter.json             # MCP server configuration
+│
+├── scripts/                      # Utility scripts
+│   ├── seed-admin.ts             # Create super admin user
+│   └── seed-subjects.ts          # Populate subject data
+│
+├── public/                       # Static assets (images, fonts, favicons)
+│
+├── .env.local                    # Environment variables (not committed)
+├── .env.example                  # Environment variable template
+├── drizzle.config.ts             # Drizzle ORM and Drizzle Kit configuration
+├── next.config.ts                # Next.js configuration
+├── tailwind.config.ts            # Tailwind CSS configuration
+└── tsconfig.json                 # TypeScript configuration
 ```
+
+#### Key Directory Purposes
+
+**`app/(auth)/`** — Public authentication routes using Next.js route groups. Pages in this group share a minimal layout optimized for sign-in/sign-up flows. No authentication required.
+
+**`app/(dashboard)/`** — Protected routes requiring authentication. Role-based access control determines which dashboard sections users can access. Includes admin, coordinator, participant, and partner portals.
+
+**`app/(marketing)/`** — Public marketing and informational pages. These routes are optimized for SEO and public visibility, providing information about the G.A.T.E. program to prospective participants and partners.
+
+**`app/api/`** — API routes for external integrations (Stripe webhooks), file operations (R2 uploads), authentication (Better Auth), and dynamic document generation (invoices, receipts).
+
+**`components/`** — Reusable React components organized by scope. The `ui/` folder contains design system primitives, while `site/`, `brand/`, and `admin/` contain domain-specific components.
+
+**`lib/`** — Shared business logic, utilities, and configurations. The `db/` folder contains the Drizzle ORM schema and database client. The `actions/` and `data/` folders contain server-side logic for mutations and queries.
+
+**`drizzle/`** — Version-controlled SQL migration files generated by Drizzle Kit. These migrations represent the complete history of database schema changes and are applied sequentially using `npm run db:migrate`.
+
+**`config/`** — Application configuration files for external services and integrations.
 
 ## Development Commands
 
