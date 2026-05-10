@@ -82,7 +82,7 @@ export const authClient = createAuthClient({
  * These are the primary authentication functions and hooks for client-side usage.
  * Each is documented individually below with usage examples.
  */
-export const { signIn, signUp, signOut, useSession, getSession } = authClient;
+const { signIn, signUp, signOut, useSession, getSession } = authClient;
 
 /**
  * Sign in a user with email and password.
