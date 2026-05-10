@@ -49,6 +49,19 @@ const AWARD_VALUES = ["gold", "silver", "bronze", "honorable_mention", "particip
 
 // ── Cycles ────────────────────────────────────────────────────────────────
 
+/**
+ * Creates a new assessment cycle.
+ * Requires super_admin role. Initializes cycle with "planning" status.
+ *
+ * @param formData - Form data containing cycle details:
+ *   - name (string, required): Display name for the cycle
+ *   - year (string, required): Year as integer between 2000-2100
+ *   - description (string, optional): Detailed cycle description
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If name is missing or year is invalid
+ * @throws {Error} If database insertion fails
+ */
 export async function createCycle(formData: FormData) {
   await requireRole(["super_admin"]);
 
@@ -67,6 +80,16 @@ export async function createCycle(formData: FormData) {
   revalidatePath("/admin/cycles");
 }
 
+/**
+ * Updates the status of an existing cycle.
+ * Requires super_admin or admin role. Status must be one of: planning, registration_open, active, completed, archived.
+ *
+ * @param id - Numeric ID of the cycle to update
+ * @param status - New status value (validated against CYCLE_STATUSES enum)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ * @throws {Error} If status is not a valid cycle status
+ */
 export async function updateCycleStatus(id: number, status: string) {
   await requireRole(["super_admin", "admin"]);
   const validStatus = assertEnum(status, CYCLE_STATUSES, "cycle status");
@@ -79,6 +102,27 @@ export async function updateCycleStatus(id: number, status: string) {
 
 // ── Rounds ────────────────────────────────────────────────────────────────
 
+/**
+ * Creates a new round within a cycle.
+ * Requires super_admin role. Format must be one of: online, onsite, hybrid.
+ * Registration status must be one of: closed, soon, open.
+ *
+ * @param formData - Form data containing round details:
+ *   - cycleId (string, required): Parent cycle ID
+ *   - name (string, required): Round display name
+ *   - order (string, optional): Display order (defaults to 1)
+ *   - format (string, optional): Round format - online/onsite/hybrid (defaults to "online")
+ *   - startDate (string, optional): ISO date string for round start
+ *   - endDate (string, optional): ISO date string for round end
+ *   - venue (string, optional): Physical location for onsite/hybrid rounds
+ *   - feeUsd (string, optional): Registration fee in USD cents (defaults to 0)
+ *   - registrationStatus (string, optional): closed/soon/open (defaults to "closed")
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If cycleId or name is missing
+ * @throws {Error} If format is not a valid round format
+ * @throws {Error} If registrationStatus is not a valid registration status
+ */
 export async function createRound(formData: FormData) {
   await requireRole(["super_admin"]);
 
@@ -111,6 +155,15 @@ export async function createRound(formData: FormData) {
   revalidatePath("/admin/cycles");
 }
 
+/**
+ * Deletes a round from the system.
+ * Requires super_admin role. Warning: This will cascade delete related data.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric ID of the round to delete
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function deleteRound(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -120,6 +173,16 @@ export async function deleteRound(formData: FormData) {
 
 // ── Cycle subjects ─────────────────────────────────────────────────────────
 
+/**
+ * Associates a subject with a cycle.
+ * Requires super_admin role. Silently ignores duplicate associations.
+ *
+ * @param formData - Form data containing:
+ *   - cycleId (string, required): Numeric cycle ID
+ *   - subjectId (string, required): Numeric subject ID
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function addCycleSubject(formData: FormData) {
   await requireRole(["super_admin"]);
   const cycleId = parseInt(formData.get("cycleId") as string);
@@ -133,6 +196,16 @@ export async function addCycleSubject(formData: FormData) {
   revalidatePath("/admin/cycles");
 }
 
+/**
+ * Removes a subject association from a cycle.
+ * Requires super_admin role.
+ *
+ * @param formData - Form data containing:
+ *   - cycleId (string, required): Numeric cycle ID
+ *   - subjectId (string, required): Numeric subject ID
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function removeCycleSubject(formData: FormData) {
   await requireRole(["super_admin"]);
   const cycleId = parseInt(formData.get("cycleId") as string);
@@ -145,6 +218,18 @@ export async function removeCycleSubject(formData: FormData) {
 
 // ── Participants ──────────────────────────────────────────────────────────
 
+/**
+ * Updates a participant's registration status.
+ * Requires super_admin or admin role. Status must be one of: draft, submitted, verified, rejected.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric participant ID
+ *   - status (string, required): New registration status (validated against PARTICIPANT_REG_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ * @throws {Error} If id is invalid or missing
+ * @throws {Error} If status is not a valid participant registration status
+ */
 export async function updateParticipantStatus(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -159,6 +244,19 @@ export async function updateParticipantStatus(formData: FormData) {
 
 // ── Users ─────────────────────────────────────────────────────────────────
 
+/**
+ * Updates a user's role and invalidates their sessions.
+ * Requires super_admin role. Prevents modifying own role. Role must be one of: super_admin, admin, coordinator, participant, partner_contact, career_applicant.
+ * Logs the change to audit trail.
+ *
+ * @param formData - Form data containing:
+ *   - userId (string, required): User ID to update
+ *   - role (string, required): New role value (validated against USER_ROLES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If userId is missing or matches current user
+ * @throws {Error} If role is not a valid user role
+ */
 export async function updateUserRole(formData: FormData) {
   const authSession = await requireRole(["super_admin"]);
   const userId = formData.get("userId") as string;
@@ -178,6 +276,15 @@ export async function updateUserRole(formData: FormData) {
   revalidatePath("/admin/users");
 }
 
+/**
+ * Deletes a user account from the system.
+ * Requires super_admin role. Prevents deleting own account. Logs the deletion to audit trail.
+ *
+ * @param formData - Form data containing:
+ *   - userId (string, required): User ID to delete
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function deleteUser(formData: FormData) {
   const session = await requireRole(["super_admin"]);
   const userId = formData.get("userId") as string;
@@ -193,6 +300,19 @@ export async function deleteUser(formData: FormData) {
 
 // ── Subjects ──────────────────────────────────────────────────────────────
 
+/**
+ * Creates a new subject in the system.
+ * Requires super_admin role. Subject is created as active by default.
+ *
+ * @param formData - Form data containing:
+ *   - name (string, required): Display name for the subject
+ *   - slug (string, required): URL-safe identifier
+ *   - description (string, optional): Detailed subject description
+ *   - order (string, optional): Display order (defaults to 0)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If name or slug is missing
+ */
 export async function createSubject(formData: FormData) {
   await requireRole(["super_admin"]);
   const name = (formData.get("name") as string)?.trim();
@@ -204,6 +324,16 @@ export async function createSubject(formData: FormData) {
   revalidatePath("/admin/subjects");
 }
 
+/**
+ * Toggles a subject's active status.
+ * Requires super_admin role. Flips the boolean active field.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric subject ID
+ *   - active (string, required): Current active status as "true" or "false"
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function toggleSubjectActive(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -214,6 +344,18 @@ export async function toggleSubjectActive(formData: FormData) {
 
 // ── Partners ──────────────────────────────────────────────────────────────
 
+/**
+ * Updates a partner's application status.
+ * Requires super_admin role. Status must be one of: pending, approved, rejected.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric partner ID
+ *   - status (string, required): New status (validated against PARTNER_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If id is invalid or missing
+ * @throws {Error} If status is not a valid partner status
+ */
 export async function updatePartnerStatus(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -228,6 +370,18 @@ export async function updatePartnerStatus(formData: FormData) {
 
 // ── Careers ───────────────────────────────────────────────────────────────
 
+/**
+ * Updates a career application's status.
+ * Requires super_admin role. Status must be one of: submitted, reviewing, shortlisted, rejected, hired.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric career application ID
+ *   - status (string, required): New status (validated against CAREER_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If id is invalid or missing
+ * @throws {Error} If status is not a valid career status
+ */
 export async function updateCareerStatus(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -242,6 +396,22 @@ export async function updateCareerStatus(formData: FormData) {
 
 // ── Results ───────────────────────────────────────────────────────────────
 
+/**
+ * Adds a new result record for a participant.
+ * Requires super_admin or admin role. Sets publishedAt to current timestamp.
+ *
+ * @param formData - Form data containing:
+ *   - participantId (string, required): Numeric participant ID
+ *   - subjectId (string, required): Numeric subject ID
+ *   - cycleId (string, required): Numeric cycle ID
+ *   - roundId (string, optional): Numeric round ID
+ *   - score (string, optional): Participant's score (free text)
+ *   - maxScore (string, optional): Maximum possible score (free text)
+ *   - rank (string, optional): Numeric rank position
+ *   - award (string, optional): Award type (gold, silver, bronze, honorable_mention, participation)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ */
 export async function addResult(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
   const participantId = parseInt(formData.get("participantId") as string);
@@ -270,6 +440,14 @@ export async function addResult(formData: FormData) {
 
 // ── Seed ──────────────────────────────────────────────────────────────────
 
+/**
+ * Seeds the database with default subject entries.
+ * Requires super_admin role. Creates 6 subjects: Mathematics, Physics, Chemistry, Biology, Competitive Programming, English.
+ * Skips subjects that already exist (identified by slug).
+ *
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function seedDefaultSubjects() {
   await requireRole(["super_admin"]);
 
@@ -294,6 +472,18 @@ export async function seedDefaultSubjects() {
 
 // ── Payments ──────────────────────────────────────────────────────────────
 
+/**
+ * Updates a payment's status.
+ * Requires super_admin or admin role. Status must be one of: pending, paid, failed, refunded.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric payment ID
+ *   - status (string, required): New status (validated against PAYMENT_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ * @throws {Error} If id is invalid or missing
+ * @throws {Error} If status is not a valid payment status
+ */
 export async function updatePaymentStatus(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -308,6 +498,20 @@ export async function updatePaymentStatus(formData: FormData) {
 
 // ── Notifications ─────────────────────────────────────────────────────────
 
+/**
+ * Sends a bulk email notification to users.
+ * Requires super_admin or admin role. Recipients can be filtered to "all" verified users or participants in a specific cycle.
+ * Continues sending to remaining recipients if individual sends fail. Records notification in database.
+ *
+ * @param formData - Form data containing:
+ *   - subject (string, required): Email subject line
+ *   - body (string, required): Email body text (escaped HTML, newlines converted to <br>)
+ *   - recipientFilter (string, optional): "all" for all users or cycle-specific (defaults to "all")
+ *   - cycleId (string, optional): Numeric cycle ID when filtering by cycle participants
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ * @throws {Error} If subject or body is missing
+ */
 export async function sendNotification(formData: FormData) {
   const session = await requireRole(["super_admin", "admin"]);
 
@@ -371,6 +575,17 @@ export async function sendNotification(formData: FormData) {
 
 // ── Cycle delete ──────────────────────────────────────────────────────────
 
+/**
+ * Deletes a cycle and its associated data.
+ * Requires super_admin role. Prevents deletion if cycle has participants.
+ * Nullifies cycle reference in payments, deletes results, then deletes the cycle.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric cycle ID
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If cycle has associated participants
+ */
 export async function deleteCycle(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -392,6 +607,23 @@ export async function deleteCycle(formData: FormData) {
 
 // ── Cycle full edit ────────────────────────────────────────────────────────
 
+/**
+ * Updates all fields of an existing cycle.
+ * Requires super_admin role. Status must be valid cycle status.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric cycle ID
+ *   - name (string, required): Display name
+ *   - year (string, required): Year as integer between 2000-2100
+ *   - description (string, optional): Detailed description
+ *   - stripeFeePercent (string, optional): Stripe fee percentage in basis points (defaults to 290)
+ *   - stripeFeeFixedCents (string, optional): Stripe fixed fee in cents (defaults to 30)
+ *   - status (string, required): Cycle status (validated against CYCLE_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If required fields are missing or invalid
+ * @throws {Error} If status is not a valid cycle status
+ */
 export async function updateCycle(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -416,6 +648,26 @@ export async function updateCycle(formData: FormData) {
 
 // ── Round full edit ────────────────────────────────────────────────────────
 
+/**
+ * Updates all fields of an existing round.
+ * Requires super_admin role. Format and registration status must be valid enum values.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric round ID
+ *   - name (string, required): Round display name
+ *   - order (string, optional): Display order (defaults to 1)
+ *   - format (string, required): Round format - online/onsite/hybrid (validated against ROUND_FORMATS)
+ *   - startDate (string, optional): ISO date string for round start
+ *   - endDate (string, optional): ISO date string for round end
+ *   - venue (string, optional): Physical location
+ *   - feeUsd (string, optional): Registration fee in USD cents (defaults to 0)
+ *   - registrationStatus (string, optional): closed/soon/open (defaults to "closed", validated against ROUND_REG_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If id or name is missing
+ * @throws {Error} If format is not a valid round format
+ * @throws {Error} If registrationStatus is not a valid registration status
+ */
 export async function updateRound(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -442,6 +694,27 @@ export async function updateRound(formData: FormData) {
 
 // ── Results upsert/delete ─────────────────────────────────────────────────
 
+/**
+ * Creates a new result or updates an existing one.
+ * Requires super_admin or admin role. If resultId is provided, updates; otherwise creates new.
+ * Award must be valid enum value if provided.
+ *
+ * @param formData - Form data containing:
+ *   - resultId (string, optional): Numeric result ID for updates
+ *   - participantId (string, required): Numeric participant ID
+ *   - subjectId (string, required): Numeric subject ID
+ *   - cycleId (string, required): Numeric cycle ID
+ *   - roundId (string, optional): Numeric round ID
+ *   - score (string, optional): Participant's score (free text)
+ *   - maxScore (string, optional): Maximum possible score (free text)
+ *   - rank (string, optional): Numeric rank position
+ *   - award (string, optional): Award type (validated against AWARD_VALUES: gold, silver, bronze, honorable_mention, participation)
+ *   - publishedAt (string, optional): ISO date string for publication timestamp
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ * @throws {Error} If participantId, subjectId, or cycleId is invalid
+ * @throws {Error} If award is provided but not a valid award value
+ */
 export async function upsertResult(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
 
@@ -481,6 +754,16 @@ export async function upsertResult(formData: FormData) {
   revalidatePath(`/admin/participants/${participantId}`);
 }
 
+/**
+ * Deletes a result record.
+ * Requires super_admin or admin role.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric result ID
+ *   - cycleId (string, optional): Numeric cycle ID for path revalidation
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ */
 export async function deleteResult(formData: FormData) {
   await requireRole(["super_admin", "admin"]);
   const id = parseInt(formData.get("id") as string);
@@ -493,6 +776,20 @@ export async function deleteResult(formData: FormData) {
 
 // ─── Question Provider Management ────────────────────────────────────────────
 
+/**
+ * Creates a new question provider account.
+ * Requires super_admin role. Creates user account via Better Auth, then sets role to "question_provider" and marks email as verified.
+ *
+ * @param formData - Form data containing:
+ *   - email (string, required): Email address (converted to lowercase)
+ *   - password (string, required): Password (minimum 8 characters)
+ *   - name (string, required): Display name
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ * @throws {Error} If any required field is missing
+ * @throws {Error} If password is less than 8 characters
+ * @throws {Error} If Better Auth sign-up fails
+ */
 export async function createQuestionProvider(formData: FormData) {
   await requireRole("super_admin");
   const email = (formData.get("email") as string).trim().toLowerCase();
@@ -527,6 +824,15 @@ export async function createQuestionProvider(formData: FormData) {
   revalidatePath("/admin/question-providers");
 }
 
+/**
+ * Deletes a question provider account.
+ * Requires super_admin role.
+ *
+ * @param formData - Form data containing:
+ *   - userId (string, required): User ID of the question provider to delete
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks super_admin role
+ */
 export async function deleteQuestionProvider(formData: FormData) {
   await requireRole("super_admin");
   const userId = formData.get("userId") as string;
