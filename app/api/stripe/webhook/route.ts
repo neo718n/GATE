@@ -26,16 +26,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
+  // Handle successful payment completion
+  // Flow: (1) Extract card details from PaymentIntent, (2) Update payment record to "paid",
+  // (3) Update participant status, (4) Send confirmation email with invoice/receipt
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const { participantId } = session.metadata ?? {};
 
+    // Card details are optional extras for receipts and admin records
+    // We fetch them from the PaymentIntent's latest charge
     let stripeChargeId: string | null = null;
     let cardLast4: string | null = null;
     let cardBrand: string | null = null;
 
     if (session.payment_intent) {
       try {
+        // Retrieve PaymentIntent with expanded charge to get card details
+        // Wrapped in try-catch because: (1) network issues to Stripe API are possible,
+        // (2) PaymentIntent might not be immediately available due to eventual consistency,
+        // (3) Card details are nice-to-have, not critical for payment completion
         const pi = await stripe.paymentIntents.retrieve(
           session.payment_intent as string,
           { expand: ["latest_charge"] }
@@ -43,14 +52,20 @@ export async function POST(req: NextRequest) {
         const charge = pi.latest_charge as Stripe.Charge | null;
         if (charge) {
           stripeChargeId = charge.id;
+          // Graceful fallback: card details might be missing for non-card payments
+          // (Apple Pay, Google Pay, etc.) or if payment_method_details is incomplete
           cardLast4 = charge.payment_method_details?.card?.last4 ?? null;
           cardBrand = charge.payment_method_details?.card?.brand ?? null;
         }
       } catch {
-        // non-fatal: proceed without card details
+        // Non-fatal: Payment is already completed successfully per the webhook event.
+        // Proceeding without card details allows us to still mark the payment as paid
+        // and send confirmation email (which has fallback for missing card info).
       }
     }
 
+    // Mark payment record as paid and store Stripe identifiers for reconciliation
+    // This is the source of truth for payment completion in our database
     await db
       .update(payments)
       .set({
@@ -63,6 +78,8 @@ export async function POST(req: NextRequest) {
       })
       .where(eq(payments.stripeCheckoutSessionId, session.id));
 
+    // Update participant status to reflect successful payment
+    // This unlocks access to program features for the participant
     const participantIdNum = participantId ? parseInt(participantId) : NaN;
     if (!isNaN(participantIdNum)) {
       await db
@@ -72,6 +89,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Send confirmation email with invoice + receipt attached
+    // We re-fetch the payment record to get updated data and related cycle/round info
     const payment = await db.query.payments.findFirst({
       where: eq(payments.stripeCheckoutSessionId, session.id),
       with: { cycle: true, round: true },
@@ -84,7 +102,11 @@ export async function POST(req: NextRequest) {
       });
 
       const email = participant?.user?.email;
-      // Guard against duplicate emails on Stripe webhook retries
+      // Guard against duplicate emails on Stripe webhook retries:
+      // Stripe may retry webhooks multiple times if our server is slow to respond or times out.
+      // The receiptPdfKey is set by sendPaymentConfirmationEmail after successfully generating
+      // and uploading the receipt PDF. If receiptPdfKey exists, we've already sent the email
+      // for this payment, so we skip sending again to avoid spamming the user.
       if (email && participant && !payment.receiptPdfKey) {
         sendPaymentConfirmationEmail({
           paymentId: payment.id,
