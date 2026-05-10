@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import {
   createCycle,
   updateCycle,
@@ -167,15 +168,14 @@ export default async function CyclesPage() {
                       </div>
                       <div className="flex flex-col gap-2">
                         <Label>Status</Label>
-                        <select
+                        <Select
                           name="status"
                           defaultValue={cycle.status}
-                          className="h-11 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                         >
                           {Object.entries(STATUS_LABELS).map(([v, l]) => (
                             <option key={v} value={v}>{l}</option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
                       <div className="md:col-span-2">
                         <Button type="submit" variant="gold" size="sm">Save Changes</Button>
@@ -245,15 +245,14 @@ export default async function CyclesPage() {
                               <Input name="name" required defaultValue={r.name} placeholder="Round name" />
                               <div className="grid grid-cols-2 gap-2">
                                 <Input name="order" type="number" min="1" defaultValue={r.order} placeholder="Order" />
-                                <select
+                                <Select
                                   name="format"
                                   defaultValue={r.format}
-                                  className="h-11 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   <option value="online">Online</option>
                                   <option value="onsite">Onsite</option>
                                   <option value="hybrid">Hybrid</option>
-                                </select>
+                                </Select>
                               </div>
                               <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col gap-1">
@@ -277,23 +276,22 @@ export default async function CyclesPage() {
                               </div>
                               <div className="flex flex-col gap-1">
                                 <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Registration Status</label>
-                                <select
+                                <Select
                                   name="registrationStatus"
                                   defaultValue={r.registrationStatus}
-                                  className="h-11 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   <option value="closed">Closed</option>
                                   <option value="soon">Soon</option>
                                   <option value="open">Open</option>
-                                </select>
+                                </Select>
                               </div>
                               <div className="flex items-center gap-3">
                                 <Button type="submit" variant="gold" size="sm">Save Round</Button>
                                 <form action={deleteRound}>
                                   <input type="hidden" name="id" value={r.id} />
-                                  <button type="submit" className="text-[10px] font-semibold uppercase tracking-[0.15em] text-red-400 hover:text-red-600 transition-colors">
+                                  <Button type="submit" variant="destructive" size="sm">
                                     Delete
-                                  </button>
+                                  </Button>
                                 </form>
                               </div>
                             </form>
@@ -310,11 +308,11 @@ export default async function CyclesPage() {
                         <Input name="name" required placeholder="Round name (e.g. Preliminary)" />
                         <div className="grid grid-cols-2 gap-2">
                           <Input name="order" type="number" min="1" placeholder="Order" defaultValue="1" />
-                          <select name="format" className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none">
+                          <Select name="format">
                             <option value="online">Online</option>
                             <option value="onsite">Onsite</option>
                             <option value="hybrid">Hybrid</option>
-                          </select>
+                          </Select>
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div className="flex flex-col gap-1">
@@ -338,15 +336,14 @@ export default async function CyclesPage() {
                         </div>
                         <div className="flex flex-col gap-1">
                           <label className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">Registration Status</label>
-                          <select
+                          <Select
                             name="registrationStatus"
                             defaultValue="closed"
-                            className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                           >
                             <option value="closed">Closed</option>
                             <option value="soon">Soon</option>
                             <option value="open">Open</option>
-                          </select>
+                          </Select>
                         </div>
                         <Button type="submit" variant="outline" size="sm">Add Round</Button>
                       </form>
@@ -365,7 +362,7 @@ export default async function CyclesPage() {
                             <input type="hidden" name="cycleId" value={cycle.id} />
                             <input type="hidden" name="subjectId" value={cs.subjectId} />
                             <span className="text-xs font-light text-foreground">{cs.subject?.name}</span>
-                            <button type="submit" className="text-[10px] font-semibold text-red-400 hover:text-red-600 transition-colors">×</button>
+                            <Button type="submit" variant="destructive" size="sm" className="h-5 w-5 p-0 text-xs">×</Button>
                           </form>
                         ))}
                       </div>
@@ -373,11 +370,11 @@ export default async function CyclesPage() {
                     {availableToAdd.length > 0 && (
                       <form action={addCycleSubject} className="flex items-center gap-2">
                         <input type="hidden" name="cycleId" value={cycle.id} />
-                        <select name="subjectId" className="flex-1 h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none">
+                        <Select name="subjectId" className="flex-1">
                           {availableToAdd.map((s) => (
                             <option key={s.id} value={s.id}>{s.name}</option>
                           ))}
-                        </select>
+                        </Select>
                         <Button type="submit" variant="outline" size="sm">Add</Button>
                       </form>
                     )}
