@@ -38,6 +38,182 @@ cycles
 
 ---
 
+## Exam Session Flow Sequence Diagram
+
+The following Mermaid diagram illustrates the complete flow of an exam session from start to submission, showing the interactions between the participant, system, and database:
+
+```mermaid
+sequenceDiagram
+    participant P as Participant
+    participant S as System
+    participant DB as Database
+
+    Note over P,DB: Stage 5: Session Start
+
+    P->>S: Start Exam (examId)
+    S->>DB: Query exam (published, windowStart, windowEnd)
+    DB-->>S: Return exam + questions
+    
+    alt Exam not available
+        S-->>P: Error: "Exam not available"
+    else Exam window not active
+        S-->>P: Error: "Window not started/closed"
+    else Exam available
+        S->>DB: Query participant (userId, grade, enrollments)
+        DB-->>S: Return participant profile
+        
+        alt Participant not found
+            S-->>P: Error: "Participant profile not found"
+        else Not enrolled (participants only)
+            S-->>P: Error: "Not enrolled in round/subject"
+        else Participant eligible
+            S->>DB: Query existing sessions (non-archived)
+            DB-->>S: Return existing session (if any)
+            
+            alt Active session exists
+                S-->>P: Resume session (sessionId)
+            else Completed exam (type="exam")
+                S-->>P: Error: "Already completed this exam"
+            else Completed practice (type="practice")
+                S->>DB: Archive previous session (archivedAt)
+                DB-->>S: Session archived
+                S->>S: Filter questions by grade
+                S->>S: Shuffle questions (if enabled)
+                S->>S: Limit questions (if configured)
+                S->>S: Calculate deadline (if durationMinutes set)
+                S->>DB: Insert exam_sessions (questionOrder, deadlineAt)
+                DB-->>S: Return new sessionId
+                S-->>P: Session created (sessionId)
+            else No prior session
+                S->>S: Filter questions by grade
+                S->>S: Shuffle questions (if enabled)
+                S->>S: Limit questions (if configured)
+                S->>S: Calculate deadline (if durationMinutes set)
+                S->>DB: Insert exam_sessions (questionOrder, deadlineAt)
+                DB-->>S: Return new sessionId
+                S-->>P: Session created (sessionId)
+            end
+        end
+    end
+
+    Note over P,DB: Stage 6: Answering Questions
+
+    loop For each question
+        P->>S: Save Answer (sessionId, questionId, answer, flagged)
+        S->>DB: Query exam_sessions (status, deadlineAt, participantId)
+        DB-->>S: Return session
+        
+        alt Session not active
+            S-->>P: Error: "Session not active"
+        else Ownership mismatch (participants only)
+            S-->>P: Error: "Unauthorized"
+        else Deadline exceeded
+            S->>DB: Update exam_sessions (status="timed_out")
+            DB-->>S: Session timed out
+            S-->>P: Error: "Time expired"
+        else Valid save
+            S->>DB: Upsert exam_answers (answer, flagged, answeredAt)
+            DB-->>S: Answer saved
+            S-->>P: Answer saved successfully
+        end
+    end
+
+    Note over P,DB: Optional: Tab Switch Detection
+    
+    loop During active session
+        P->>S: Log Tab Switch (sessionId)
+        S->>DB: Increment tabSwitchCount (only if status="active")
+        DB-->>S: Count updated
+    end
+
+    Note over P,DB: Stage 7: Submission
+
+    P->>S: Submit Exam (sessionId)
+    S->>DB: Query session with answers and questions
+    DB-->>S: Return session data
+    
+    alt Session not active
+        S-->>P: Error: "Session not active"
+    else Session active
+        S->>S: Filter questions by session.questionOrder
+        
+        Note over S: Stage 8: Auto-Grading
+        
+        loop For each question in session
+            alt Question type = MCQ
+                S->>S: isCorrect = (answer == correctAnswer)
+                S->>S: pointsAwarded = isCorrect ? points : 0
+            else Question type = numeric
+                S->>S: diff = abs(answer - correctAnswer)
+                S->>S: isCorrect = (diff < 1e-9)
+                S->>S: pointsAwarded = isCorrect ? points : 0
+            else Question type = open
+                S->>S: Skip (manual grading required)
+            end
+        end
+        
+        S->>S: Calculate score = (earnedPoints / totalPoints) * 100
+        
+        S->>DB: Batch update exam_answers (isCorrect, pointsAwarded)
+        DB-->>S: Answers graded
+        
+        S->>DB: Update exam_sessions (status="submitted", submittedAt, score)
+        DB-->>S: Session submitted
+        
+        S-->>P: Submission successful (score)
+    end
+
+    Note over P,DB: Stage 9: Manual Grading (Admin)
+
+    opt If open-ended questions exist
+        S->>DB: Query ungraded answers (type="open")
+        DB-->>S: Return open answers
+        Note over S: Admin reviews and grades manually
+        S->>DB: Update exam_answers (isCorrect, pointsAwarded, gradedAt, gradedByUserId)
+        DB-->>S: Answer graded
+        S->>DB: Query all answers for session
+        DB-->>S: Return all answers
+        S->>S: Recalculate score (includes new open question points)
+        S->>DB: Update exam_sessions (score)
+        DB-->>S: Score updated
+    end
+```
+
+### Key Interactions
+
+**Session Creation:**
+- Validates exam availability, time windows, and participant eligibility
+- Enforces enrollment requirements (round, subject) for participants
+- Archives prior practice sessions without deletion
+- Filters, shuffles, and limits questions based on configuration
+- Calculates deadline from durationMinutes
+
+**Answer Saving:**
+- Enforces ownership (participants can only save to their own sessions)
+- Checks deadline on every save and auto-timeouts if expired
+- Uses upsert logic (insert or update) for answer persistence
+- Preserves answeredAt timestamp only when answer is provided
+
+**Tab Switch Tracking:**
+- Incremental counter updated via SQL to avoid race conditions
+- Only tracked for active sessions
+- Participants can only log for their own sessions
+
+**Submission & Auto-Grading:**
+- Only grades questions in session.questionOrder (respects shuffle/limit)
+- MCQ: Exact string match with correctAnswer
+- Numeric: Tolerance of 1e-9 for floating-point precision
+- Open: Skipped during auto-grading, requires manual review
+- Score calculated as percentage of earned vs total points
+
+**Manual Grading:**
+- Admins grade open-ended questions post-submission
+- Each graded answer triggers full session score recalculation
+- Supports partial credit (pointsAwarded < question.points)
+- Audit trail via gradedAt and gradedByUserId
+
+---
+
 ## Stage 1: Exam Creation
 
 **Responsible Roles:** `admin`, `super_admin`, `question_provider`
