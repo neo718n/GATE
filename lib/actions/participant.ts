@@ -177,10 +177,16 @@ export async function initiatePayment(formData: FormData) {
     }
   }
 
+  // Reverse Stripe fee calculation: determine grossAmount such that after Stripe deducts
+  // their percentage + fixed fee, the net amount equals round.feeUsd.
+  // Formula: grossAmount = (netAmount + fixedFee) / (1 - percentFee)
+  // stripeFeePercent is stored in basis points (e.g., 290 = 2.90%), so divide by 10000 to get decimal
+  // Math.ceil ensures we round up to the nearest cent, guaranteeing we collect enough to cover all fees
   const grossAmount = Math.ceil(
     (round.feeUsd + cycle.stripeFeeFixedCents) /
       (1 - cycle.stripeFeePercent / 10000)
   );
+  // feeAmount is the total service fee charged to the participant (Stripe's cut)
   const feeAmount = grossAmount - round.feeUsd;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
