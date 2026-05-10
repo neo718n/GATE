@@ -47,6 +47,42 @@ This is a modern web application built with:
 - **Tailwind CSS** — Utility-first styling following G.A.T.E. brand guidelines
 - **Server Components** — Optimized rendering strategy for fast load times
 
+## Architecture
+
+The G.A.T.E. platform is built on a modern, scalable architecture that ensures reliability, security, and performance:
+
+### Core Stack
+- **[Next.js 14](https://nextjs.org)** — Full-stack React framework with App Router, Server Actions, and API routes
+- **[TypeScript](https://www.typescriptlang.org)** — End-to-end type safety across frontend and backend
+- **[Tailwind CSS](https://tailwindcss.com)** — Utility-first CSS framework for consistent, brand-compliant styling
+
+### Database & ORM
+- **[Neon Postgres](https://neon.tech)** — Serverless Postgres database with automatic scaling and branching
+- **[Drizzle ORM](https://orm.drizzle.team)** — Type-safe SQL ORM with full TypeScript support
+- **Database Schema** — Comprehensive relational model covering users, cycles, rounds, registrations, payments, partners, and career opportunities
+
+### Authentication & Authorization
+- **[Better Auth](https://www.better-auth.com)** — Modern authentication solution with session management, email verification, and role-based access control
+- **Role System** — Seven distinct roles: super_admin, admin, coordinator, participant, partner_contact, career_applicant, question_provider
+
+### Payment Processing
+- **[Stripe](https://stripe.com)** — Secure payment processing for registration fees with webhook integration
+- **Fee Structure** — Configurable fee percentages and fixed amounts per cycle
+- **Payment Tracking** — Comprehensive payment status management (unpaid, paid, waived, refunded)
+
+### File Storage
+- **[Cloudflare R2](https://www.cloudflare.com/products/r2/)** — S3-compatible object storage for documents, certificates, photos, and user uploads
+- **Document Types** — Support for identity documents, certificates, CVs, invoices, and general attachments
+
+### Email Communication
+- **[Resend](https://resend.com)** — Transactional email delivery for verification emails, notifications, and system communications
+
+### Key Services
+- **Certificate Generation** — Automated certificate creation following official G.A.T.E. brand standards
+- **Document Management** — Secure upload, storage, and retrieval of participant documents
+- **Analytics Engine** — Performance tracking and reporting across cycles, rounds, and participants
+- **Partner Portal** — Multi-organizational support for universities, schools, and institutions
+
 ## Getting Started
 
 ### Prerequisites
