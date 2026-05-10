@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { user } from "@/lib/db/schema";
 import { desc, count, ilike, or } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { updateUserRole } from "@/lib/actions/admin";
 import { DeleteUserButton } from "./delete-user-button";
 import Link from "next/link";
@@ -74,25 +76,21 @@ export default async function UsersPage({
       </div>
 
       <form method="get" className="flex gap-2">
-        <input
+        <Input
           name="q"
           defaultValue={search}
           placeholder="Search by name or email..."
-          className="flex-1 border border-border bg-card px-4 py-2 text-sm font-light text-foreground placeholder:text-foreground/35 focus:outline-none focus:ring-1 focus:ring-gate-gold"
+          className="flex-1"
         />
-        <button
-          type="submit"
-          className="px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] bg-gate-gold text-white"
-        >
+        <Button type="submit" variant="gold" size="md">
           Search
-        </button>
+        </Button>
         {search && (
-          <Link
-            href="/admin/users"
-            className="px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] border border-border text-foreground/60 hover:text-foreground"
-          >
-            Clear
-          </Link>
+          <Button variant="outline" size="md" asChild>
+            <Link href="/admin/users">
+              Clear
+            </Link>
+          </Button>
         )}
       </form>
 
@@ -120,15 +118,15 @@ export default async function UsersPage({
             {u.id !== session.user.id ? (
               <form action={updateUserRole} className="flex gap-2 items-center">
                 <input type="hidden" name="userId" value={u.id} />
-                <select
+                <Select
                   name="role"
                   defaultValue={u.role}
-                  className="flex-1 h-9 border border-border bg-input px-2 text-xs font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
+                  className="flex-1 h-9 text-xs"
                 >
                   {ROLES.map((r) => (
                     <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                   ))}
-                </select>
+                </Select>
                 <Button type="submit" variant="outline" size="sm">Set</Button>
               </form>
             ) : (
