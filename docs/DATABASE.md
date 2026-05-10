@@ -23,6 +23,399 @@ cycles
                           └── exam_answers (individual question responses)
 ```
 
+## Entity-Relationship Diagram
+
+```mermaid
+erDiagram
+    %% ══════════════════════════════════════════════════════════════════════
+    %% Authentication Tables
+    %% ══════════════════════════════════════════════════════════════════════
+    
+    user {
+        text id PK
+        text name
+        text email UK
+        boolean emailVerified
+        text image
+        timestamp createdAt
+        timestamp updatedAt
+        roleEnum role
+        text firstName
+        text lastName
+        text country
+        text phone
+    }
+    
+    session {
+        text id PK
+        text userId FK
+        text token UK
+        timestamp expiresAt
+        text ipAddress
+        text userAgent
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    account {
+        text id PK
+        text userId FK
+        text accountId
+        text providerId
+        text accessToken
+        text refreshToken
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    verification {
+        text id PK
+        text identifier
+        text value
+        timestamp expiresAt
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    %% ══════════════════════════════════════════════════════════════════════
+    %% Core Exam Hierarchy
+    %% ══════════════════════════════════════════════════════════════════════
+    
+    cycles {
+        serial id PK
+        integer year
+        text name
+        text description
+        cycleStatusEnum status
+        integer stripeFeePercent
+        integer stripeFeeFixedCents
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    rounds {
+        serial id PK
+        integer cycleId FK
+        text name
+        integer order
+        roundFormatEnum format
+        timestamp startDate
+        timestamp endDate
+        text venue
+        integer feeUsd
+        roundRegistrationStatusEnum registrationStatus
+        timestamp createdAt
+    }
+    
+    subjects {
+        serial id PK
+        text slug UK
+        text name
+        text description
+        integer order
+        boolean active
+    }
+    
+    exams {
+        serial id PK
+        text createdByUserId FK
+        integer roundId FK
+        integer subjectId FK
+        text title
+        examTypeEnum type
+        text instructions
+        integer durationMinutes
+        timestamp windowStart
+        timestamp windowEnd
+        boolean shuffleQuestions
+        integer questionsPerSession
+        text[] targetGrades
+        boolean published
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    questions {
+        serial id PK
+        integer examId FK
+        questionTypeEnum type
+        integer order
+        text content
+        jsonb options
+        text correctAnswer
+        numeric tolerance
+        text[] grades
+        integer points
+        text explanation
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    %% ══════════════════════════════════════════════════════════════════════
+    %% Participants & Exam Sessions
+    %% ══════════════════════════════════════════════════════════════════════
+    
+    participants {
+        serial id PK
+        text userId FK_UK
+        integer cycleId FK
+        integer roundId FK
+        text fullName
+        date dateOfBirth
+        text country
+        text city
+        text school
+        text grade
+        text phone
+        genderEnum gender
+        registrationStatusEnum registrationStatus
+        paymentStatusEnum paymentStatus
+        text notes
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    exam_sessions {
+        serial id PK
+        integer examId FK
+        integer participantId FK
+        jsonb questionOrder
+        timestamp startedAt
+        timestamp deadlineAt
+        timestamp submittedAt
+        examSessionStatusEnum status
+        numeric score
+        integer tabSwitchCount
+        text ipAddress
+        text userAgent
+        timestamp archivedAt
+        timestamp createdAt
+    }
+    
+    exam_answers {
+        serial id PK
+        integer sessionId FK
+        integer questionId FK
+        text answer
+        boolean isCorrect
+        numeric pointsAwarded
+        boolean flagged
+        timestamp answeredAt
+        timestamp gradedAt
+        text gradedByUserId FK
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    results {
+        serial id PK
+        integer participantId FK
+        integer subjectId FK
+        integer cycleId FK
+        integer roundId FK
+        numeric score
+        numeric maxScore
+        integer rank
+        awardEnum award
+        text certificateUrl
+        timestamp publishedAt
+        timestamp createdAt
+    }
+    
+    %% ══════════════════════════════════════════════════════════════════════
+    %% Join Tables
+    %% ══════════════════════════════════════════════════════════════════════
+    
+    cycle_subjects {
+        integer cycleId PK_FK
+        integer subjectId PK_FK
+    }
+    
+    participant_subjects {
+        integer participantId PK_FK
+        integer subjectId PK_FK
+    }
+    
+    %% ══════════════════════════════════════════════════════════════════════
+    %% Supporting Entities
+    %% ══════════════════════════════════════════════════════════════════════
+    
+    partners {
+        serial id PK
+        text userId FK
+        text organizationName
+        partnerTypeEnum type
+        text country
+        text city
+        text website
+        text contactName
+        text contactEmail
+        text contactPhone
+        text cooperationType
+        text message
+        partnerStatusEnum status
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    positions {
+        serial id PK
+        text title
+        text location
+        positionTypeEnum type
+        text description
+        text requirements
+        boolean active
+        timestamp postedAt
+    }
+    
+    career_applications {
+        serial id PK
+        text userId FK
+        integer positionId FK
+        text fullName
+        text email
+        text phone
+        text country
+        text cvUrl
+        text motivationText
+        careerStatusEnum status
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    payments {
+        serial id PK
+        text userId FK
+        integer participantId FK
+        integer cycleId FK
+        integer roundId FK
+        text stripeCheckoutSessionId UK
+        text stripePaymentIntentId
+        text stripeChargeId
+        text cardLast4
+        text cardBrand
+        integer amountCents
+        integer serviceFeeCents
+        text currency
+        stripePaymentStatusEnum status
+        text receiptUrl
+        text invoicePdfKey
+        text receiptPdfKey
+        timestamp createdAt
+        timestamp updatedAt
+    }
+    
+    documents {
+        serial id PK
+        text userId FK
+        integer participantId FK
+        documentTypeEnum type
+        text name
+        text key UK
+        integer size
+        text mimeType
+        timestamp archivedAt
+        timestamp uploadedAt
+    }
+    
+    notifications {
+        serial id PK
+        text subject
+        text body
+        text recipientFilter
+        integer cycleId FK
+        text sentByUserId FK
+        integer recipientCount
+        timestamp sentAt
+        timestamp createdAt
+    }
+    
+    audit_log {
+        serial id PK
+        text userId FK
+        text action
+        text entityType
+        text entityId
+        jsonb meta
+        timestamp createdAt
+    }
+    
+    %% ══════════════════════════════════════════════════════════════════════
+    %% Relationships
+    %% ══════════════════════════════════════════════════════════════════════
+    
+    %% User relationships
+    user ||--o{ session : "has many sessions"
+    user ||--o{ account : "has many accounts"
+    user ||--o| participants : "has one participant profile"
+    user ||--o| partners : "has one partner profile"
+    user ||--o{ payments : "makes payments"
+    user ||--o{ documents : "uploads documents"
+    user ||--o{ exam_answers : "grades answers"
+    user ||--o{ exams : "creates exams"
+    user ||--o{ notifications : "sends notifications"
+    user ||--o{ career_applications : "submits applications"
+    user ||--o{ audit_log : "performs actions"
+    
+    %% Core exam hierarchy
+    cycles ||--o{ rounds : "contains rounds"
+    rounds ||--o{ exams : "contains exams"
+    exams ||--o{ questions : "contains questions"
+    
+    %% Exam session flow
+    exams ||--o{ exam_sessions : "has sessions"
+    participants ||--o{ exam_sessions : "takes exams"
+    exam_sessions ||--o{ exam_answers : "contains answers"
+    questions ||--o{ exam_answers : "receives answers"
+    
+    %% Subject relationships
+    cycles ||--o{ cycle_subjects : "offers subjects"
+    subjects ||--o{ cycle_subjects : "included in cycles"
+    participants ||--o{ participant_subjects : "enrolls in subjects"
+    subjects ||--o{ participant_subjects : "enrolled by participants"
+    subjects ||--o{ exams : "has exams"
+    subjects ||--o{ results : "has results"
+    
+    %% Participant relationships
+    participants ||--o{ results : "earns results"
+    participants ||--o{ payments : "makes payments"
+    participants ||--o{ documents : "uploads documents"
+    cycles ||--o{ participants : "enrolls participants"
+    rounds ||--o{ participants : "registers participants"
+    
+    %% Results relationships
+    cycles ||--o{ results : "produces results"
+    rounds ||--o{ results : "produces results"
+    
+    %% Payment relationships
+    cycles ||--o{ payments : "receives payments for"
+    rounds ||--o{ payments : "receives payments for"
+    
+    %% Career relationships
+    positions ||--o{ career_applications : "receives applications"
+    
+    %% Notification relationships
+    cycles ||--o{ notifications : "sends notifications for"
+```
+
+**Diagram Legend:**
+- `PK` - Primary Key
+- `FK` - Foreign Key
+- `UK` - Unique Key
+- `||--o{` - One-to-Many (one parent, zero or more children)
+- `||--o|` - One-to-One (one parent, zero or one child)
+- `||--||` - One-to-One Required (exactly one on both sides)
+
+**Key Relationships:**
+
+1. **Core Hierarchy**: cycles → rounds → exams → questions
+2. **Exam Flow**: participants → exam_sessions → exam_answers ← questions
+3. **Subject Enrollment**: Many-to-many via `cycle_subjects` and `participant_subjects`
+4. **Payment Flow**: user → participants → payments (linked to cycles/rounds)
+5. **Results**: participants + subjects + cycles/rounds → results
+6. **Documents**: user → documents (optionally linked to participants)
+
 ## Enums
 
 ### roleEnum
