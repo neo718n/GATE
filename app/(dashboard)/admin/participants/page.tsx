@@ -3,6 +3,8 @@ import { db } from "@/lib/db";
 import { participants } from "@/lib/db/schema";
 import { desc, ilike, or, count } from "drizzle-orm";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const PAGE_SIZE = 30;
 
@@ -71,25 +73,21 @@ export default async function ParticipantsPage({
 
       {/* Search */}
       <form method="get" className="flex gap-2">
-        <input
+        <Input
           name="q"
           defaultValue={search}
           placeholder="Search by name or country..."
-          className="flex-1 border border-border bg-card px-4 py-2 text-sm font-light text-foreground placeholder:text-foreground/35 focus:outline-none focus:ring-1 focus:ring-gate-gold"
+          className="flex-1"
         />
-        <button
-          type="submit"
-          className="px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] bg-gate-gold text-white hover:opacity-90 transition-opacity"
-        >
+        <Button type="submit" variant="gold" size="md">
           Search
-        </button>
+        </Button>
         {search && (
-          <Link
-            href="/admin/participants"
-            className="px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] border border-border text-foreground/60 hover:text-foreground transition-colors flex items-center"
-          >
-            Clear
-          </Link>
+          <Button variant="outline" size="md" asChild>
+            <Link href="/admin/participants">
+              Clear
+            </Link>
+          </Button>
         )}
       </form>
 
