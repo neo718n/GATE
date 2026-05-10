@@ -20,51 +20,271 @@ This document describes the data flow architecture in the GATE platform, followi
 
 The GATE platform uses a unidirectional data flow architecture optimized for Next.js 14's App Router and React Server Components:
 
+```mermaid
+graph TB
+    subgraph UI["UI Layer - React Server Components"]
+        A1[Pages & Layouts]
+        A2[Form Components]
+        A3[Display Components]
+    end
+    
+    subgraph SA["Server Actions Layer"]
+        B1[createExam]
+        B2[updateExam]
+        B3[deleteExam]
+        B4[Data Queries]
+        B5[Authorization requireRole]
+        B6[Validation & Business Logic]
+        B7[Cache Invalidation revalidatePath]
+    end
+    
+    subgraph ORM["Drizzle ORM Layer"]
+        C1[db.insert]
+        C2[db.update]
+        C3[db.delete]
+        C4[db.query.findMany]
+        C5[db.query.findFirst]
+        C6[Type-safe Schema]
+        C7[Relations & Joins]
+    end
+    
+    subgraph DB["PostgreSQL Database"]
+        D1[(exams)]
+        D2[(questions)]
+        D3[(participants)]
+        D4[(exam_sessions)]
+        D5[Constraints & Indexes]
+    end
+    
+    %% Data Flow Connections
+    A1 -->|Fetch Data| B4
+    A2 -->|Form Action| B1
+    A2 -->|Form Action| B2
+    A2 -->|Form Action| B3
+    
+    B1 --> B5
+    B2 --> B5
+    B3 --> B5
+    B4 --> B5
+    
+    B5 --> B6
+    B6 --> C1
+    B6 --> C2
+    B6 --> C3
+    B4 --> C4
+    B4 --> C5
+    
+    C1 --> C6
+    C2 --> C6
+    C3 --> C6
+    C4 --> C6
+    C5 --> C6
+    C6 --> C7
+    
+    C7 -->|SQL Queries| D1
+    C7 -->|SQL Queries| D2
+    C7 -->|SQL Queries| D3
+    C7 -->|SQL Queries| D4
+    D1 -.-> D5
+    D2 -.-> D5
+    D3 -.-> D5
+    D4 -.-> D5
+    
+    B6 --> B7
+    B7 -.->|Revalidate Cache| A1
+    
+    style UI fill:#e1f5ff
+    style SA fill:#fff4e1
+    style ORM fill:#e8f5e9
+    style DB fill:#fce4ec
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       UI Components                         │
-│              (React Server Components)                      │
-│  • Server-side data fetching                               │
-│  • Form actions calling server actions                     │
-│  • Type-safe props from database queries                   │
-└─────────────────────────────────────────────────────────────┘
-                            ▲
-                            │
-                    Data / Form Actions
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Server Actions                           │
-│              ("use server" functions)                       │
-│  • Authorization checks (requireRole)                      │
-│  • Business logic and validation                           │
-│  • Database operations via Drizzle                         │
-│  • Cache invalidation (revalidatePath)                     │
-│  • Audit logging                                           │
-└─────────────────────────────────────────────────────────────┘
-                            ▲
-                            │
-                      ORM Queries
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                     Drizzle ORM                             │
-│  • Type-safe query builder                                 │
-│  • Schema definitions and relations                        │
-│  • Query composition and joins                             │
-│  • Type inference from schema                              │
-└─────────────────────────────────────────────────────────────┘
-                            ▲
-                            │
-                       SQL Queries
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   PostgreSQL Database                       │
-│  • Data persistence                                         │
-│  • Constraints and relationships                           │
-│  • Indexes for performance                                 │
-└─────────────────────────────────────────────────────────────┘
+
+### Layer Responsibilities
+
+**1. UI Components Layer (React Server Components)**
+- Server-side data fetching directly in components
+- Form submissions via server actions
+- Type-safe props from database queries
+- Zero client-side JavaScript for data operations
+- Progressive enhancement with `useFormStatus` and `useTransition`
+
+**2. Server Actions Layer**
+- Entry point for all mutations and data operations
+- Authorization checks using `requireRole()`
+- Input validation and business logic
+- Database operations via Drizzle ORM
+- Cache invalidation with `revalidatePath()`
+- Audit logging for critical operations
+- Error handling and user feedback
+
+**3. Drizzle ORM Layer**
+- Type-safe query builder
+- Schema definitions with TypeScript inference
+- Relation mapping and eager loading
+- Query composition and optimization
+- Transaction support
+- Migration management
+
+**4. PostgreSQL Database**
+- Single source of truth for all data
+- Foreign key constraints and cascading deletes
+- Indexes for query performance
+- Row-level security policies
+- ACID compliance and data integrity
+
+### Example Data Flows
+
+Below are detailed example flows showing how data moves through the architecture for common operations:
+
+#### Example 1: Creating an Exam
+
+```mermaid
+sequenceDiagram
+    participant Form as Form Component
+    participant Action as createExam()
+    participant Auth as requireRole()
+    participant ORM as Drizzle ORM
+    participant DB as PostgreSQL
+    participant Cache as Next.js Cache
+    
+    Form->>Action: FormData (title, type, etc.)
+    Action->>Auth: Check admin/super_admin role
+    Auth-->>Action: Session with user.id
+    
+    Action->>Action: Validate & sanitize inputs
+    
+    Action->>ORM: db.insert(exams).values(...)
+    ORM->>DB: INSERT INTO exams (...)
+    DB-->>ORM: RETURNING id, created_at
+    ORM-->>Action: { id: 123, ... }
+    
+    Action->>ORM: writeAuditLog(userId, "create_exam", ...)
+    ORM->>DB: INSERT INTO audit_logs (...)
+    
+    Action->>Cache: revalidatePath("/admin/exams")
+    Cache-->>Action: Cache cleared
+    
+    Action->>Form: redirect("/admin/exams/123")
+    Form->>Form: Navigate to exam detail page
+```
+
+#### Example 2: Reading Exams List
+
+```mermaid
+sequenceDiagram
+    participant Page as ExamListPage
+    participant Auth as requireRole()
+    participant ORM as Drizzle ORM
+    participant DB as PostgreSQL
+    participant UI as React Components
+    
+    Page->>Auth: Check admin role
+    Auth-->>Page: Session confirmed
+    
+    Page->>ORM: db.query.exams.findMany({...})
+    ORM->>DB: SELECT * FROM exams ORDER BY created_at DESC
+    DB-->>ORM: [...exam rows]
+    ORM-->>Page: Exam[] (typed)
+    
+    Page->>UI: Render with exams data
+    UI-->>Page: HTML (Server-rendered)
+```
+
+#### Example 3: Updating an Exam
+
+```mermaid
+sequenceDiagram
+    participant Form as Edit Form
+    participant Action as updateExam()
+    participant Auth as requireRole()
+    participant ORM as Drizzle ORM
+    participant DB as PostgreSQL
+    participant Cache as Next.js Cache
+    
+    Form->>Action: FormData (examId, title, ...)
+    Action->>Auth: Check admin role
+    Auth-->>Action: Session confirmed
+    
+    Action->>Action: Validate inputs
+    
+    Action->>ORM: db.update(exams).set({...}).where(eq(exams.id, examId))
+    ORM->>DB: UPDATE exams SET ... WHERE id = ?
+    DB-->>ORM: Rows affected: 1
+    ORM-->>Action: Success
+    
+    Action->>Cache: revalidatePath("/admin/exams/123")
+    Action->>Cache: revalidatePath("/admin/exams")
+    Cache-->>Action: Caches cleared
+    
+    Action->>Form: Return to updated page
+```
+
+#### Example 4: Reading Exam with Relations
+
+```mermaid
+sequenceDiagram
+    participant Page as ExamDetailPage
+    participant Auth as requireRole()
+    participant ORM as Drizzle ORM
+    participant DB as PostgreSQL
+    participant UI as React Components
+    
+    Page->>Auth: Check admin role
+    Auth-->>Page: Session confirmed
+    
+    Page->>ORM: db.query.exams.findFirst({ with: { questions, sessions, createdBy } })
+    ORM->>DB: SELECT ... FROM exams<br/>LEFT JOIN questions ...<br/>LEFT JOIN exam_sessions ...<br/>LEFT JOIN user ...
+    DB-->>ORM: Exam with nested relations
+    ORM-->>Page: Exam (fully typed with relations)
+    
+    Page->>UI: Render exam with questions and sessions
+    UI-->>Page: HTML (Server-rendered)
+```
+
+#### Example 5: Taking an Exam (Complex Flow)
+
+```mermaid
+sequenceDiagram
+    participant User as Participant UI
+    participant Start as startExamSession()
+    participant Submit as submitAnswer()
+    participant End as endExamSession()
+    participant ORM as Drizzle ORM
+    participant DB as PostgreSQL
+    participant Cache as Next.js Cache
+    
+    User->>Start: Start exam (examId)
+    Start->>ORM: db.insert(exam_sessions).values(...)
+    ORM->>DB: INSERT INTO exam_sessions
+    DB-->>Start: { sessionId, startedAt }
+    
+    Start->>ORM: db.query.questions.findMany({ where: ... })
+    ORM->>DB: SELECT * FROM questions WHERE exam_id = ?
+    DB-->>Start: [questions]
+    
+    Start->>Cache: revalidatePath("/participant/exam/[id]")
+    Start-->>User: Session started with questions
+    
+    loop For each question
+        User->>Submit: Submit answer (sessionId, questionId, answer)
+        Submit->>ORM: db.insert(exam_answers).values(...)
+        ORM->>DB: INSERT INTO exam_answers
+        DB-->>Submit: Answer saved
+    end
+    
+    User->>End: End exam (sessionId)
+    End->>ORM: db.query.exam_answers.findMany({ where: ... })
+    ORM->>DB: SELECT * FROM exam_answers WHERE session_id = ?
+    DB-->>End: [answers]
+    
+    End->>End: Calculate score from answers
+    
+    End->>ORM: db.update(exam_sessions).set({ score, completedAt })
+    ORM->>DB: UPDATE exam_sessions SET score = ?, completed_at = NOW()
+    DB-->>End: Updated
+    
+    End->>Cache: revalidatePath("/participant/results")
+    End-->>User: Show results with score
 ```
 
 ---
