@@ -10,6 +10,11 @@ import { writeAuditLog } from "@/lib/audit";
 
 // ─── Admin: Exam CRUD ─────────────────────────────────────────────────────────
 
+/**
+ * Admin/QP action: Creates a new exam or practice session.
+ * Extracts form data for exam properties (title, type, subject, round, timing, shuffle settings).
+ * Redirects to the newly created exam's admin page on success.
+ */
 export async function createExam(formData: FormData) {
   const session = await requireRole(["admin", "super_admin", "question_provider"]);
 
@@ -44,6 +49,11 @@ export async function createExam(formData: FormData) {
   redirect(`/admin/exams/${exam.id}`);
 }
 
+/**
+ * Admin action: Updates an existing exam's metadata and settings.
+ * Allows changing title, type, subject/round association, timing windows, shuffle behavior,
+ * questions-per-session limit, instructions, and target grades. Revalidates admin exam routes.
+ */
 export async function updateExam(examId: number, formData: FormData) {
   await requireRole(["admin", "super_admin"]);
 
@@ -80,6 +90,11 @@ export async function updateExam(examId: number, formData: FormData) {
   revalidatePath("/admin/exams");
 }
 
+/**
+ * Admin action: Toggles an exam's published status.
+ * Published exams become visible to participants; unpublished exams are hidden.
+ * Revalidates exam detail and listing pages.
+ */
 export async function togglePublishExam(formData: FormData) {
   await requireRole(["admin", "super_admin"]);
   const examId = parseInt(formData.get("examId") as string);
@@ -91,6 +106,11 @@ export async function togglePublishExam(formData: FormData) {
   revalidatePath("/admin/exams");
 }
 
+/**
+ * Admin action: Permanently deletes an exam and all its associated data.
+ * Writes an audit log entry for the deletion. Redirects to the exam listing page.
+ * CASCADE deletes in DB schema remove related questions, sessions, and answers.
+ */
 export async function deleteExam(formData: FormData) {
   const session = await requireRole(["admin", "super_admin"]);
   const examId = parseInt(formData.get("examId") as string);
@@ -103,6 +123,13 @@ export async function deleteExam(formData: FormData) {
 
 // ─── Admin: Question CRUD ─────────────────────────────────────────────────────
 
+/**
+ * Ownership assertion pattern: Enforces exam ownership for question_provider role.
+ * Admins and super_admins bypass this check. For question_providers:
+ *   - If exam.createdByUserId is null (legacy exam), claim it for this QP
+ *   - If exam.createdByUserId doesn't match userId, throw access error
+ * This pattern prevents question_providers from modifying each other's exams.
+ */
 async function assertExamOwnership(examId: number, userId: string, role: string) {
   if (role === "question_provider") {
     const exam = await db.query.exams.findFirst({ where: eq(exams.id, examId) });
@@ -116,6 +143,12 @@ async function assertExamOwnership(examId: number, userId: string, role: string)
   }
 }
 
+/**
+ * Admin/QP action: Creates a new question for an exam.
+ * Asserts ownership via assertExamOwnership pattern. Parses MCQ options from JSON.
+ * Auto-assigns order (maxOrder + 1) to append question to end. Redirects to exam
+ * detail page (/admin or /qp route based on user role).
+ */
 export async function createQuestion(formData: FormData) {
   const session = await requireRole(["admin", "super_admin", "question_provider"]);
   const role = (session.user as { role?: string }).role ?? "participant";
@@ -160,6 +193,11 @@ export async function createQuestion(formData: FormData) {
   redirect(role === "question_provider" ? `/qp/exams/${examId}` : `/admin/exams/${examId}`);
 }
 
+/**
+ * Admin/QP action: Updates an existing question's content, type, options, answer, and metadata.
+ * Asserts ownership via assertExamOwnership pattern. Parses MCQ options from JSON if applicable.
+ * Redirects to exam detail page (/admin or /qp route based on user role).
+ */
 export async function updateQuestion(formData: FormData) {
   const session = await requireRole(["admin", "super_admin", "question_provider"]);
   const role = (session.user as { role?: string }).role ?? "participant";
@@ -196,6 +234,11 @@ export async function updateQuestion(formData: FormData) {
   redirect(role === "question_provider" ? `/qp/exams/${examId}` : `/admin/exams/${examId}`);
 }
 
+/**
+ * Admin/QP action: Permanently deletes a question from an exam.
+ * Asserts ownership via assertExamOwnership pattern. Prevents deletion if any participant
+ * has already answered the question. Writes audit log entry. Revalidates exam detail pages.
+ */
 export async function deleteQuestion(formData: FormData) {
   const session = await requireRole(["admin", "super_admin", "question_provider"]);
   const role = (session.user as { role?: string }).role ?? "participant";
@@ -217,6 +260,13 @@ export async function deleteQuestion(formData: FormData) {
 
 // ─── Participant: Exam Sessions ───────────────────────────────────────────────
 
+/**
+ * Participant action: Starts a new exam session or resumes an active one.
+ * Checks exam availability, window constraints, and participant enrollment (round/subject).
+ * Filters questions by participant's grade level. Handles shuffling and question-per-session limits.
+ * For practice exams, archives old sessions so participant can review prior attempts.
+ * For regular exams, prevents multiple attempts. Returns sessionId or error message.
+ */
 export async function startExamSession(examId: number): Promise<{ sessionId: number } | { error: string }> {
   const session = await requireRole(["participant", "admin", "super_admin"]);
 
@@ -301,6 +351,12 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
   return { sessionId: newSession.id };
 }
 
+/**
+ * Participant action: Saves or updates a participant's answer for a specific question.
+ * Validates session is active and not expired. Enforces ownership — participants can only
+ * save answers to their own sessions. Uses upsert (onConflictDoUpdate) to handle answer changes.
+ * If deadline passed, marks session as timed_out and rejects the answer.
+ */
 export async function saveAnswer(
   sessionId: number,
   questionId: number,
@@ -349,6 +405,21 @@ export async function saveAnswer(
   return { ok: true };
 }
 
+/**
+ * Participant action: Submits an exam session and runs auto-scoring algorithm (60+ lines).
+ *
+ * Auto-scoring algorithm logic:
+ *   1. Identifies session-assigned questions from questionOrder array
+ *   2. Iterates through each question to calculate total and earned points:
+ *      - MCQ questions: exact string match (answer === correctAnswer)
+ *      - Numeric questions: absolute difference < 1e-9 tolerance (floating-point safe)
+ *      - Open questions: skipped (requires manual grading, not auto-scored)
+ *   3. Calculates percentage score: (earnedPoints / totalPoints) * 100
+ *   4. Updates each answer row with isCorrect flag and pointsAwarded value
+ *   5. Marks session as submitted with final score and timestamp
+ *
+ * Returns: { ok: true, score: string } or { error: string }
+ */
 export async function submitExam(sessionId: number) {
   await requireRole(["participant", "admin", "super_admin"]);
 
@@ -413,6 +484,12 @@ export async function submitExam(sessionId: number) {
   return { ok: true, score };
 }
 
+/**
+ * Participant action: Increments tab switch counter for proctoring purposes.
+ * Tracks when a participant navigates away from the exam tab. Only applies to active
+ * sessions. Participants can only log tab switches for their own sessions (ownership check).
+ * Admins can log tab switches for any session (testing/monitoring).
+ */
 export async function logTabSwitch(sessionId: number) {
   const auth = await requireRole(["participant", "admin", "super_admin"]);
   const role = (auth.user as { role?: string }).role ?? "participant";
@@ -440,6 +517,12 @@ export async function logTabSwitch(sessionId: number) {
 
 // ─── Admin: Grading ───────────────────────────────────────────────────────────
 
+/**
+ * Admin action: Manually grades an open-ended answer and recalculates session score.
+ * Sets isCorrect flag and pointsAwarded for the answer. Records grader's userId and timestamp.
+ * After grading, recomputes entire session's score by summing all pointsAwarded values
+ * (including previously auto-scored MCQ/numeric answers). Revalidates exam result pages.
+ */
 export async function gradeOpenAnswer(formData: FormData) {
   const gradingSession = await requireRole(["admin", "super_admin"]);
 
