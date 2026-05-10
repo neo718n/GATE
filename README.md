@@ -418,6 +418,195 @@ Visit [http://localhost:3000](http://localhost:3000) and check:
 - Check that the bucket name matches exactly (case-sensitive)
 - Ensure the endpoint URL includes your correct account ID
 
+## Database Setup
+
+The G.A.T.E. platform uses [Drizzle ORM](https://orm.drizzle.team) with [Drizzle Kit](https://orm.drizzle.team/kit-docs/overview) for type-safe database operations and schema management. All database commands are configured in `package.json` and use the Drizzle configuration defined in `drizzle.config.ts`.
+
+### Database Configuration
+
+Drizzle is configured to use:
+- **Dialect:** PostgreSQL
+- **Schema Location:** `./lib/db/schema.ts`
+- **Migrations Output:** `./drizzle`
+- **Connection:** Uses `DATABASE_URL` from `.env.local`
+
+### Schema Management Commands
+
+#### Generate Migration Files
+
+```bash
+npm run db:generate
+```
+
+Generates SQL migration files based on schema changes in `lib/db/schema.ts`. This command:
+- Analyzes your Drizzle schema for changes
+- Creates timestamped migration SQL files in the `./drizzle` directory
+- Preserves a history of all schema changes for version control
+
+**When to use:** After modifying the database schema (adding tables, columns, indexes, or constraints)
+
+---
+
+#### Apply Migrations
+
+```bash
+npm run db:migrate
+```
+
+Applies pending migration files to your database. This command:
+- Executes SQL migrations in chronological order
+- Tracks which migrations have been applied
+- Ensures database schema matches your migration history
+
+**When to use:** After generating migrations or when deploying to a new environment
+
+---
+
+#### Push Schema Changes
+
+```bash
+npm run db:push
+```
+
+Directly pushes schema changes to the database without generating migration files. This command:
+- Syncs the database schema directly from `lib/db/schema.ts`
+- Automatically creates, alters, or drops tables and columns as needed
+- Ideal for rapid development iteration
+
+**When to use:** During local development for quick prototyping. **Not recommended for production** — use migrations for production deployments.
+
+**⚠️ Caution:** This command can result in data loss if schema changes involve dropping columns or tables. Always back up data before using in non-local environments.
+
+---
+
+#### Open Drizzle Studio
+
+```bash
+npm run db:studio
+```
+
+Launches [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview) — a visual database browser and editor. This command:
+- Starts a local web interface (usually at `https://local.drizzle.studio`)
+- Provides a GUI for viewing and editing database records
+- Allows exploring schema structure, relationships, and indexes
+
+**When to use:** For visual database inspection, manual data editing, or exploring the database structure without SQL
+
+---
+
+### Database Seeding
+
+The platform includes seed scripts for initializing essential data:
+
+#### Seed Super Admin User
+
+```bash
+npm run seed:admin
+```
+
+Creates the first super admin user with full system access. This script:
+- Generates a super admin account with `super_admin` role
+- Sets up initial authentication credentials
+- Required before first login to the platform
+
+**When to use:** 
+- After initial database setup
+- When you need to create or reset the super admin account
+- Before deploying to a new environment
+
+**⚠️ Important:** Store the generated credentials securely. The super admin has unrestricted access to all platform functions.
+
+---
+
+#### Seed Subject Data
+
+```bash
+npm run seed:subjects
+```
+
+Populates the database with standard academic subjects for G.A.T.E. assessments. This script:
+- Adds predefined subject categories (Mathematics, Physics, Chemistry, etc.)
+- Sets up subject metadata and configuration
+- Required for creating assessment rounds
+
+**When to use:**
+- After initial database setup
+- Before creating the first assessment cycle
+- When subject data needs to be reset or updated
+
+---
+
+### Complete Database Initialization
+
+For a fresh installation, run these commands in order:
+
+```bash
+# 1. Push the initial schema to the database
+npm run db:push
+
+# 2. Seed the super admin user
+npm run seed:admin
+
+# 3. Seed subject data
+npm run seed:subjects
+
+# 4. (Optional) Open Drizzle Studio to verify
+npm run db:studio
+```
+
+After these steps, your database will be fully initialized with:
+- ✅ Complete schema (users, cycles, rounds, registrations, payments, partners, etc.)
+- ✅ Super admin account for first login
+- ✅ Subject data for creating assessments
+
+---
+
+### Schema Development Workflow
+
+**Local Development:**
+```bash
+# 1. Modify schema in lib/db/schema.ts
+# 2. Push changes directly to local database
+npm run db:push
+
+# 3. Verify changes in Drizzle Studio
+npm run db:studio
+```
+
+**Production Deployment:**
+```bash
+# 1. Modify schema in lib/db/schema.ts
+# 2. Generate migration files
+npm run db:generate
+
+# 3. Review generated SQL in ./drizzle directory
+# 4. Commit migration files to version control
+git add drizzle/
+git commit -m "Add migration: [description]"
+
+# 5. Deploy and apply migrations
+npm run db:migrate
+```
+
+---
+
+### Troubleshooting
+
+**Migration Conflicts:**
+- If migrations fail, check the `./drizzle` directory for conflicting migration files
+- Resolve schema conflicts before retrying
+- Use `npm run db:studio` to inspect the current database state
+
+**Connection Errors:**
+- Verify `DATABASE_URL` is set correctly in `.env.local`
+- Ensure your Neon database is active and accessible
+- Check that you're using the pooled connection string
+
+**Seed Script Failures:**
+- Ensure the database schema is up to date (`npm run db:push`)
+- Check for existing data that might conflict with seed data
+- Review script output for specific error messages
+
 ## Brand Standards
 
 All visual materials, certificates, and user interfaces adhere to the official **G.A.T.E. Assessment Brand Identity** guidelines. Refer to `GATE-Brand-Kit-v2/GATE-BRAND-DOCUMENTATION.md` for:
