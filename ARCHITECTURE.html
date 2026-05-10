@@ -799,8 +799,631 @@
     </div>
   </div>
 
+  <!-- ═══════════════════════════════════════════════ AUTHORIZATION SYSTEM -->
+  <h2>11. Authorization System</h2>
+  <p class="subtitle" style="margin-top:0">Comprehensive role-based access control (RBAC) with 7 user roles and server-side enforcement</p>
+
+  <div class="grid-2">
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Authorization Middleware (lib/authz.ts)</h3>
+      <div class="box blue" style="margin-bottom:12px">
+        <h3 style="color:#5a8aba;margin-bottom:8px">getCurrentSession()</h3>
+        <p style="margin-bottom:8px">Retrieves current user session without requiring authentication. Used for optional personalization.</p>
+        <div style="font-size:0.78rem;color:#888;font-family:monospace;line-height:1.8">
+          const session = await getCurrentSession();<br/>
+          // Returns: Session | null
+        </div>
+        <div style="margin-top:8px">
+          <span class="tag blue">Optional Auth</span>
+          <span class="tag blue">Marketing Pages</span>
+        </div>
+      </div>
+
+      <div class="box purple" style="margin-bottom:12px">
+        <h3 style="color:#8a5aba;margin-bottom:8px">requireSession()</h3>
+        <p style="margin-bottom:8px">Enforces authentication and email verification. Redirects to /login if not authenticated, /verify-email if email not verified.</p>
+        <div style="font-size:0.78rem;color:#888;font-family:monospace;line-height:1.8">
+          const session = await requireSession();<br/>
+          // Throws redirect if unauthorized
+        </div>
+        <div style="margin-top:8px">
+          <span class="tag purple">Required Auth</span>
+          <span class="tag purple">Email Check</span>
+        </div>
+      </div>
+
+      <div class="box green" style="margin-bottom:12px">
+        <h3 style="color:#5aaa7a;margin-bottom:8px">requireRole(roles: Role | Role[])</h3>
+        <p style="margin-bottom:8px">Validates session AND checks if user's role matches. Supports single role or array of roles. Redirects to / if unauthorized.</p>
+        <div style="font-size:0.78rem;color:#888;font-family:monospace;line-height:1.8">
+          await requireRole("super_admin");<br/>
+          await requireRole(["admin", "super_admin"]);<br/>
+          await requireRole(["participant", "admin"]);
+        </div>
+        <div style="margin-top:8px">
+          <span class="tag green">Role-Based</span>
+          <span class="tag green">Primary Guard</span>
+        </div>
+      </div>
+
+      <div class="box orange" style="margin-bottom:12px">
+        <h3 style="color:#ba8a5a;margin-bottom:8px">requireStaffSession()</h3>
+        <p style="margin-bottom:8px">Enforces staff-only access (super_admin, admin, coordinator). Redirects to /staff if not authenticated, / if not staff.</p>
+        <div style="font-size:0.78rem;color:#888;font-family:monospace;line-height:1.8">
+          const session = await requireStaffSession();<br/>
+          // Staff roles: super_admin, admin, coordinator
+        </div>
+        <div style="margin-top:8px">
+          <span class="tag orange">Staff Only</span>
+          <span class="tag orange">Admin Portal</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Email Verification Requirements</h3>
+      <div class="box" style="border-color:#ba8a5a;margin-bottom:12px">
+        <h3 style="color:#ba8a5a;margin-bottom:8px">Protected by Email Verification</h3>
+        <p style="margin-bottom:8px">These portals require <strong>emailVerified = true</strong> (enforced by requireSession()):</p>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:10px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="tag green">participant</span>
+            <span style="font-size:0.8rem;color:#888">All /participant/* routes</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="tag orange">partner_contact</span>
+            <span style="font-size:0.8rem;color:#888">All /partner/* routes</span>
+          </div>
+        </div>
+        <p style="margin-top:12px;font-size:0.78rem;color:#888">If emailVerified = false, user is redirected to /verify-email and cannot proceed until verified.</p>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px;margin-top:16px">7 User Roles & Hierarchy</h3>
+      <table class="tbl">
+        <thead><tr><th>Role</th><th>Access Level</th><th>Dashboard</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag purple">super_admin</span></td><td class="muted">Full system access + config</td><td class="mono">/admin</td></tr>
+          <tr><td><span class="tag red">admin</span></td><td class="muted">Operational admin (no config)</td><td class="mono">/admin</td></tr>
+          <tr><td><span class="tag blue">coordinator</span></td><td class="muted">Regional participant mgmt</td><td class="mono">/coordinator</td></tr>
+          <tr><td><span class="tag gray">question_provider</span></td><td class="muted">Question bank management</td><td class="mono">/questions</td></tr>
+          <tr><td><span class="tag orange">partner_contact</span></td><td class="muted">Partner organization portal</td><td class="mono">/partner</td></tr>
+          <tr><td><span class="tag green">participant</span></td><td class="muted">Student enrollment + exams</td><td class="mono">/participant</td></tr>
+          <tr><td><span class="tag gray">career_applicant</span></td><td class="muted">Marketing site only</td><td class="mono">/ (no dashboard)</td></tr>
+        </tbody>
+      </table>
+      <p class="section-note">Roles ordered by privilege level (highest to lowest)</p>
+    </div>
+  </div>
+
+  <div style="margin-top:24px">
+    <h3 style="color:#888;margin-bottom:12px">Authorization Patterns</h3>
+    <div class="grid-2">
+      <div class="box" style="margin-bottom:12px">
+        <h3 style="color:var(--gold);margin-bottom:8px">Pattern 1: Layout-Level Authorization</h3>
+        <p style="margin-bottom:8px">Protect entire route groups by adding authorization to layout:</p>
+        <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.8;background:#0d0d0d;padding:10px;border-radius:4px">
+          // app/(dashboard)/layout.tsx<br/>
+          export default async function DashboardLayout() {<br/>
+          &nbsp;&nbsp;await requireSession(); // All nested routes protected<br/>
+          &nbsp;&nbsp;return &lt;DashboardShell&gt;{children}&lt;/DashboardShell&gt;;<br/>
+          }
+        </div>
+      </div>
+
+      <div class="box" style="margin-bottom:12px">
+        <h3 style="color:var(--gold);margin-bottom:8px">Pattern 2: Page-Level Authorization</h3>
+        <p style="margin-bottom:8px">Add specific role requirements to individual pages:</p>
+        <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.8;background:#0d0d0d;padding:10px;border-radius:4px">
+          // app/(dashboard)/admin/users/page.tsx<br/>
+          export default async function UsersPage() {<br/>
+          &nbsp;&nbsp;await requireRole(["super_admin"]);<br/>
+          &nbsp;&nbsp;const users = await db.query.users.findMany();<br/>
+          &nbsp;&nbsp;return &lt;UsersTable users={users} /&gt;;<br/>
+          }
+        </div>
+      </div>
+
+      <div class="box" style="margin-bottom:12px">
+        <h3 style="color:var(--gold);margin-bottom:8px">Pattern 3: Data-Scoped Authorization</h3>
+        <p style="margin-bottom:8px">Scope database queries based on user role:</p>
+        <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.8;background:#0d0d0d;padding:10px;border-radius:4px">
+          const session = await requireRole(["participant", "admin"]);<br/>
+          const isAdmin = session.user.role === "admin";<br/>
+          <br/>
+          // Participants see only their data, admins see all<br/>
+          const results = isAdmin<br/>
+          &nbsp;&nbsp;? await db.query.sessions.findMany()<br/>
+          &nbsp;&nbsp;: await db.query.sessions.findMany({<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where: eq(sessions.userId, session.user.id)<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;});
+        </div>
+      </div>
+
+      <div class="box" style="margin-bottom:12px">
+        <h3 style="color:var(--gold);margin-bottom:8px">Pattern 4: Server Action Guards</h3>
+        <p style="margin-bottom:8px">Protect data mutations with authorization checks:</p>
+        <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.8;background:#0d0d0d;padding:10px;border-radius:4px">
+          "use server";<br/>
+          export async function deleteUser(userId: string) {<br/>
+          &nbsp;&nbsp;await requireRole(["super_admin"]); // Auth guard<br/>
+          &nbsp;&nbsp;await db.delete(users).where(eq(users.id, userId));<br/>
+          &nbsp;&nbsp;revalidatePath("/admin/users");<br/>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-top:20px">
+    <div class="box" style="border-color:var(--gold)">
+      <h3 style="color:var(--gold);margin-bottom:8px">ROLE_HOME Mapping (Post-Login Redirect)</h3>
+      <p style="margin-bottom:12px">When users log in or visit <span class="mono" style="color:#7ab8e8">/dashboard</span>, they are redirected to their role-specific dashboard:</p>
+      <table class="tbl">
+        <thead><tr><th>Role</th><th>Home Route</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag purple">super_admin</span></td><td class="mono">/admin</td><td class="muted">System config + ops</td></tr>
+          <tr><td><span class="tag red">admin</span></td><td class="mono">/admin</td><td class="muted">Operational admin</td></tr>
+          <tr><td><span class="tag blue">coordinator</span></td><td class="mono">/coordinator</td><td class="muted">Regional mgmt</td></tr>
+          <tr><td><span class="tag green">participant</span></td><td class="mono">/participant</td><td class="muted">Student portal</td></tr>
+          <tr><td><span class="tag orange">partner_contact</span></td><td class="mono">/partner</td><td class="muted">Partner portal</td></tr>
+          <tr><td><span class="tag gray">question_provider</span></td><td class="mono">/questions</td><td class="muted">Question mgmt</td></tr>
+          <tr><td><span class="tag gray">career_applicant</span></td><td class="mono">/</td><td class="muted">Public homepage</td></tr>
+        </tbody>
+      </table>
+      <p class="section-note">Defined in lib/authz.ts as ROLE_HOME constant</p>
+    </div>
+
+    <div class="box" style="border-color:#5a8aba">
+      <h3 style="color:#5a8aba;margin-bottom:8px">Security Best Practices</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:4px">✅ Server-Side Only</div>
+          <p style="font-size:0.75rem;color:#888">All authorization checks in Server Components and Server Actions. Never client-side.</p>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:4px">✅ Defense in Depth</div>
+          <p style="font-size:0.75rem;color:#888">Authorization at layout, page, server action, and query levels.</p>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:4px">✅ Fail Securely</div>
+          <p style="font-size:0.75rem;color:#888">Default to denying access. Explicit role checks required.</p>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:4px">✅ Email Verification</div>
+          <p style="font-size:0.75rem;color:#888">Required before accessing participant and partner portals.</p>
+        </div>
+        <div>
+          <div style="font-size:0.78rem;color:var(--gold);font-weight:600;margin-bottom:4px">✅ Audit Logging</div>
+          <p style="font-size:0.75rem;color:#888">Sensitive operations logged to audit_logs table.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ COMPLETE ROUTE MAPPING -->
+  <h2>12. Complete Route-to-Role Mapping</h2>
+  <p class="subtitle" style="margin-top:0">All 68 application routes organized by route group with role-based access control patterns</p>
+
+  <div style="margin-bottom:20px">
+    <h3 style="color:#888;margin-bottom:12px">Route Groups Overview (68 Total Routes)</h3>
+    <div class="grid-4">
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">3</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Auth Routes</div>
+        <span class="tag gray">Public</span>
+      </div>
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">14</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Marketing</div>
+        <span class="tag gray">Public</span>
+      </div>
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">25</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Admin Routes</div>
+        <span class="tag red">Admin</span>
+      </div>
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">12</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Participant</div>
+        <span class="tag green">Participant</span>
+      </div>
+    </div>
+    <div class="grid-4" style="margin-top:10px">
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">3</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Coordinator</div>
+        <span class="tag blue">Coordinator</span>
+      </div>
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">3</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Partner</div>
+        <span class="tag orange">Partner</span>
+      </div>
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">6</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Questions</div>
+        <span class="tag gray">QP</span>
+      </div>
+      <div class="box" style="text-align:center">
+        <div style="font-size:1.4rem;color:var(--gold);font-weight:700">2</div>
+        <div style="font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px">Special</div>
+        <span class="tag gold">Mixed</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Authentication Routes (3)</h3>
+      <div class="box" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag blue">app/(auth)/</span>
+        </div>
+        <table class="tbl" style="font-size:0.76rem">
+          <thead><tr><th>Route</th><th>Access</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">/login</td><td><span class="tag gray">Public</span></td><td class="muted">Staff and participant login</td></tr>
+            <tr><td class="mono">/register</td><td><span class="tag gray">Public</span></td><td class="muted">New participant registration</td></tr>
+            <tr><td class="mono">/verify-email</td><td><span class="tag gray">Public</span></td><td class="muted">Email verification flow</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            // No requireSession() or requireRole()<br/>
+            // Public access with smart redirect:<br/>
+            // - Authenticated users → ROLE_HOME[role]<br/>
+            // - Unauthenticated → show login/register form
+          </div>
+        </div>
+        <p class="section-note">Auth routes use Better Auth (/api/auth/[...all]) for authentication</p>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px">Marketing Routes (14)</h3>
+      <div class="box" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag purple">app/(marketing)/</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.76rem;font-family:monospace;color:#7ab8e8">
+          <div>/</div><div>/about</div>
+          <div>/academic-info</div><div>/academic-integrity</div>
+          <div>/awards</div><div>/careers</div>
+          <div>/contact</div><div>/onsite-assessment</div>
+          <div>/partnerships</div><div>/privacy</div>
+          <div>/rules</div><div>/structure</div>
+          <div>/subjects</div><div>/terms</div>
+        </div>
+        <p class="section-note">Public access with optional personalized navigation if logged in</p>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px">Participant Routes (12)</h3>
+      <div class="box green" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag green">app/(dashboard)/participant/</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+          <span class="tag green">participant</span>
+          <span class="tag red">admin</span>
+          <span class="tag purple">super_admin</span>
+        </div>
+        <table class="tbl" style="font-size:0.76rem">
+          <tbody>
+            <tr><td class="mono">/participant</td><td class="muted">Dashboard + 4-step progress tracker</td></tr>
+            <tr><td class="mono">/participant/profile</td><td class="muted">Personal info + school details</td></tr>
+            <tr><td class="mono">/participant/enrollment</td><td class="muted">Subject selection + payment flow</td></tr>
+            <tr><td class="mono">/participant/exam</td><td class="muted">Exam guidelines and schedule</td></tr>
+            <tr><td class="mono">/participant/exams</td><td class="muted">Available exams list</td></tr>
+            <tr><td class="mono">/participant/exams/[id]</td><td class="muted">Exam info + eligibility status</td></tr>
+            <tr><td class="mono">/participant/exams/[id]/take</td><td class="muted">⚡ Active exam session (proctored)</td></tr>
+            <tr><td class="mono">/participant/exams/[id]/result</td><td class="muted">Individual exam result + score</td></tr>
+            <tr><td class="mono">/participant/results</td><td class="muted">All exam results + scores</td></tr>
+            <tr><td class="mono">/participant/certificates</td><td class="muted">Digital certificates download</td></tr>
+            <tr><td class="mono">/participant/documents</td><td class="muted">Upload ID + supporting docs</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:#0d1f14;border:1px solid #2a5a3a;border-radius:4px">
+          <div style="font-size:0.7rem;color:#5aaa7a;text-transform:uppercase;font-weight:600;margin-bottom:6px">Special Features</div>
+          <div style="font-size:0.75rem;color:#aaa;line-height:1.6">
+            <div>📊 <strong>Progress Tracker:</strong> 4 steps (Profile → Enrolled → Paid → Ready)</div>
+            <div style="margin-top:4px">🔒 <strong>Exam Proctoring:</strong> Tab-switch detection, timed sessions, deadline enforcement</div>
+            <div style="margin-top:4px">👥 <strong>Admin Oversight:</strong> Admins can view participant pages for support</div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            await requireRole(["participant", "admin", "super_admin"]);<br/>
+            // Participants: emailVerified required (requireSession check)<br/>
+            // Admins: Can access for oversight and support
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px">Coordinator Routes (3)</h3>
+      <div class="box blue" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag blue">app/(dashboard)/coordinator/</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+          <span class="tag blue">coordinator</span>
+          <span class="tag red">admin</span>
+          <span class="tag purple">super_admin</span>
+        </div>
+        <table class="tbl" style="font-size:0.76rem">
+          <tbody>
+            <tr><td class="mono">/coordinator</td><td class="muted">Regional overview + statistics</td></tr>
+            <tr><td class="mono">/coordinator/participants</td><td class="muted">Assigned regional participants</td></tr>
+            <tr><td class="mono">/coordinator/reports</td><td class="muted">Regional performance reports</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            await requireRole(["coordinator", "admin", "super_admin"]);<br/>
+            // Regional coordinators + admin oversight
+          </div>
+        </div>
+        <p class="section-note">3 nav items focused on regional participant management</p>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="color:#888;margin-bottom:12px">Admin Routes (25)</h3>
+      <div class="box red" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag red">app/(dashboard)/admin/</span>
+        </div>
+
+        <h3 style="font-size:0.75rem;color:#888;margin:12px 0 6px;text-transform:uppercase">Core Admin Pages (14)</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+          <span class="tag red">admin</span>
+          <span class="tag purple">super_admin</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:0.74rem;font-family:monospace;color:#7ab8e8;margin-bottom:8px">
+          <div>/admin</div><div>/admin/analytics*</div>
+          <div>/admin/careers*</div><div>/admin/certificates</div>
+          <div>/admin/content</div><div>/admin/inquiries</div>
+          <div>/admin/notifications</div><div>/admin/partners*</div>
+          <div>/admin/payments</div><div>/admin/question-providers*</div>
+          <div>/admin/results</div><div>/admin/settings*</div>
+          <div>/admin/subjects*</div><div>/admin/users*</div>
+        </div>
+        <div style="font-size:0.7rem;color:#ba5a5a;background:#2a0d0d;padding:6px 8px;border-radius:4px;margin-bottom:12px">
+          * Super admin exclusive pages (requireRole(["super_admin"]))
+        </div>
+
+        <h3 style="font-size:0.75rem;color:#888;margin:12px 0 6px;text-transform:uppercase">Cycle Management (2)</h3>
+        <div style="margin-bottom:8px"><span class="tag purple">super_admin only</span></div>
+        <div style="display:flex;flex-direction:column;gap:3px;font-size:0.74rem;font-family:monospace;color:#7ab8e8;margin-bottom:8px">
+          <div>/admin/cycles — Cycles list + create cycle</div>
+          <div>/admin/cycles/[id] — Cycle detail + rounds management</div>
+        </div>
+
+        <h3 style="font-size:0.75rem;color:#888;margin:12px 0 6px;text-transform:uppercase">Participant Management (2)</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+          <span class="tag red">admin</span>
+          <span class="tag purple">super_admin</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;font-size:0.74rem;font-family:monospace;color:#7ab8e8;margin-bottom:8px">
+          <div>/admin/participants — All participants list + filters</div>
+          <div>/admin/participants/[id] — Individual participant details</div>
+        </div>
+
+        <h3 style="font-size:0.75rem;color:#888;margin:12px 0 6px;text-transform:uppercase">Exam Management (7)</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+          <span class="tag red">admin</span>
+          <span class="tag purple">super_admin</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;font-size:0.74rem;font-family:monospace;color:#7ab8e8;margin-bottom:8px">
+          <div>/admin/exams — All exams list</div>
+          <div>/admin/exams/new — Create new exam</div>
+          <div>/admin/exams/[id] — Exam overview + management</div>
+          <div>/admin/exams/[id]/questions/new — Add question</div>
+          <div>/admin/exams/[id]/questions/[qid]/edit — Edit question</div>
+          <div>/admin/exams/[id]/results — All exam results</div>
+          <div>/admin/exams/[id]/results/[sid] — Session result detail</div>
+        </div>
+
+        <div style="margin-top:12px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            // Most pages:<br/>
+            await requireRole(["admin", "super_admin"]);<br/>
+            <br/>
+            // Super admin exclusive pages:<br/>
+            await requireRole(["super_admin"]);
+          </div>
+        </div>
+
+        <div style="margin-top:10px;padding:8px;background:#1a0d2a;border:1px solid#3a1a5a;border-radius:4px">
+          <div style="font-size:0.7rem;color:#8a5aba;font-weight:600;margin-bottom:4px">Navigation Differences</div>
+          <div style="font-size:0.74rem;color:#aaa">
+            <div>🔹 <strong>Super Admin:</strong> 14 nav items (full system access)</div>
+            <div>🔹 <strong>Admin:</strong> 9 nav items (operational access, no config)</div>
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px">Partner Routes (3)</h3>
+      <div class="box orange" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag orange">app/(dashboard)/partner/</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+          <span class="tag orange">partner_contact</span>
+          <span class="tag red">admin</span>
+          <span class="tag purple">super_admin</span>
+        </div>
+        <table class="tbl" style="font-size:0.76rem">
+          <tbody>
+            <tr><td class="mono">/partner</td><td class="muted">Partner organization dashboard</td></tr>
+            <tr><td class="mono">/partner/profile</td><td class="muted">Organization details + contact info</td></tr>
+            <tr><td class="mono">/partner/status</td><td class="muted">Partnership application status</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            await requireRole(["partner_contact", "admin", "super_admin"]);<br/>
+            // Partners: emailVerified required<br/>
+            // Admins: Can access for partnership management
+          </div>
+        </div>
+        <p class="section-note">Email verification required for partner_contact role</p>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px">Question Provider Routes (6)</h3>
+      <div class="box purple" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-size:0.75rem;color:#666;text-transform:uppercase">Route Group:</span>
+          <span class="tag purple">app/(dashboard)/questions/</span>
+        </div>
+        <div style="margin-bottom:10px"><span class="tag gray">question_provider</span></div>
+        <div style="display:flex;flex-direction:column;gap:3px;font-size:0.74rem;font-family:monospace;color:#7ab8e8;margin-bottom:10px">
+          <div>/questions — Question provider dashboard</div>
+          <div>/questions/bank — Question bank browse</div>
+          <div>/questions/new — Create new question</div>
+          <div>/questions/[id] — Question detail + edit</div>
+          <div>/questions/submissions — Submission history</div>
+          <div>/questions/analytics — Question performance analytics</div>
+        </div>
+        <div style="margin-top:12px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            await requireRole(["question_provider"]);
+          </div>
+        </div>
+      </div>
+
+      <h3 style="color:#888;margin-bottom:12px">Special Routes (2)</h3>
+      <div class="box" style="margin-bottom:20px">
+        <table class="tbl" style="font-size:0.76rem">
+          <thead><tr><th>Route</th><th>Access</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">/staff</td><td><span class="tag gray">Public</span></td><td class="muted">Staff login portal (redirects authenticated staff to dashboard)</td></tr>
+            <tr><td class="mono">/dashboard</td><td><span class="tag gold">Auth Required</span></td><td class="muted">Role-based redirect using ROLE_HOME mapping</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;padding:10px;background:#0d0d0d;border-radius:4px">
+          <div style="font-size:0.7rem;color:#666;text-transform:uppercase;margin-bottom:6px">Authorization Pattern:</div>
+          <div style="font-size:0.76rem;color:#888;font-family:monospace;line-height:1.6">
+            // /staff: Public with smart redirect<br/>
+            const session = await getCurrentSession();<br/>
+            if (session) redirect(ROLE_HOME[session.user.role]);<br/>
+            <br/>
+            // /dashboard: Authenticated redirect<br/>
+            const session = await requireSession();<br/>
+            redirect(ROLE_HOME[session.user.role]);
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px">
+    <h3 style="color:#888;margin-bottom:12px">Role-to-Route Access Matrix</h3>
+    <div class="box" style="border-color:var(--gold)">
+      <p style="margin-bottom:12px;font-size:0.85rem;color:#aaa">Quick reference showing which roles can access which route groups</p>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Route Group</th>
+            <th>super_admin</th>
+            <th>admin</th>
+            <th>coordinator</th>
+            <th>participant</th>
+            <th>partner</th>
+            <th>qp</th>
+            <th>career</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">Marketing (14)</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+          </tr>
+          <tr>
+            <td class="mono">Auth (3)</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+          </tr>
+          <tr>
+            <td class="mono">Admin (25)</td>
+            <td style="text-align:center;color:var(--gold)">✅ Full</td>
+            <td style="text-align:center;color:#ba8a5a">✅ Limited</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+          </tr>
+          <tr>
+            <td class="mono">Coordinator (3)</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+          </tr>
+          <tr>
+            <td class="mono">Participant (12)</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+          </tr>
+          <tr>
+            <td class="mono">Partner (3)</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+          </tr>
+          <tr>
+            <td class="mono">Questions (6)</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">❌</td>
+            <td style="text-align:center">✅</td>
+            <td style="text-align:center">❌</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="section-note" style="margin-top:12px">
+        ✅ = Full access | ✅ Limited = Some pages restricted (e.g., admin vs super_admin) | ❌ = No access
+      </p>
+    </div>
+  </div>
+
   <!-- ═══════════════════════════════════════════════ KNOWN GAPS -->
-  <h2>11. Known Gaps / Future Work</h2>
+  <h2>13. Known Gaps / Future Work</h2>
   <div class="grid-3">
     <div class="box orange">
       <h3 style="color:#ba8a5a;margin-bottom:8px">Orphaned DB Column</h3>
@@ -817,7 +1440,7 @@
   </div>
 
   <hr class="divider" />
-  <p style="font-size:0.75rem;color:#444;text-align:center">GATE Platform Architecture · Generated 2026-04-29 · Next.js 15 · Drizzle ORM · PostgreSQL (Neon) · Better Auth · Stripe · Cloudflare R2</p>
+  <p style="font-size:0.75rem;color:#444;text-align:center">GATE Platform Architecture · Generated 2026-05-11 · Next.js 15 · Drizzle ORM · PostgreSQL (Neon) · Better Auth · Stripe · Cloudflare R2</p>
   <div style="height:40px"></div>
 
 </div>
