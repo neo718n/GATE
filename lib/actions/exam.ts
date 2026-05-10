@@ -369,28 +369,40 @@ export async function submitExam(sessionId: number) {
   );
   const sessionQuestions = session.exam.questions.filter((q) => sessionQuestionIds.has(q.id));
 
+  // Accumulate points across all session questions for percentage calculation
   let totalPoints = 0;
   let earnedPoints = 0;
   const scoreUpdates: { answerId: number; isCorrect: boolean; awarded: number }[] = [];
 
   for (const q of sessionQuestions) {
+    // Accumulate maximum possible points from all questions in this session
     totalPoints += q.points;
     const ans = session.answers.find((a) => a.questionId === q.id);
+    // Skip auto-scoring if no answer submitted or if question type is open-ended,
+    // since open-ended responses require manual grading by admins
     if (!ans?.answer || q.type === "open") continue;
 
     let isCorrect = false;
     if (q.type === "mcq") {
+      // MCQ requires exact string match because option values are stored as strings (A/B/C/D)
+      // and any variation would indicate a different selected option
       isCorrect = ans.answer === q.correctAnswer;
     } else if (q.type === "numeric" && q.correctAnswer) {
+      // Numeric answers use floating-point tolerance (1e-9) instead of exact equality
+      // to account for rounding errors during string-to-float conversion and prevent
+      // rejecting mathematically correct answers due to precision limits
       const diff = Math.abs(parseFloat(ans.answer) - parseFloat(q.correctAnswer));
       isCorrect = diff < 1e-9;
     }
 
+    // Award full points if correct, zero otherwise (no partial credit in auto-scoring)
     const awarded = isCorrect ? q.points : 0;
+    // Accumulate earned points for percentage score calculation
     earnedPoints += awarded;
     scoreUpdates.push({ answerId: ans.id, isCorrect, awarded });
   }
 
+  // Calculate percentage score: (earned / total) * 100, ensuring we avoid division by zero
   const score = totalPoints > 0 ? ((earnedPoints / totalPoints) * 100).toFixed(2) : null;
 
   // Neon HTTP driver does not support transactions — run sequentially
