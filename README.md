@@ -173,6 +173,49 @@ Open [http://localhost:3000](http://localhost:3000) to view the application.
 └── styles/                # Global styles and Tailwind configuration
 ```
 
+## Development Commands
+
+The G.A.T.E. platform provides several npm scripts for development, building, and database management:
+
+### Development & Build
+
+- **`npm run dev`** — Start the Next.js development server with hot reloading at http://localhost:3000
+- **`npm run build`** — Create an optimized production build
+- **`npm run start`** — Start the production server (requires `npm run build` first)
+- **`npm run lint`** — Run ESLint to check code quality and style
+
+### Database Management
+
+- **`npm run db:generate`** — Generate Drizzle ORM migration files from schema changes
+- **`npm run db:migrate`** — Apply pending database migrations to your database
+- **`npm run db:push`** — Push schema changes directly to the database (development only)
+- **`npm run db:studio`** — Launch Drizzle Studio for visual database management at http://localhost:4983
+
+### Data Seeding
+
+- **`npm run seed:admin`** — Create a super admin user account for platform administration
+- **`npm run seed:subjects`** — Populate the database with default assessment subjects
+
+### Typical Development Workflow
+
+```bash
+# 1. Start development server
+npm run dev
+
+# 2. Make schema changes in db/schema.ts, then push to database
+npm run db:push
+
+# 3. (Optional) Open Drizzle Studio to inspect database
+npm run db:studio
+
+# 4. Seed initial data if needed
+npm run seed:admin
+npm run seed:subjects
+
+# 5. Check code quality before committing
+npm run lint
+```
+
 ## Environment Setup
 
 The G.A.T.E. platform requires several third-party services to function properly. Follow these steps to configure your environment:
