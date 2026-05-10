@@ -71,6 +71,14 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-background">
+      {/* Skip to main content link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-gate-gold focus:text-white focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gate-gold focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
+
       {/* Sidebar */}
       <aside className="hidden md:flex w-60 flex-col border-r border-border bg-card shrink-0">
         {/* Logo */}
@@ -128,7 +136,7 @@ export default async function DashboardLayout({
           </div>
         </header>
 
-        <main className="flex-1 p-5 md:p-8">{children}</main>
+        <main id="main-content" className="flex-1 p-5 md:p-8">{children}</main>
         <Toaster position="top-right" richColors closeButton />
       </div>
     </div>
