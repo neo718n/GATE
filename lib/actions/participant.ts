@@ -8,6 +8,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { stripe } from "@/lib/stripe";
 
+/**
+ * Saves or updates a participant's profile information.
+ * Authorization: Requires participant, admin, or super_admin role.
+ * Creates new participant record if none exists, otherwise updates existing record.
+ * Automatically sets registrationStatus to "submitted" and paymentStatus to "unpaid" for new records.
+ * @param formData - Form data containing: firstName, lastName, country, city, school, grade, dateOfBirth, phoneCode, phoneNumber, gender
+ * @throws {Error} If any required field is missing
+ */
 export async function saveParticipantProfile(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
 
@@ -64,7 +72,13 @@ export async function saveParticipantProfile(formData: FormData) {
   revalidatePath("/participant/profile");
 }
 
-
+/**
+ * Assigns a round to a participant for competition enrollment.
+ * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
+ * Prevents modification if payment has already been completed (paymentStatus === "paid").
+ * @param formData - Form data containing: participantId, roundId
+ * @throws {Error} If participant doesn't belong to session user (Unauthorized)
+ */
 export async function selectRound(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
   const participantId = parseInt(formData.get("participantId") as string);
@@ -89,6 +103,14 @@ export async function selectRound(formData: FormData) {
   revalidatePath("/participant/enrollment");
 }
 
+/**
+ * Assigns a subject to a participant for competition enrollment.
+ * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
+ * Prevents modification if payment has already been completed (paymentStatus === "paid").
+ * Replaces any existing subject selection by deleting old records before inserting new one.
+ * @param formData - Form data containing: participantId, subjectId
+ * @throws {Error} If participant doesn't belong to session user (Unauthorized)
+ */
 export async function selectSubject(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
   const participantId = parseInt(formData.get("participantId") as string);
@@ -112,6 +134,25 @@ export async function selectSubject(formData: FormData) {
   revalidatePath("/participant");
 }
 
+/**
+ * Initiates Stripe payment checkout for participant enrollment fee.
+ * Authorization: Requires participant role. Verifies participant.userId matches session user.
+ * Implements idempotency: redirects if already paid or re-uses existing open Stripe session.
+ *
+ * Stripe Fee Reverse-Calculation Formula:
+ * grossAmount = Math.ceil((netAmount + fixedFee) / (1 - percentFee/10000))
+ *
+ * Why this formula: We want the participant to pay exactly round.feeUsd (net amount) while covering
+ * Stripe's percentage and fixed fees. Stripe deducts: gross * (percentFee/10000) + fixedFee.
+ * To solve for gross such that: gross - (gross * percentFee/10000 + fixedFee) = netAmount,
+ * we rearrange to: grossAmount = (netAmount + fixedFee) / (1 - percentFee/10000).
+ * Math.ceil ensures we round up to avoid underpayment due to fractional cents.
+ *
+ * @param formData - Form data containing: cycleId, roundId, participantId
+ * @throws {Error} "Invalid request" if any ID is NaN
+ * @throws {Error} "Unauthorized" if participant doesn't belong to session user
+ * @throws {Error} "Cycle or round not found" if referenced records don't exist
+ */
 export async function initiatePayment(formData: FormData) {
   const session = await requireRole(["participant"]);
   const cycleId = parseInt(formData.get("cycleId") as string);
@@ -177,10 +218,16 @@ export async function initiatePayment(formData: FormData) {
     }
   }
 
+  // Reverse Stripe fee calculation: determine grossAmount such that after Stripe deducts
+  // their percentage + fixed fee, the net amount equals round.feeUsd.
+  // Formula: grossAmount = (netAmount + fixedFee) / (1 - percentFee)
+  // stripeFeePercent is stored in basis points (e.g., 290 = 2.90%), so divide by 10000 to get decimal
+  // Math.ceil ensures we round up to the nearest cent, guaranteeing we collect enough to cover all fees
   const grossAmount = Math.ceil(
     (round.feeUsd + cycle.stripeFeeFixedCents) /
       (1 - cycle.stripeFeePercent / 10000)
   );
+  // feeAmount is the total service fee charged to the participant (Stripe's cut)
   const feeAmount = grossAmount - round.feeUsd;
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";

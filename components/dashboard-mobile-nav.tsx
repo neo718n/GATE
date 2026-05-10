@@ -29,13 +29,13 @@ export function DashboardMobileNav({
         className="flex flex-col justify-center gap-[5px] w-8 h-8 p-1"
       >
         <span
-          className={`block h-[2px] bg-gate-800 transition-transform origin-center ${open ? "rotate-45 translate-y-[7px]" : ""}`}
+          className={`block h-[2px] bg-foreground transition-transform origin-center ${open ? "rotate-45 translate-y-[7px]" : ""}`}
         />
         <span
-          className={`block h-[2px] bg-gate-800 transition-opacity ${open ? "opacity-0" : ""}`}
+          className={`block h-[2px] bg-foreground transition-opacity ${open ? "opacity-0" : ""}`}
         />
         <span
-          className={`block h-[2px] bg-gate-800 transition-transform origin-center ${open ? "-rotate-45 -translate-y-[7px]" : ""}`}
+          className={`block h-[2px] bg-foreground transition-transform origin-center ${open ? "-rotate-45 -translate-y-[7px]" : ""}`}
         />
       </button>
 
