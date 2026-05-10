@@ -664,48 +664,561 @@ if (exam.type === "practice" && existingSession) {
 
 ## Proctoring and Security
 
-### Tab Switch Monitoring
+The GATE Platform implements multiple proctoring features to ensure exam integrity and provide administrators with tools to monitor participant behavior during assessments. These features work together to create a comprehensive proctoring system.
 
-**Action:** `logTabSwitch`
+### Overview of Proctoring Features
 
-Tracks participant focus changes during active sessions:
+The system tracks four primary categories of proctoring data:
+
+1. **Tab-Switch Detection** - Monitors when participants leave the exam window
+2. **Timed Sessions** - Enforces time limits and deadlines
+3. **Question Shuffling** - Prevents answer sharing between participants
+4. **IP/User Agent Tracking** - Records technical session metadata
+
+---
+
+### 1. Tab-Switch Detection
+
+**Purpose:** Detect when participants navigate away from the exam, potentially accessing unauthorized resources.
+
+**Action:** `logTabSwitch` (lib/actions/exam.ts)
+
+**Implementation:**
+
+Tab switches are logged via client-side event listeners that trigger when the exam window loses focus:
 
 ```typescript
+// Client-side detection (triggered by visibility/blur events)
+await logTabSwitch(sessionId)
+
+// Server-side implementation
 UPDATE exam_sessions 
 SET tabSwitchCount = tabSwitchCount + 1
-WHERE id = sessionId AND status = "active"
+WHERE id = sessionId 
+  AND status = "active"
+  AND participantId = <current_participant>
 ```
 
-**Validation:**
-- Participants can only log switches for their own sessions
-- Only tracked for `"active"` sessions
-- Count preserved after submission for review
+**Technical Details:**
 
-### Session Metadata
+- **Counter:** Incremental integer stored in `exam_sessions.tabSwitchCount`
+- **Default Value:** 0 (set at session creation)
+- **Increment Logic:** Uses SQL increment to avoid race conditions
+- **Access Control:** Participants can only log switches for their own sessions
+- **Status Filtering:** Only tracked for `"active"` sessions (not after submission)
 
-Each session captures technical details:
+**Authorization Rules:**
+
 ```typescript
-{
-  ipAddress: text      // Network origin
-  userAgent: text      // Browser/device info
-  tabSwitchCount: int  // Focus loss events
+// Participants: ownership check enforced
+if (role === "participant") {
+  const participant = await db.query.participants.findFirst({
+    where: (p, { eq }) => eq(p.userId, auth.user.id),
+  });
+  participantIdFilter = eq(examSessions.participantId, participant.id);
+}
+
+// Admins: can log for any session (for testing/troubleshooting)
+```
+
+**Database Schema:**
+
+```typescript
+exam_sessions {
+  tabSwitchCount: integer NOT NULL DEFAULT 0
 }
 ```
 
-### Time Enforcement
+**Use Cases:**
 
-**Deadline Tracking:**
-- Set at session start: `deadlineAt = startedAt + durationMinutes`
-- Checked on every `saveAnswer` call
-- Auto-timeout on deadline expiry
+1. **Integrity Review:** Admins review `tabSwitchCount` when grading to identify suspicious behavior
+2. **Policy Enforcement:** High switch counts may trigger manual review
+3. **Participant Awareness:** Visible counter discourages cheating attempts
+4. **Historical Data:** Count preserved after submission for audit trails
 
-**Status Flow:**
+**Limitations:**
+
+- Relies on client-side events (can be bypassed with browser tools)
+- Does not detect second devices or external resources
+- Cannot distinguish between legitimate reasons (phone call) and cheating
+
+**Best Practices:**
+
+- Inform participants that switches are tracked (deterrent effect)
+- Set reasonable thresholds (3-5 switches may be legitimate)
+- Combine with other metrics (time taken, answer patterns)
+- Do not auto-fail based solely on switch count
+
+---
+
+### 2. Timed Sessions
+
+**Purpose:** Enforce time limits on exam attempts to ensure fair assessment conditions.
+
+**Configuration:**
+
+Timed sessions are configured at the exam level:
+
+```typescript
+// In exams table
+durationMinutes: integer | null  // null = unlimited time
 ```
-active → timed_out (deadline exceeded)
-active → submitted (participant submission)
+
+**Session Deadline Calculation:**
+
+At session start, the system calculates a deadline if duration is set:
+
+```typescript
+// In startExamSession action
+const now = new Date();
+const deadlineAt = exam.durationMinutes
+  ? new Date(now.getTime() + exam.durationMinutes * 60 * 1000)
+  : null;
+
+await db.insert(examSessions).values({
+  examId,
+  participantId: participant.id,
+  questionOrder: questionIds,
+  deadlineAt,  // Stored for enforcement
+});
 ```
 
-**Note:** `timed_out` sessions are NOT automatically submitted. They remain in timeout state.
+**Database Schema:**
+
+```typescript
+exam_sessions {
+  startedAt: timestamp NOT NULL DEFAULT NOW()
+  deadlineAt: timestamp | null
+  status: enum("active" | "submitted" | "timed_out")
+}
+```
+
+**Deadline Enforcement:**
+
+Time limits are enforced on every answer save operation:
+
+```typescript
+// In saveAnswer action
+const now = new Date();
+if (dbSession.deadlineAt && now > dbSession.deadlineAt) {
+  // Auto-timeout the session
+  await db.update(examSessions)
+    .set({ status: "timed_out" })
+    .where(eq(examSessions.id, sessionId));
+  
+  return { error: "Time expired. Your session has been ended." };
+}
+```
+
+**Status Transitions:**
+
+```
+┌─────────┐
+│ active  │ ──────┐
+└─────────┘       │
+     │            │
+     │ deadline   │ submitExam()
+     │ exceeded   │
+     ▼            ▼
+┌───────────┐  ┌────────────┐
+│ timed_out │  │ submitted  │
+└───────────┘  └────────────┘
+```
+
+**Important Behaviors:**
+
+1. **No Auto-Submit:** Timed-out sessions do NOT automatically submit
+   - Status changes to `"timed_out"`
+   - Further answer saves are blocked
+   - Participant sees "Time expired" error
+   - Requires manual administrative action to grade
+
+2. **Continuous Enforcement:** Deadline checked on every `saveAnswer` call
+   - Prevents late answer submissions
+   - Works even if client-side timer fails
+   - Server time is source of truth
+
+3. **Grace Period:** None implemented
+   - Deadline is absolute
+   - Consider adding buffer in `durationMinutes` (e.g., 62 minutes for 60-minute exam)
+
+**Configuration Recommendations:**
+
+| Exam Type | Duration | Use Case |
+|-----------|----------|----------|
+| Practice | `null` | Unlimited time for self-paced learning |
+| Short Quiz | 15-30 min | Quick assessments |
+| Standard Exam | 60-120 min | Official evaluations |
+| Competition Round | 180+ min | Multi-section competitions |
+
+**Time Window vs Duration:**
+
+```typescript
+// Time window: when exam is available
+windowStart: timestamp  // Earliest start time (e.g., 9:00 AM)
+windowEnd: timestamp    // Latest submission time (e.g., 11:00 PM)
+
+// Duration: session time limit
+durationMinutes: integer  // How long participant has after starting
+```
+
+**Example Scenario:**
+
+```typescript
+exam {
+  windowStart: "2024-01-15 09:00:00"  // Available from 9 AM
+  windowEnd: "2024-01-15 23:00:00"    // Must finish by 11 PM
+  durationMinutes: 120                // 2 hours per attempt
+}
+
+// Participant starts at 10:30 PM
+startedAt: "2024-01-15 22:30:00"
+deadlineAt: "2024-01-16 00:30:00"     // ⚠️ Exceeds windowEnd!
+
+// System should validate: deadlineAt <= windowEnd
+```
+
+**⚠️ Current Limitation:** System does not validate that `deadlineAt <= windowEnd`. Consider adding this check.
+
+---
+
+### 3. Question Shuffling
+
+**Purpose:** Prevent answer sharing by randomizing question order for each participant.
+
+**Configuration:**
+
+```typescript
+// In exams table
+shuffleQuestions: boolean DEFAULT true
+questionsPerSession: integer | null  // Optional: limit total questions
+```
+
+**Shuffling Algorithm:**
+
+Randomization occurs at session start, before storing question order:
+
+```typescript
+// In startExamSession action
+
+// 1. Start with grade-filtered questions
+let questionIds = gradeFiltered.map((q) => q.id);
+
+// 2. Shuffle if enabled (Fisher-Yates-like shuffle)
+if (exam.shuffleQuestions) {
+  questionIds = questionIds.sort(() => Math.random() - 0.5);
+}
+
+// 3. Limit to subset if configured
+if (exam.questionsPerSession && exam.questionsPerSession < questionIds.length) {
+  questionIds = questionIds.slice(0, exam.questionsPerSession);
+}
+
+// 4. Store in session
+await db.insert(examSessions).values({
+  questionOrder: questionIds,  // JSONB array: [42, 15, 8, 23, ...]
+});
+```
+
+**Database Schema:**
+
+```typescript
+exam_sessions {
+  questionOrder: jsonb  // Stores: number[] (question IDs)
+}
+```
+
+**Storage Format:**
+
+```json
+{
+  "questionOrder": [42, 15, 8, 23, 91, 67, 34, 12, 55, 78]
+}
+```
+
+**Why Store Order:**
+
+1. **Consistency:** Participant sees same order if they refresh
+2. **Grading:** System knows which questions to score
+3. **Review:** Admins can see participant's exact question sequence
+4. **Question Limiting:** When combined with `questionsPerSession`, ensures participant gets consistent subset
+
+**Shuffle + Limit Interaction:**
+
+```typescript
+// Example: 50 questions in bank, 20 per session
+questions.length = 50
+questionsPerSession = 20
+shuffleQuestions = true
+
+// Result: Each participant gets random 20 questions
+Participant A: [12, 45, 3, 8, ...]   // 20 IDs
+Participant B: [33, 7, 41, 19, ...]  // Different 20 IDs
+```
+
+**Grading Implications:**
+
+Only questions in `questionOrder` are scored:
+
+```typescript
+// In submitExam action
+const sessionQuestionIds = new Set(session.questionOrder);
+const sessionQuestions = exam.questions.filter(q => 
+  sessionQuestionIds.has(q.id)
+);
+
+// Score calculation uses only sessionQuestions
+const totalPoints = sessionQuestions.reduce((sum, q) => sum + q.points, 0);
+```
+
+**Security Benefits:**
+
+1. **Answer Sharing Prevention:** Different question orders make copying harder
+2. **Question Bank Rotation:** Random subsets prevent memorization
+3. **Parallel Testing:** Multiple sessions can run simultaneously without concern
+4. **Forensic Analysis:** Admins can detect collusion by comparing question orders
+
+**Recommendations:**
+
+| Exam Type | Shuffle | Limit | Rationale |
+|-----------|---------|-------|-----------|
+| Official Exam | ✅ Yes | Optional | Maximize security |
+| Practice | ❌ No | No | Consistent learning experience |
+| Quiz | ✅ Yes | 10-20 | Quick randomized checks |
+| Large Bank | ✅ Yes | 30-50 | Draw from 100+ question pool |
+
+**Disable Shuffling When:**
+
+- Questions have logical dependencies (Q2 builds on Q1)
+- Exam is narrative-based (reading passage followed by questions)
+- Debugging/testing exam content
+- Practice exams where learners expect consistent order
+
+---
+
+### 4. IP Address and User Agent Tracking
+
+**Purpose:** Record technical session metadata for security auditing and anomaly detection.
+
+**Database Schema:**
+
+```typescript
+exam_sessions {
+  ipAddress: text | null    // IPv4/IPv6 address (e.g., "192.168.1.1")
+  userAgent: text | null    // Browser identification string
+}
+```
+
+**Captured Data:**
+
+**IP Address:**
+```
+Examples:
+- IPv4: "203.0.113.42"
+- IPv6: "2001:db8::1"
+- Proxy: "10.0.0.5" (internal network)
+```
+
+**User Agent:**
+```
+Examples:
+- Chrome: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+- Firefox: "Mozilla/5.0 (X11; Linux x86_64; rv:89.0) Gecko/20100101 Firefox/89.0"
+- Mobile: "Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15"
+```
+
+**Implementation Location:**
+
+⚠️ **Current Status:** Schema fields exist but are not populated during session creation.
+
+**Recommended Implementation:**
+
+```typescript
+// In startExamSession action - capture from request headers
+import { headers } from "next/headers";
+
+export async function startExamSession(examId: number) {
+  // ... existing validation ...
+  
+  // Capture session metadata
+  const headersList = headers();
+  const ipAddress = headersList.get("x-forwarded-for")?.split(",")[0] 
+                 || headersList.get("x-real-ip") 
+                 || "unknown";
+  const userAgent = headersList.get("user-agent") || "unknown";
+  
+  const [newSession] = await db.insert(examSessions).values({
+    examId,
+    participantId: participant.id,
+    questionOrder: questionIds,
+    deadlineAt,
+    ipAddress,    // Store IP
+    userAgent,    // Store browser info
+  }).returning({ id: examSessions.id });
+}
+```
+
+**Use Cases:**
+
+1. **Multi-Device Detection:**
+   - Flag if same participant uses different IPs mid-session
+   - Identify proxy/VPN usage during exam
+
+2. **Location Verification:**
+   - Confirm participant is in expected location (onsite exams)
+   - Detect geographic anomalies
+
+3. **Device Consistency:**
+   - Verify same browser/device used throughout session
+   - Flag if user agent changes (potential impersonation)
+
+4. **Forensic Investigation:**
+   - Review technical details when cheating suspected
+   - Correlate multiple accounts from same IP
+
+5. **Statistical Analysis:**
+   - Most common browsers/devices
+   - Network infrastructure patterns
+
+**Privacy Considerations:**
+
+**Data Retention:**
+- IP addresses are personal data under GDPR/privacy laws
+- Document retention policy (e.g., delete after 90 days)
+- Inform participants in privacy policy
+
+**Anonymization:**
+- Consider hashing IPs after initial validation period
+- Truncate to network prefix (e.g., `192.168.1.xxx`)
+
+**Access Control:**
+- Only admins can view IP/user agent data
+- Exclude from participant-facing session reviews
+
+**Security Best Practices:**
+
+1. **Proxy Detection:** IP may show CDN/proxy, not actual user
+2. **Shared Networks:** School/library IPs shared by many users
+3. **Dynamic IPs:** Home IPs may change during long exams
+4. **Mobile Data:** Cellular IPs change frequently
+5. **VPN Usage:** Consider policy on VPN usage during exams
+
+**Admin Review Interface:**
+
+Proctoring data should be visible in admin results views:
+
+```typescript
+// Example: /admin/exams/{examId}/results/{sessionId}
+{
+  participantName: "John Doe",
+  score: "85.00",
+  startedAt: "2024-01-15 10:30:00",
+  submittedAt: "2024-01-15 11:45:00",
+  
+  // Proctoring metrics
+  tabSwitchCount: 3,
+  ipAddress: "203.0.113.42",
+  userAgent: "Chrome 91 on Windows 10",
+  
+  // Analysis
+  timeWarnings: [], // e.g., ["Submitted 5 min after deadline"]
+  proctoringFlags: [] // e.g., ["High tab switch count", "IP changed mid-session"]
+}
+```
+
+---
+
+### Integrated Proctoring Workflow
+
+**Session Creation (Stage 5):**
+```typescript
+1. Validate exam availability and participant eligibility
+2. Shuffle questions if configured
+3. Calculate deadline if duration set
+4. ✅ Capture IP address and user agent
+5. Create session with status: "active"
+```
+
+**Active Session (Stage 6):**
+```typescript
+1. Participant answers questions
+2. ✅ Tab switches logged in real-time
+3. ✅ Deadline checked on every answer save
+4. Auto-timeout if time expired
+```
+
+**Submission (Stage 7):**
+```typescript
+1. Status: active → submitted
+2. ✅ Tab switch count finalized
+3. Auto-grading executed
+4. Proctoring data preserved for review
+```
+
+**Admin Review (Stage 9):**
+```typescript
+1. Admin views session results
+2. ✅ Reviews proctoring metrics:
+   - Tab switch count
+   - Session duration
+   - IP/user agent consistency
+   - Question order (shuffled)
+3. Makes grading decisions with full context
+```
+
+---
+
+### Proctoring Data Summary
+
+| Feature | Field | Type | Captured When | Enforced When |
+|---------|-------|------|---------------|---------------|
+| **Tab Switches** | `tabSwitchCount` | integer | During session | Reviewed post-submission |
+| **Time Limit** | `deadlineAt` | timestamp | Session start | Every answer save |
+| **Question Order** | `questionOrder` | jsonb | Session start | Grading |
+| **IP Address** | `ipAddress` | text | Session start | Reviewed post-submission |
+| **User Agent** | `userAgent` | text | Session start | Reviewed post-submission |
+
+---
+
+### Limitations and Future Enhancements
+
+**Current Limitations:**
+
+1. **Client-Side Detection:** Tab switches rely on JavaScript events (can be bypassed)
+2. **No Webcam:** No video proctoring capability
+3. **No Screen Sharing:** Cannot monitor participant's screen
+4. **Basic Time Tracking:** No pause/resume functionality
+5. **IP Not Captured:** Schema exists but not implemented (requires addition)
+
+**Potential Enhancements:**
+
+1. **Advanced Proctoring:**
+   - Webcam snapshots at intervals
+   - AI-based behavior analysis
+   - Screen recording (with consent)
+
+2. **Improved Time Management:**
+   - Pause/resume for technical issues
+   - Time extensions for accommodations
+   - Warning before deadline (5 min, 1 min)
+
+3. **Enhanced Monitoring:**
+   - Copy/paste detection
+   - Right-click blocking
+   - Full-screen enforcement
+   - Browser lockdown integration
+
+4. **Analytics Dashboard:**
+   - Proctoring metrics across all sessions
+   - Anomaly detection algorithms
+   - Cheating pattern identification
+
+5. **Network Security:**
+   - IP geolocation validation
+   - Device fingerprinting
+   - Session token binding
+
+**Recommendation:** Focus on creating a balanced approach that maintains exam integrity while respecting participant privacy and avoiding false positives.
 
 ---
 
