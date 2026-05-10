@@ -79,24 +79,48 @@ The G.A.T.E. platform implements a comprehensive role-based access control syste
 
 ## Key Features
 
-### For Participants
-- **Secure Registration & Authentication** — Role-based access for students, parents, and educators
-- **Multi-Subject Assessment Delivery** — Timed, proctored assessments across various academic disciplines
-- **Real-Time Progress Tracking** — Dashboard for monitoring assessment status and results
-- **Official Digital Certificates** — Automatically generated certificates following G.A.T.E. brand standards
-- **Achievement Portfolio** — Personal profile showcasing medals, certificates, and academic milestones
+### Exam Management
+- **Cycle & Round Configuration** — Create and manage multi-phase assessment cycles with flexible scheduling
+- **Assessment Delivery** — Timed, proctored assessments across various academic disciplines
+- **Question Bank** — Comprehensive question library with support for math equations and rich content
+- **Scoring Engine** — Automated scoring with configurable rubrics and grading criteria
 
-### For Administrators
-- **Participant Management** — Comprehensive student registration and profile management
-- **Assessment Configuration** — Create, schedule, and manage multi-subject assessments
-- **Automated Scoring & Grading** — Intelligent scoring engine with configurable rubrics
-- **Certificate Generation** — Bulk certificate creation following official brand guidelines
-- **Analytics & Reporting** — Detailed insights into participation, performance, and achievement distribution
+### Registration & Participant Management
+- **Multi-Role Registration** — Secure registration for participants, partners, coordinators, and question providers
+- **Document Verification** — Upload and validation of identity documents, certificates, and supporting materials
+- **Profile Management** — Comprehensive participant profiles with academic history and achievements
+- **Round Selection** — Flexible registration for specific assessment rounds and subjects
 
-### For Educators
-- **Student Performance Monitoring** — Track student progress and results
-- **Resource Access** — Preparation materials and assessment guidelines
-- **Award Verification** — Validate student certificates and achievements
+### Payment Processing
+- **Stripe Integration** — Secure payment processing for registration fees
+- **Configurable Fee Structure** — Cycle-specific fee percentages and fixed amounts
+- **Payment Tracking** — Real-time payment status monitoring (unpaid, paid, waived, refunded)
+- **Automated Invoicing** — Dynamic invoice and receipt generation for all transactions
+
+### Certificate Generation
+- **Automated Certificate Creation** — Generate official certificates following G.A.T.E. brand standards
+- **Medal Recognition** — Gold, Silver, and Bronze medal certificates based on performance
+- **Bulk Processing** — Mass certificate generation for entire cycles or rounds
+- **Digital Distribution** — Secure download access for participants and administrators
+
+### Analytics & Reporting
+- **Performance Dashboards** — Real-time insights into participation, completion rates, and achievement distribution
+- **Cycle Analytics** — Comprehensive reporting across assessment cycles and rounds
+- **Participant Insights** — Individual performance tracking and historical data
+- **Export Capabilities** — Data export for external analysis and reporting
+
+### Notification System
+- **Email Communications** — Automated transactional emails via Resend integration
+- **Verification Emails** — Account verification and email confirmation workflows
+- **Status Notifications** — Real-time updates on registration, payment, and assessment status
+- **System Announcements** — Broadcast communications to participants and partners
+
+### Partner Management
+- **Organization Profiles** — Comprehensive partner organization management (universities, schools, institutions)
+- **Partner Dashboard** — Dedicated portal for partner contacts to manage affiliated participants
+- **Bulk Registration** — Group registration capabilities for institutional partners
+- **Performance Reporting** — Institutional-level analytics and achievement tracking
+- **Approval Workflows** — Partner verification and approval process for administrators
 
 ## Technical Foundation
 
