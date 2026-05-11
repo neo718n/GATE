@@ -98,7 +98,7 @@ export async function archiveDocument(id: number) {
   const doc = await db.query.documents.findFirst({ where: eq(documents.id, id) });
   if (!doc) throw new Error("Document not found");
 
-  const role = (session.user as any).role;
+  const role = (session.user as unknown as { role: string }).role;
   if (doc.userId !== session.user.id && role !== "super_admin" && role !== "admin") {
     throw new Error("Forbidden");
   }

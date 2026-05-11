@@ -1,8 +1,8 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { exams, questions, examSessions, examAnswers, subjects, rounds } from "@/lib/db/schema";
-import { eq, desc, and, asc, sql } from "drizzle-orm";
+import { exams, questions, examSessions, examAnswers } from "@/lib/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

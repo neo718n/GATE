@@ -66,7 +66,7 @@ export function MathContent({ html, className }: { html: string; className?: str
   return (
     <div
       className={className}
-      // eslint-disable-next-line react/no-danger
+       
       dangerouslySetInnerHTML={{ __html: renderMath(html) }}
     />
   );

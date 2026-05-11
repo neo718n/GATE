@@ -1,10 +1,9 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { exams, examSessions, examAnswers } from "@/lib/db/schema";
+import { exams, examSessions } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { GradeOpenAnswerForm } from "./grade-form";
 
 const STATUS_COLOR: Record<string, string> = {
@@ -33,7 +32,6 @@ export default async function ExamResultsPage({ params }: { params: Promise<{ id
   });
   if (!exam) notFound();
 
-  const totalPoints = exam.questions.reduce((s, q) => s + q.points, 0);
   const openQuestions = exam.questions.filter((q) => q.type === "open");
   const submitted = exam.sessions.filter((s) => s.status === "submitted");
   const avgScore =

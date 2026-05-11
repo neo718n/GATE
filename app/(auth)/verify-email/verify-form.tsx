@@ -30,7 +30,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
     if (password) {
       sessionStorage.removeItem("gate_verify_pw");
       const { data } = await signIn.email({ email, password });
-      const role = (data as any)?.user?.role ?? "participant";
+      const role = (data as unknown as { user?: { role?: string } })?.user?.role ?? "participant";
       const ROLE_HOME: Record<string, string> = {
         super_admin: "/admin",
         admin: "/admin",

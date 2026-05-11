@@ -38,7 +38,7 @@ export function StaffLoginForm() {
       return;
     }
 
-    const role = (data as any)?.user?.role ?? "";
+    const role = (data as unknown as { user?: { role?: string } })?.user?.role ?? "";
     router.push(ROLE_HOME[role] ?? "/admin");
   }
 

@@ -65,7 +65,27 @@ export default async function CycleDetailPage({
       </div>
 
       <CycleParticipantsManager
-        participants={participantList as any}
+        participants={participantList as Array<{
+          id: number;
+          fullName: string;
+          country: string;
+          registrationStatus: string;
+          paymentStatus: string;
+          user: { email: string; name: string } | null;
+          subjects: { subject: { id: number; name: string } | null }[];
+          results: Array<{
+            id: number;
+            roundId: number | null;
+            subjectId: number;
+            score: string | null;
+            maxScore: string | null;
+            rank: number | null;
+            award: string | null;
+            publishedAt: Date | null;
+            subject: { id: number; name: string } | null;
+            round: { id: number; name: string } | null;
+          }>;
+        }>}
         rounds={cycle.rounds}
         cycleId={cycleId}
         cycleSubjects={cycleSubjects}

@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { subjects, rounds, cycles } from "@/lib/db/schema";
+import { subjects, rounds } from "@/lib/db/schema";
 import { asc, desc } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

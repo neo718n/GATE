@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import Link from "next/link";
 import {
   User, BookOpen, FileText, Award, Trophy,
-  CreditCard, FolderOpen, HelpCircle, Bell,
+  FolderOpen, HelpCircle, Bell,
   CheckCircle2, Clock, XCircle, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";

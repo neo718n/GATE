@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { exams, examSessions, examAnswers, participants } from "@/lib/db/schema";
+import { exams, examSessions, participants } from "@/lib/db/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
@@ -49,7 +49,6 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
   const earnedPoints = examSession.answers
     .reduce((s, a) => s + (a.pointsAwarded ? parseFloat(a.pointsAwarded) : 0), 0);
   const scorePercent = examSession.score ? parseFloat(examSession.score) : null;
-  const hasOpenQuestions = sessionQuestions.some((q) => q.type === "open");
   const pendingGrading = examSession.answers.some((a) => a.question.type === "open" && a.isCorrect === null && a.answer);
 
   return (

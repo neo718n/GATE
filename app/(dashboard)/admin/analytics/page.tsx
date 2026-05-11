@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, user, cycles, results, partners, careerApplications, payments } from "@/lib/db/schema";
+import { participants, user, cycles, results, partners, careerApplications } from "@/lib/db/schema";
 import { count, eq } from "drizzle-orm";
 
 export default async function AnalyticsPage() {

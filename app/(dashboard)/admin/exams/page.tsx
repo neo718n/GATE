@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
 import { exams, questions, examSessions } from "@/lib/db/schema";
-import { desc, count, eq } from "drizzle-orm";
+import { desc, count } from "drizzle-orm";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 

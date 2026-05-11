@@ -1,6 +1,6 @@
 ﻿import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, payments, documents } from "@/lib/db/schema";
+import { participants } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";

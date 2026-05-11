@@ -59,7 +59,7 @@ export function LoginForm() {
         return;
       }
 
-      const role = (data as any)?.user?.role ?? "participant";
+      const role = (data as unknown as { user?: { role?: string } })?.user?.role ?? "participant";
       window.location.href = ROLE_HOME[role] ?? "/participant";
     } catch {
       setError("Something went wrong. Please try again.");
