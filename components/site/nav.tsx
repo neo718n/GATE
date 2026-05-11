@@ -46,7 +46,7 @@ export function SiteNav({ session }: { session?: NavSession | null }) {
   const pathname = usePathname();
 
   const dashboardHref = session
-    ? (ROLE_HOME[(session.user as any).role ?? "participant"] ?? "/participant")
+    ? (ROLE_HOME[(session.user as unknown as { role?: string }).role ?? "participant"] ?? "/participant")
     : "/participant";
 
   useEffect(() => {

@@ -130,7 +130,7 @@ function buildEmailHtml(p: {
         <tr><td style="border-top:1px solid #cccccc;padding:16px 40px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td style="font-size:11px;color:#999999;">G.A.T.E. Assessment &middot; Olympiad Management Platform</td>
+              <td style="font-size:11px;color:#999999;">G.A.T.E. Assessment &middot; Assessment Management Platform</td>
               <td align="right" style="font-size:11px;color:#c9993a;">gate-assessment.org</td>
             </tr>
           </table>

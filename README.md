@@ -381,7 +381,7 @@ DATABASE_URL="postgresql://user:password@host.neon.tech/db?sslmode=require"
 
 ```env
 RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxx"
-RESEND_FROM_EMAIL="G.A.T.E. Olympiad <noreply@yourdomain.com>"
+RESEND_FROM_EMAIL="G.A.T.E. Assessment <noreply@yourdomain.com>"
 ```
 
 **Note:** For production, you must verify your domain. For development, you can use Resend's test email: `onboarding@resend.dev`

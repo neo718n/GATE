@@ -60,7 +60,7 @@ export default async function ResultsPage() {
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="flex flex-col gap-1">
                   <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
-                    {r.cycle?.name} вЂ" {r.round?.name ?? "Round"}
+                    {r.cycle?.name} &mdash; {r.round?.name ?? "Round"}
                   </p>
                   <p className="text-base font-light text-foreground">{r.subject?.name}</p>
                 </div>

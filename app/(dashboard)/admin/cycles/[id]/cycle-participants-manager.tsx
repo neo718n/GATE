@@ -80,6 +80,31 @@ function toDatetimeLocal(d: Date | null | undefined): string {
   return dt.toISOString().slice(0, 16);
 }
 
+function SortBtn({
+  label,
+  k,
+  sortKey,
+  sortDir,
+  onClick,
+}: {
+  label: string;
+  k: SortKey;
+  sortKey: SortKey;
+  sortDir: "asc" | "desc";
+  onClick: (k: SortKey) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onClick(k)}
+      className={`text-[10px] font-semibold uppercase tracking-[0.2em] hover:text-gate-gold transition-colors ${sortKey === k ? "text-gate-gold" : "text-foreground/50"}`}
+    >
+      {label}
+      {sortKey === k ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
+    </button>
+  );
+}
+
 export function CycleParticipantsManager({
   participants,
   rounds,
@@ -151,23 +176,6 @@ export function CycleParticipantsManager({
     });
   }, [participants, search, filterRound, sortKey, sortDir]);
 
-  const SortBtn = ({
-    label,
-    k,
-  }: {
-    label: string;
-    k: SortKey;
-  }) => (
-    <button
-      type="button"
-      onClick={() => toggleSort(k)}
-      className={`text-[10px] font-semibold uppercase tracking-[0.2em] hover:text-gate-gold transition-colors ${sortKey === k ? "text-gate-gold" : "text-foreground/50"}`}
-    >
-      {label}
-      {sortKey === k ? (sortDir === "asc" ? " ↑" : " ↓") : ""}
-    </button>
-  );
-
   return (
     <div className="flex flex-col gap-5">
       {/* Controls */}
@@ -211,12 +219,12 @@ export function CycleParticipantsManager({
           className="grid gap-3 px-4 py-2.5 bg-muted/30 border-b border-border"
           style={{ gridTemplateColumns: `2fr 1fr 1fr ${rounds.map(() => "1fr").join(" ")} 1fr 1fr 60px` }}
         >
-          <SortBtn label="Name" k="name" />
-          <SortBtn label="Country" k="country" />
+          <SortBtn label="Name" k="name" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
+          <SortBtn label="Country" k="country" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
           <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">Subject</span>
           {rounds.map((r) => (
             <div key={r.id} className="flex flex-col gap-0.5">
-              <SortBtn label={r.name} k={`score_${r.id}`} />
+              <SortBtn label={r.name} k={`score_${r.id}`} sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} />
               <button
                 type="button"
                 onClick={() => toggleSort(`rank_${r.id}`)}

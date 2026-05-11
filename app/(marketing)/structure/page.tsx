@@ -58,9 +58,9 @@ export default function StructurePage() {
             Assessment Structure
           </h1>
           <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-2xl mt-2">
-            G.A.T.E. operates across two distinct phases — an open online
+            G.A.T.E. operates across two distinct phases &mdash; an open online
             preliminary accessible to students everywhere, followed by a
-            prestigious in-person Global Final at the edition's host venue.
+            prestigious in-person Global Final at the edition&apos;s host venue.
           </p>
         </div>
       </section>

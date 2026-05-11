@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { exams, examSessions, examAnswers } from "@/lib/db/schema";
+import { exams, examSessions } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";

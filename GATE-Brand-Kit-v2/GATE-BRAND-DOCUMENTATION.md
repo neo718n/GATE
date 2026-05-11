@@ -392,7 +392,7 @@ Never place other elements (text, images, borders) inside this zone.
     <div style="font-size:6px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:#8A9BB0;margin-top:3px;">Assessment</div>
   </div>
   <div style="font-size:8px;font-weight:300;letter-spacing:1.5px;color:rgba(138,155,176,0.6);text-align:right;">
-    Beijing, China<br>gateolympiad.com
+    Beijing, China<br>gateassessment.com
   </div>
 </div>
 <!-- Gold accent line -->
@@ -568,7 +568,7 @@ A: Background `#FAFBFC`, text `#0B1F3A`, gold accents `#C9993A`, use Cormorant G
 **Q: User wants to add the logo to a dark blue presentation slide.**
 A: Use PRIMARY DARK variant on `#0B1F3A` background, or PRIMARY LIGHT on a white text box.
 
-**Q: User wants a social media post for the olympiad.**
+**Q: User wants a social media post for the assessment.**
 A: Dark gradient background `#0B1F3A → #1A3560`, white wordmark with gold dots, gold rule line, white tagline at 50% opacity.
 
 **Q: User asks to make the logo "more colourful" or "add more colours".**

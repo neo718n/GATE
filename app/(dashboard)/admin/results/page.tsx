@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { results, participants, subjects, cycles, rounds } from "@/lib/db/schema";
+import { results, participants, subjects, cycles } from "@/lib/db/schema";
 import { desc } from "drizzle-orm";
 import { ResultsForm } from "./results-form";
 
