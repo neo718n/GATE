@@ -5,7 +5,7 @@ const ASSESSMENT_LINKS = [
   { href: "/about", label: "About G.A.T.E." },
   { href: "/structure", label: "Assessment Structure" },
   { href: "/subjects", label: "Subjects" },
-  { href: "/onsite-assessment", label: "Global Final" },
+  { href: "/onsite-assessment", label: "Hangzhou Training Camp" },
   { href: "/awards", label: "Awards & Certificates" },
 ];
 
@@ -67,9 +67,9 @@ export function SiteFooter() {
           <div className="flex flex-col gap-5">
             <ThemeAwareLogo size="sm" showTagline={false} />
             <p className="text-sm font-light text-foreground/55 max-w-xs leading-[1.9]">
-              An international academic assessment across six disciplines —
-              from a global online preliminary to an invitation-only final at
-              Xidian University, Hangzhou.
+              International academic diagnostic and educational programs —
+              an online assessment across six disciplines, and an onsite
+              training camp at Xidian University, Hangzhou.
             </p>
           </div>
 

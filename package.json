@@ -12,7 +12,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed:admin": "tsx scripts/seed-super-admin.ts",
-    "seed:subjects": "tsx scripts/seed-subjects.ts"
+    "seed:subjects": "tsx scripts/seed-subjects.ts",
+    "query:cycles": "tsx scripts/query-active-cycles.ts",
+    "upload:marketing-photos": "tsx scripts/upload-marketing-photos.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1038.0",
