@@ -236,7 +236,7 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
 
         {/* Footer */}
         <View style={s.footer}>
-          <Text style={s.footerText}>G.A.T.E. Assessment {"·"} Olympiad Management Platform</Text>
+          <Text style={s.footerText}>G.A.T.E. Assessment {"·"} Assessment Management Platform</Text>
           <Text style={s.footerGold}>support@gate-assessment.org</Text>
         </View>
       </Page>
