@@ -413,7 +413,7 @@ const userExams = await db.query.exams.findMany({
 ```typescript
 // Insert with returning
 const [exam] = await db.insert(exams).values({
-  title: "Physics Olympiad",
+  title: "Physics Assessment",
   type: "exam",
   createdByUserId: session.user.id,
   // ... other fields
