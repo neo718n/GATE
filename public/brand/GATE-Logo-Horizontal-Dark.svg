@@ -5,6 +5,6 @@
     <tspan x="32" y="66" fill="#FAFBFC" letter-spacing="12">G</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan><tspan fill="#FAFBFC" letter-spacing="12">A</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan><tspan fill="#FAFBFC" letter-spacing="12">T</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan><tspan fill="#FAFBFC" letter-spacing="12">E</tspan><tspan fill="#C9993A" letter-spacing="0">.</tspan>
   </text>
   <line x1="330" y1="18" x2="331" y2="82" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
-  <text x="348" y="42" font-family="Montserrat,Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="3" fill="#C9993A">OLYMPIAD</text>
+  <text x="348" y="42" font-family="Montserrat,Arial,sans-serif" font-size="9" font-weight="700" letter-spacing="3" fill="#C9993A">ASSESSMENT</text>
   <text x="348" y="64" font-family="Montserrat,Arial,sans-serif" font-size="12" font-weight="600" letter-spacing="2" fill="#FAFBFC">GLOBAL ACADEMIC</text>
 </svg>
