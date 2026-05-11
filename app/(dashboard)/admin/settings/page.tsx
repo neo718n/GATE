@@ -42,7 +42,7 @@ export default async function SettingsPage() {
 
   const todos = [
     "Set STRIPE_WEBHOOK_SECRET from: stripe listen --forward-to localhost:3000/api/stripe/webhook",
-    "Update package.json name from 'gate-olympiad' to 'gate-assessment'",
+    "Verify package.json name is set to 'gate-assessment'",
     "Set NEXT_PUBLIC_APP_URL to your production domain before deploying",
     "Configure RESEND_FROM_EMAIL with a verified sending domain for production",
   ];
