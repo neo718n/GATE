@@ -51,7 +51,10 @@ export default async function EnrollmentPage({
     }
   }
 
-  if (!participant || participant.registrationStatus === "draft") {
+  // New registration flow: participants are created automatically during signup at /register
+  // with registrationStatus='draft'. This is now a valid state for enrollment (draft = hasn't paid yet).
+  // Only redirect if participant record doesn't exist (orphaned user scenario).
+  if (!participant) {
     return (
       <div className="flex flex-col gap-8 max-w-2xl">
         <div className="flex flex-col gap-1.5">
@@ -62,13 +65,13 @@ export default async function EnrollmentPage({
         </div>
         <div className="border border-border bg-muted/30 p-8 flex flex-col gap-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
-            Profile Required
+            Registration Required
           </p>
           <p className="text-sm font-light text-foreground/65 leading-[1.9]">
-            You must complete your participant profile before selecting a subject area.
+            You must complete your registration before enrolling in a subject area.
           </p>
           <Button variant="gold" size="sm" asChild className="w-fit">
-            <Link href="/participant/profile">Complete Profile</Link>
+            <Link href="/register">Complete Registration</Link>
           </Button>
         </div>
       </div>
