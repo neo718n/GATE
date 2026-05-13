@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { RegisterForm } from "./register-form";
+import { UnifiedRegistrationForm } from "@/components/auth/unified-registration-form";
 
 export const metadata: Metadata = {
   title: "Apply Now",
 };
 
 export default function RegisterPage() {
-  return <RegisterForm />;
+  return <UnifiedRegistrationForm />;
 }
