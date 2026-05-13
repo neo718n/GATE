@@ -41,6 +41,7 @@ import { nextCookies } from "better-auth/next-js";
 import { emailOTP } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "./db/schema";
+import { participants } from "./db/schema";
 import { resend, DEFAULT_FROM } from "./email";
 
 if (!process.env.BETTER_AUTH_SECRET) {
@@ -152,10 +153,10 @@ export const auth = betterAuth({
         required: false,
         input: false,
       },
-      firstName: { type: "string", required: false },
-      lastName: { type: "string", required: false },
-      country: { type: "string", required: false },
-      phone: { type: "string", required: false },
+      firstName: { type: "string", required: false, input: true },
+      lastName: { type: "string", required: false, input: true },
+      country: { type: "string", required: false, input: true },
+      phone: { type: "string", required: false, input: true },
     },
   },
   session: {
@@ -164,6 +165,28 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 60 * 5,
+    },
+  },
+  databaseHooks: {
+    user: {
+      create: {
+        async after(user) {
+          try {
+            const firstName = user.firstName || "";
+            const lastName = user.lastName || "";
+            const fullName = `${firstName} ${lastName}`.trim() || "Unnamed Participant";
+
+            await db.insert(participants).values({
+              userId: user.id,
+              fullName,
+              country: user.country || "Not specified",
+              phone: user.phone,
+            });
+          } catch (error) {
+            console.error("Failed to create participant record for user:", user.id, error);
+          }
+        },
+      },
     },
   },
   plugins: [
