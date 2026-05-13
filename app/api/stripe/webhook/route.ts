@@ -98,30 +98,16 @@ export async function POST(req: NextRequest) {
     if (payment && !isNaN(participantIdNum)) {
       const participant = await db.query.participants.findFirst({
         where: eq(participants.id, participantIdNum),
-        with: {
-          user: true,
-          subjects: { with: { subject: true } },
-        },
+        with: { user: true },
       });
 
       const email = participant?.user?.email;
+      // Guard against duplicate emails on Stripe webhook retries:
+      // Stripe may retry webhooks multiple times if our server is slow to respond or times out.
+      // The receiptPdfKey is set by sendPaymentConfirmationEmail after successfully generating
+      // and uploading the receipt PDF. If receiptPdfKey exists, we've already sent the email
+      // for this payment, so we skip sending again to avoid spamming the user.
       if (email && participant && !payment.receiptPdfKey) {
-        // Compute optional metadata fields for receipt/invoice line item
-        const round = payment.round;
-        const isCamp = round?.order === 2;
-        const start = round?.startDate ? new Date(round.startDate) : null;
-        const end = round?.endDate ? new Date(round.endDate) : null;
-        let programDates: string | undefined;
-        if (start && end) {
-          const sameMonth = start.getUTCMonth() === end.getUTCMonth();
-          const fmt = (d: Date) =>
-            d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-          programDates = sameMonth
-            ? `${start.getUTCDate()}–${end.getUTCDate()} ${end.toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" })}`
-            : `${fmt(start)} – ${fmt(end)}`;
-        }
-        const subjectName = participant.subjects[0]?.subject?.name;
-
         sendPaymentConfirmationEmail({
           paymentId: payment.id,
           amountCents: payment.amountCents,
@@ -131,11 +117,7 @@ export async function POST(req: NextRequest) {
           stripeChargeId: payment.stripeChargeId ?? stripeChargeId,
           stripePaymentIntentId: payment.stripePaymentIntentId,
           cycle: payment.cycle?.name ?? "-",
-          round: round?.name,
-          programDates,
-          subject: subjectName,
-          venue: round?.venue ?? undefined,
-          isCamp,
+          round: payment.round?.name,
           participant: {
             name: participant.fullName,
             email,

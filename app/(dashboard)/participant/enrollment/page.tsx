@@ -3,9 +3,11 @@ import { db } from "@/lib/db";
 import { participants, cycles, payments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
+import { LocalDate } from "@/components/ui/local-date";
 import Link from "next/link";
+import { selectRound, selectSubject, initiatePayment } from "@/lib/actions/participant";
 import { stripe } from "@/lib/stripe";
-import { EnrollmentForm } from "./enrollment-form";
+import { PaymentSubmitButton } from "@/components/payment-submit-button";
 
 export default async function EnrollmentPage({
   searchParams,
@@ -22,8 +24,7 @@ export default async function EnrollmentPage({
     },
   });
 
-  // Verify Stripe payment when redirected back from checkout (webhook fallback).
-  // Failure here is non-fatal — the webhook is the source of truth.
+  // Verify Stripe payment when redirected back from checkout (webhook fallback)
   if (sp.payment === "success" && sp.sid && participant?.paymentStatus !== "paid") {
     try {
       const sess = await stripe.checkout.sessions.retrieve(sp.sid);
@@ -50,13 +51,12 @@ export default async function EnrollmentPage({
     }
   }
 
-  // Profile gate — must complete profile before enrolling
   if (!participant || participant.registrationStatus === "draft") {
     return (
       <div className="flex flex-col gap-8 max-w-2xl">
         <div className="flex flex-col gap-1.5">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-            Program Registration
+            Subject Enrollment
           </span>
           <h1 className="font-serif text-4xl font-light text-foreground">Enrollment</h1>
         </div>
@@ -65,7 +65,7 @@ export default async function EnrollmentPage({
             Profile Required
           </p>
           <p className="text-sm font-light text-foreground/65 leading-[1.9]">
-            You must complete your participant profile before registering for a program.
+            You must complete your participant profile before selecting a subject area.
           </p>
           <Button variant="gold" size="sm" asChild className="w-fit">
             <Link href="/participant/profile">Complete Profile</Link>
@@ -84,31 +84,37 @@ export default async function EnrollmentPage({
   });
 
   const openRounds = activeCycle?.rounds.filter((r) => r.registrationStatus === "open") ?? [];
-  const selectedSubject = participant.subjects[0]?.subject ?? null;
   const selectedSubjectId = participant.subjects[0]?.subjectId ?? null;
-  const selectedRound = activeCycle?.rounds.find((r) => r.id === participant.roundId) ?? null;
+  const selectedSubject = participant.subjects[0]?.subject ?? null;
+  const selectedRoundId = participant.roundId ?? null;
+  const selectedRound = activeCycle?.rounds.find((r) => r.id === selectedRoundId) ?? null;
   const isPaid = participant.paymentStatus === "paid";
+
+  const grossAmount = selectedRound
+    ? Math.ceil(
+        (selectedRound.feeUsd + (activeCycle?.stripeFeeFixedCents ?? 30)) /
+          (1 - (activeCycle?.stripeFeePercent ?? 290) / 10000)
+      )
+    : 0;
+  const feeAmount = selectedRound ? grossAmount - selectedRound.feeUsd : 0;
 
   return (
     <div className="flex flex-col gap-8 max-w-3xl">
       <div className="flex flex-col gap-1.5">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-          Program Registration
+          Subject Enrollment
         </span>
         <h1 className="font-serif text-4xl font-light text-foreground">
           Enrollment &amp; Payment
         </h1>
-        <p className="text-sm font-light text-foreground/55 mt-2 leading-relaxed">
-          Choose a program, pick your subject, and complete payment in a single step.
-        </p>
       </div>
 
       {sp.payment === "success" && (
-        <div className="border border-green-200 bg-green-50 px-5 py-4 dark:bg-green-950/30 dark:border-green-900">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-green-700 dark:text-green-400">
+        <div className="border border-green-200 bg-green-50 px-5 py-4">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-green-700">
             Payment Successful
           </p>
-          <p className="text-sm font-light text-green-800/70 dark:text-green-200/70 mt-1">
+          <p className="text-sm font-light text-green-800/70 mt-1">
             Your registration fee has been received. Your enrollment is confirmed.
           </p>
         </div>
@@ -120,7 +126,7 @@ export default async function EnrollmentPage({
             Payment Cancelled
           </p>
           <p className="text-sm font-light text-foreground/65 mt-1">
-            Your payment was not completed. Your selections are saved — you can submit again below.
+            Your payment was not completed. Your selections are saved — you can pay below.
           </p>
         </div>
       )}
@@ -142,7 +148,7 @@ export default async function EnrollmentPage({
             Enrolled
           </p>
           <p className="text-sm font-light text-foreground">
-            Program: <span className="font-semibold">{selectedRound?.name ?? "—"}</span>
+            Round: <span className="font-semibold">{selectedRound?.name ?? "—"}</span>
           </p>
           <p className="text-sm font-light text-foreground">
             Subject: <span className="font-semibold">{selectedSubject?.name ?? "—"}</span>
@@ -155,46 +161,152 @@ export default async function EnrollmentPage({
 
       {activeCycle && !isPaid && (
         <>
-          {openRounds.length === 0 ? (
-            <div className="border border-border bg-muted/30 p-5">
-              <p className="text-sm font-light text-foreground/60">
-                No programs are currently open for registration.
+          {/* Round selection */}
+          <div className="flex flex-col gap-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
+              Select Round
+            </p>
+            {openRounds.length === 0 ? (
+              <div className="border border-border bg-muted/30 p-5">
+                <p className="text-sm font-light text-foreground/60">
+                  No rounds are currently open for registration.
+                </p>
+              </div>
+            ) : (
+              <form action={selectRound} className="flex flex-col gap-3">
+                <input type="hidden" name="participantId" value={participant.id} />
+                <div className="flex flex-col gap-2">
+                  {openRounds.map((r) => (
+                    <label
+                      key={r.id}
+                      className="flex items-start gap-3 border border-border p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
+                    >
+                      <input
+                        type="radio"
+                        name="roundId"
+                        value={r.id}
+                        defaultChecked={r.id === selectedRoundId}
+                        className="mt-1 accent-[#C9993A]"
+                      />
+                      <div className="flex flex-col gap-0.5 flex-1">
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="text-sm font-semibold text-foreground">{r.name}</span>
+                          <span className="text-sm font-light text-foreground">
+                            {r.feeUsd > 0 ? `$${(r.feeUsd / 100).toFixed(2)}` : "Free"}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <span className="text-xs font-light text-foreground/50 capitalize">{r.format}</span>
+                          {r.startDate && (
+                            <span className="text-xs font-light text-foreground/50">
+                              <LocalDate date={r.startDate} />
+                            </span>
+                          )}
+                          {r.venue && (
+                            <span className="text-xs font-light text-foreground/50">{r.venue}</span>
+                          )}
+                        </div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div className="pt-1">
+                  <Button type="submit" variant="outline" size="sm">
+                    Save Round Selection
+                  </Button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          {/* Subject selection */}
+          {activeCycle.subjects.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
+                Select Subject
               </p>
+              <form action={selectSubject} className="flex flex-col gap-3">
+                <input type="hidden" name="participantId" value={participant.id} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {activeCycle.subjects.map(({ subject: s }) =>
+                    s ? (
+                      <label
+                        key={s.id}
+                        className="flex items-start gap-3 border border-border p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
+                      >
+                        <input
+                          type="radio"
+                          name="subjectId"
+                          value={s.id}
+                          defaultChecked={s.id === selectedSubjectId}
+                          className="mt-1 accent-[#C9993A]"
+                        />
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-sm font-semibold text-foreground">{s.name}</span>
+                          {s.description && (
+                            <span className="text-xs font-light text-foreground/55 leading-[1.7]">
+                              {s.description}
+                            </span>
+                          )}
+                        </div>
+                      </label>
+                    ) : null
+                  )}
+                </div>
+                <div className="pt-1">
+                  <Button type="submit" variant="outline" size="sm">
+                    Save Subject Selection
+                  </Button>
+                </div>
+              </form>
             </div>
-          ) : (
-            <EnrollmentForm
-              participant={{
-                id: participant.id,
-                roundId: participant.roundId,
-                selectedSubjectId,
-                passportNumber: participant.passportNumber,
-                passportExpiry: participant.passportExpiry,
-                parentalConsent: participant.parentalConsent,
-                dietaryNeeds: participant.dietaryNeeds,
-                emergencyContact: participant.emergencyContact,
-              }}
-              cycleId={activeCycle.id}
-              rounds={openRounds.map((r) => ({
-                id: r.id,
-                name: r.name,
-                order: r.order,
-                format: r.format,
-                startDate: r.startDate,
-                endDate: r.endDate,
-                feeUsd: r.feeUsd,
-                venue: r.venue,
-              }))}
-              subjects={activeCycle.subjects
-                .map((cs) => cs.subject)
-                .filter((s): s is NonNullable<typeof s> => s !== null && s.active !== false)
-                .map((s) => ({
-                  id: s.id,
-                  name: s.name,
-                  description: s.description ?? null,
-                }))}
-              stripeFeePercent={activeCycle.stripeFeePercent}
-              stripeFeeFixedCents={activeCycle.stripeFeeFixedCents}
-            />
+          )}
+
+          {/* Payment */}
+          {selectedRoundId && selectedSubjectId && (
+            <div className="border border-border p-6 flex flex-col gap-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
+                Payment
+              </p>
+              {selectedRound && selectedRound.feeUsd > 0 ? (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center justify-between text-sm font-light text-foreground/65">
+                    <span>Registration fee</span>
+                    <span>${(selectedRound.feeUsd / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-light text-foreground/50">
+                    <span>Service fee</span>
+                    <span>${(feeAmount / 100).toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm font-semibold text-foreground border-t border-border pt-2 mt-1">
+                    <span>Total</span>
+                    <span>${(grossAmount / 100).toFixed(2)} USD</span>
+                  </div>
+                  <p className="text-xs font-light text-foreground/40 mt-1">
+                    Round:{" "}
+                    <span className="text-foreground/65">{selectedRound.name}</span>
+                    {" · "}Subject:{" "}
+                    <span className="text-foreground/65">{selectedSubject?.name}</span>
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm font-light text-foreground/65 leading-[1.9]">
+                  This round has no registration fee. Click below to confirm enrollment.
+                </p>
+              )}
+              <form action={initiatePayment}>
+                <input type="hidden" name="cycleId" value={activeCycle.id} />
+                <input type="hidden" name="roundId" value={selectedRoundId} />
+                <input type="hidden" name="participantId" value={participant.id} />
+                <PaymentSubmitButton
+                  label={
+                    selectedRound && selectedRound.feeUsd > 0
+                      ? `Pay $${(grossAmount / 100).toFixed(2)} & Confirm`
+                      : "Confirm Enrollment"
+                  }
+                />
+              </form>
+            </div>
           )}
         </>
       )}

@@ -6,14 +6,14 @@ import "./globals.css";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
   weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s · G.A.T.E. Assessment",
   },
   description:
-    "Global Academic & Theoretical Excellence — international academic diagnostic and educational programs, including an onsite training camp at Xidian University, Hangzhou.",
+    "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a multi-stage Global Final hosted across international venues.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   ),
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     siteName: "G.A.T.E. Assessment",
     title: "G.A.T.E. Assessment",
     description:
-      "Global Academic & Theoretical Excellence — international academic diagnostic and educational programs, including an onsite training camp at Xidian University, Hangzhou.",
+      "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a multi-stage Global Final hosted across international venues.",
     images: [
       {
         url: "/brand/GATE-Logo-Primary-Dark@2x.png",

@@ -1,4 +1,4 @@
-import { renderToBuffer } from "@react-pdf/renderer";
+﻿import { renderToBuffer } from "@react-pdf/renderer";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2, BUCKET } from "@/lib/r2";
 import { InvoicePDF } from "@/components/invoice-pdf";
@@ -10,10 +10,6 @@ interface GenerateInvoiceParams {
   participant: { name: string; email: string; country: string };
   cycle: string;
   round?: string;
-  programDates?: string;
-  subject?: string;
-  venue?: string;
-  isCamp?: boolean;
   amountCents: number;
   status: string;
 }
@@ -26,10 +22,6 @@ export async function generateAndUploadInvoice(params: GenerateInvoiceParams): P
       participant={params.participant}
       cycle={params.cycle}
       round={params.round}
-      programDates={params.programDates}
-      subject={params.subject}
-      venue={params.venue}
-      isCamp={params.isCamp}
       amountCents={params.amountCents}
       status={params.status}
     />
@@ -50,3 +42,4 @@ export async function generateAndUploadInvoice(params: GenerateInvoiceParams): P
 
   return { key, buffer };
 }
+

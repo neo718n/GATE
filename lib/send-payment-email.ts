@@ -15,10 +15,6 @@ interface SendPaymentEmailParams {
   stripePaymentIntentId?: string | null;
   cycle: string;
   round?: string;
-  programDates?: string;
-  subject?: string;
-  venue?: string;
-  isCamp?: boolean;
   participant: { name: string; email: string; country: string };
 }
 
@@ -37,10 +33,6 @@ export async function sendPaymentConfirmationEmail(params: SendPaymentEmailParam
         participant: params.participant,
         cycle: params.cycle,
         round: params.round,
-        programDates: params.programDates,
-        subject: params.subject,
-        venue: params.venue,
-        isCamp: params.isCamp,
         amountCents: params.amountCents,
         status: "paid",
       }),
@@ -51,10 +43,6 @@ export async function sendPaymentConfirmationEmail(params: SendPaymentEmailParam
         participant: params.participant,
         cycle: params.cycle,
         round: params.round,
-        programDates: params.programDates,
-        subject: params.subject,
-        venue: params.venue,
-        isCamp: params.isCamp,
         amountCents: params.amountCents,
         serviceFeeCents: params.serviceFeeCents,
         cardLast4: params.cardLast4,
@@ -69,30 +57,13 @@ export async function sendPaymentConfirmationEmail(params: SendPaymentEmailParam
     .set({ invoicePdfKey: invoiceKey, receiptPdfKey: receiptKey })
     .where(eq(payments.id, params.paymentId));
 
-  const programLine = params.round ?? params.cycle;
-  const programMeta = [
-    params.cycle,
-    params.programDates,
-    params.subject ? `Subject: ${params.subject}` : null,
-    params.isCamp && params.venue ? params.venue : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const programLine = params.round ? `${params.cycle} – ${params.round}` : params.cycle;
 
   await resend.emails.send({
     from: DEFAULT_FROM,
     to: params.participant.email,
-    subject: `Payment Confirmed — ${receiptNumber} | G.A.T.E.`,
-    html: buildEmailHtml({
-      participantName: params.participant.name,
-      totalAmt,
-      programLine,
-      programMeta,
-      invoiceNumber,
-      receiptNumber,
-      paidAt,
-      isCamp: !!params.isCamp,
-    }),
+    subject: `Payment Confirmed — ${receiptNumber} | G.A.T.E. Assessment`,
+    html: buildEmailHtml({ ...params, invoiceNumber, receiptNumber, totalAmt, paidAt, programLine }),
     attachments: [
       { filename: `invoice-${invoiceNumber}.pdf`, content: invoiceBuffer },
       { filename: `receipt-${receiptNumber}.pdf`, content: receiptBuffer },
@@ -101,23 +72,13 @@ export async function sendPaymentConfirmationEmail(params: SendPaymentEmailParam
 }
 
 function buildEmailHtml(p: {
-  participantName: string;
+  participant: { name: string };
   totalAmt: string;
   programLine: string;
-  programMeta: string;
   invoiceNumber: string;
   receiptNumber: string;
   paidAt: string;
-  isCamp: boolean;
 }) {
-  const campNote = p.isCamp
-    ? `<p style="font-size:13px;color:#444444;margin:16px 0 0;line-height:1.6;">
-         <strong>Hangzhou Camp:</strong> your tuition is all-inclusive — dormitory accommodation,
-         three meals daily, lectures, and the cultural program are covered. Visa, travel insurance,
-         and international airfare are not included.
-       </p>`
-    : "";
-
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -128,13 +89,13 @@ function buildEmailHtml(p: {
         <tr><td style="height:5px;background:#c9993a;font-size:0;">&nbsp;</td></tr>
         <tr><td style="padding:32px 40px 20px;">
           <div style="font-size:22px;font-weight:bold;letter-spacing:2px;color:#111111;">G.A.T.E.</div>
-          <div style="font-size:11px;color:#666666;margin-top:4px;">International Academic Programs</div>
+          <div style="font-size:11px;color:#666666;margin-top:4px;">Global Assessment &amp; Testing for Excellence</div>
         </td></tr>
         <tr><td style="padding:0 40px;"><div style="border-top:1px solid #cccccc;"></div></td></tr>
         <tr><td style="padding:28px 40px 32px;">
           <h1 style="font-size:22px;color:#111111;margin:0 0 8px;font-family:Helvetica,Arial,sans-serif;">Payment Confirmed</h1>
           <p style="font-size:14px;color:#444444;margin:0 0 24px;line-height:1.6;">
-            Dear ${p.participantName}, your payment of <strong>${p.totalAmt}</strong> has been received and confirmed.
+            Dear ${p.participant.name}, your payment of <strong>${p.totalAmt}</strong> has been received and confirmed.
             Your invoice and receipt are attached to this email as PDF files.
           </p>
           <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #cccccc;margin-bottom:24px;">
@@ -146,10 +107,6 @@ function buildEmailHtml(p: {
               <td style="padding:10px 16px;font-size:12px;color:#666666;border-right:1px solid #cccccc;border-bottom:1px solid #cccccc;">Program</td>
               <td style="padding:10px 16px;font-size:12px;color:#111111;border-bottom:1px solid #cccccc;">${p.programLine}</td>
             </tr>
-            ${p.programMeta ? `<tr>
-              <td style="padding:10px 16px;font-size:12px;color:#666666;border-right:1px solid #cccccc;border-bottom:1px solid #cccccc;">Details</td>
-              <td style="padding:10px 16px;font-size:12px;color:#444444;border-bottom:1px solid #cccccc;">${p.programMeta}</td>
-            </tr>` : ""}
             <tr>
               <td style="padding:10px 16px;font-size:12px;color:#666666;border-right:1px solid #cccccc;border-bottom:1px solid #cccccc;">Date</td>
               <td style="padding:10px 16px;font-size:12px;color:#111111;border-bottom:1px solid #cccccc;">${p.paidAt}</td>
@@ -163,8 +120,7 @@ function buildEmailHtml(p: {
               <td style="padding:10px 16px;font-size:12px;color:#111111;font-weight:bold;">${p.receiptNumber}</td>
             </tr>
           </table>
-          ${campNote}
-          <p style="font-size:13px;color:#666666;margin:24px 0 8px;line-height:1.6;">
+          <p style="font-size:13px;color:#666666;margin:0 0 8px;line-height:1.6;">
             Please retain the attached documents for your records.
           </p>
           <p style="font-size:13px;color:#666666;margin:0;line-height:1.6;">
@@ -174,13 +130,8 @@ function buildEmailHtml(p: {
         <tr><td style="border-top:1px solid #cccccc;padding:16px 40px;">
           <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
-              <td style="font-size:11px;color:#999999;">G.A.T.E. &middot; International Academic Programs</td>
+              <td style="font-size:11px;color:#999999;">G.A.T.E. Assessment &middot; Assessment Management Platform</td>
               <td align="right" style="font-size:11px;color:#c9993a;">gate-assessment.org</td>
-            </tr>
-            <tr>
-              <td colspan="2" style="font-size:10px;color:#aaaaaa;padding-top:6px;text-align:center;">
-                Operated by Chongqing Xinshijie Technology Service Co., LTD
-              </td>
             </tr>
           </table>
         </td></tr>

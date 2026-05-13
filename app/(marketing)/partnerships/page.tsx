@@ -10,7 +10,7 @@ const BENEFITS = [
   { title: "Global Visibility", body: "Your institution is listed as an official G.A.T.E. partner across all program materials, certificates, and the platform." },
   { title: "Student Access", body: "Partner institutions gain facilitated access to bring their students into the Assessment through coordinated registration channels." },
   { title: "Academic Network", body: "Join an international network of universities, schools, and academic organizations committed to excellence in theoretical education." },
-  { title: "Exam Center Status", body: "Qualified partner institutions may apply to serve as official examination centers for the Online Diagnostic Assessment in their region." },
+  { title: "Exam Center Status", body: "Qualified partner institutions may apply to serve as official examination centers for the Preliminary Round in their region." },
 ];
 
 const TYPES = [

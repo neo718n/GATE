@@ -30,17 +30,17 @@ export default function AboutPage() {
               <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
                 <p>G.A.T.E. — the Global Academic and Theoretical Excellence Assessment — was founded to create a credible, transparent, and academically rigorous platform for international academic excellence across six disciplines.</p>
                 <p>We believe that rigorous academic assessment, when conducted with integrity and at the highest standard, is one of the most powerful tools for identifying and developing talent. Our Assessment is structured to reward depth of understanding — emphasizing theoretical reasoning, rigorous proof, and creative problem-solving.</p>
-                <p>The Hangzhou Academic Training Camp brings participants together at Xidian University, Hangzhou Institute of Technology, creating an experience that extends beyond assessment into genuine scholarly exchange.</p>
+                <p>The Global Final brings participants together at a leading international host institution, creating an experience that extends beyond examination into genuine scholarly exchange. The host venue is selected and announced per edition.</p>
               </div>
             </div>
           </div>
           <div className="flex flex-col gap-6">
             {[
               { label: "Founded", value: "2025" },
-              { label: "Camp Venue", value: "Xidian University · Hangzhou" },
+              { label: "Global Final Venue", value: "Announced per edition" },
               { label: "Disciplines", value: "6 Academic Areas" },
-              { label: "Programs", value: "Online Diagnostic\nHangzhou Training Camp" },
-              { label: "Recognition", value: "Academic Distinction\nHonors · Merit\nCertificates" },
+              { label: "Format", value: "Two-Round System\nOnline + Onsite" },
+              { label: "Recognition", value: "Gold, Silver, Bronze\nHonorable Mention\nCertificates" },
             ].map((item) => (
               <div key={item.label} className="flex flex-col gap-1 border-b border-gate-fog/70 pb-5 last:border-0">
                 <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">{item.label}</span>
@@ -78,8 +78,8 @@ export default function AboutPage() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">International Scope</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Open to Students Everywhere</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
-              <p>G.A.T.E. imposes no geographic restrictions on participation. Both programs — the Online Diagnostic Assessment and the Hangzhou Academic Training Camp — are open to students worldwide, regardless of country, institution, or background.</p>
-              <p>Language accessibility, inclusive assessment design, and transparent scoring are foundational principles. Every participant is evaluated on the same terms and receives a personalized performance report.</p>
+              <p>G.A.T.E. imposes no geographic restrictions on participation. The Preliminary Round is designed to be accessible to any qualified student, regardless of country, institution, or background.</p>
+              <p>Language accessibility, inclusive examination design, and transparent scoring are foundational principles. Every participant competes on the same terms.</p>
             </div>
             <div className="flex gap-4 mt-2">
               <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
@@ -87,7 +87,7 @@ export default function AboutPage() {
             </div>
           </div>
           <div className="flex flex-col gap-0">
-            {["No geographic restrictions on participation","Online program conducted remotely","Available to students in Grades 1–12","Transparent, independently verified results","Official credentials recognized internationally"].map((pt) => (
+            {["No geographic restrictions on participation","Round I conducted fully online","Available to all enrolled secondary students","Transparent, independently verified results","Official credentials recognized internationally"].map((pt) => (
               <div key={pt} className="flex items-start gap-4 py-4 border-b border-gate-fog/70 last:border-0">
                 <span className="mt-2 h-px w-5 shrink-0 bg-gate-gold/50" />
                 <span className="text-sm font-light text-gate-800/65 leading-relaxed">{pt}</span>

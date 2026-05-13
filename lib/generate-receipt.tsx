@@ -1,4 +1,4 @@
-import { renderToBuffer } from "@react-pdf/renderer";
+﻿import { renderToBuffer } from "@react-pdf/renderer";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { r2, BUCKET } from "@/lib/r2";
 import { ReceiptPDF } from "@/components/receipt-pdf";
@@ -10,10 +10,6 @@ interface GenerateReceiptParams {
   participant: { name: string; email: string; country: string };
   cycle: string;
   round?: string;
-  programDates?: string;
-  subject?: string;
-  venue?: string;
-  isCamp?: boolean;
   amountCents: number;
   serviceFeeCents: number;
   cardLast4?: string | null;
@@ -30,10 +26,6 @@ export async function generateAndUploadReceipt(params: GenerateReceiptParams): P
       participant={params.participant}
       cycle={params.cycle}
       round={params.round}
-      programDates={params.programDates}
-      subject={params.subject}
-      venue={params.venue}
-      isCamp={params.isCamp}
       amountCents={params.amountCents}
       serviceFeeCents={params.serviceFeeCents}
       cardLast4={params.cardLast4}
@@ -58,3 +50,4 @@ export async function generateAndUploadReceipt(params: GenerateReceiptParams): P
 
   return { key, buffer };
 }
+

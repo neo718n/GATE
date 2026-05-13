@@ -54,9 +54,6 @@ export default async function HomePage() {
       rounds: {
         orderBy: (t, { asc }) => [asc(t.order)],
       },
-      subjects: {
-        with: { subject: true },
-      },
     },
   });
 
@@ -64,7 +61,6 @@ export default async function HomePage() {
   const onlineRound = rounds.find((r) => r.order === 1);
   const campRound = rounds.find((r) => r.order === 2);
   const registrationOpen = activeCycle?.status === "registration_open";
-  const availableSubjectSlugs = activeCycle?.subjects.map((cs) => cs.subject.slug) ?? [];
 
   return (
     <>
@@ -89,7 +85,7 @@ export default async function HomePage() {
 
       <ProgramCards rounds={rounds} />
 
-      <OnlineProgramSection round={onlineRound} availableSubjectSlugs={availableSubjectSlugs} />
+      <OnlineProgramSection round={onlineRound} />
 
       <ChinaCampSection round={campRound} />
 

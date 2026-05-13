@@ -11,7 +11,7 @@ const SECTIONS = [
     number: "01",
     title: "Eligibility",
     content: [
-      "Participation in G.A.T.E. Academic Programs is open to any student in Grades 1–12 worldwide. The Online Diagnostic Assessment and the Hangzhou Academic Training Camp are independent programs — a participant may register for either, both, or neither, without prerequisite.",
+      "Participation in the G.A.T.E. Assessment is open to any student who, at the time of the Preliminary Round, is currently enrolled in secondary or pre-university education (equivalent to grades 9–12) and is between the ages of 14 and 19. Students in their final year of secondary education are eligible regardless of age at the time of application.",
       "There are no restrictions on nationality, country of residence, language background, or institutional affiliation. Homeschooled students are eligible provided they can supply documentation confirming active secondary-level enrollment.",
       "Each participant must register individually and in exactly one (1) subject area. No participant may register in more than one discipline per assessment cycle. Subject selection is final upon registration confirmation and cannot be altered under any circumstances.",
       "G.A.T.E. reserves the right to verify eligibility at any stage of the program. Participants who are found to be ineligible — at any point before, during, or after the assessment — will be disqualified, and any awards or certificates issued will be revoked.",
@@ -31,7 +31,7 @@ const SECTIONS = [
     number: "03",
     title: "Examination Format",
     content: [
-      "G.A.T.E. operates two independent academic programs. The Online Diagnostic Assessment is an academic evaluation conducted online under supervised conditions, with a personalized performance report issued to every participant. The Hangzhou Academic Training Camp is a 7-day onsite educational program held at Xidian University, Hangzhou Institute of Technology, with direct registration.",
+      "The G.A.T.E. Assessment operates across two phases. Phase I (the Preliminary Round) is an open, globally accessible theoretical examination conducted online under remotely proctored conditions. Phase II (the Global Onsite Assessment) is an in-person examination held at the edition's designated host venue, by invitation only.",
       "Examination format, duration, and permitted materials are specified in official instructions issued to registered participants prior to each phase. Participants are responsible for reading and complying with all examination instructions.",
       "Unless explicitly authorized in the examination instructions, the following are prohibited during any examination: calculators, mathematical software, reference materials, textbooks, notes, and any form of electronic communication device.",
       "All examination content — including questions, problems, and answers — is strictly confidential. Disclosure, reproduction, or distribution of examination content, in whole or in part, before, during, or after the examination window is prohibited and constitutes academic misconduct.",
@@ -52,7 +52,7 @@ const SECTIONS = [
     title: "Scoring and Results",
     content: [
       "Examinations are evaluated by independent subject-matter experts appointed by G.A.T.E. Scoring criteria are determined by G.A.T.E. and applied consistently across all participants. Scores are assessed based on accuracy, methodology, proof quality, and clarity of reasoning.",
-      "Online Diagnostic Assessment results are published on the official G.A.T.E. platform as a personalized performance report. Outstanding performance receives academic distinction — Top 5% Distinction, Top 15% Honors, Top 30% Merit. The Hangzhou Camp is a separate program with its own registration and is not contingent on online assessment results.",
+      "Phase I results are published on the official G.A.T.E. platform. Participants who achieve the qualifying threshold score in their subject area will receive an official invitation to Phase II. The number of finalists selected per subject is determined at the sole discretion of G.A.T.E.",
       "Score review requests may be submitted within fourteen (14) calendar days of results publication. Reviews address only clerical and computational errors; they do not involve re-assessment of academic judgment applied by evaluators. Score review outcomes are final.",
       "G.A.T.E. does not guarantee any specific number of invitations from any country, region, or institution.",
     ],

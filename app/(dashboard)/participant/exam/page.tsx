@@ -97,7 +97,7 @@ export default async function ExamPage() {
               },
               {
                 heading: "Results",
-                body: "Examinations are independently scored by subject-matter experts. Every participant receives a detailed performance report in their portal, identifying strengths and growth areas. Outstanding performance receives academic distinction.",
+                body: "Examinations are independently scored by subject-matter experts. Results are published in your portal. Participants who achieve the qualifying threshold receive an official invitation to the next round.",
               },
             ].map((item) => (
               <div key={item.heading} className="flex flex-col gap-2 border-b border-border pb-6 last:border-0">

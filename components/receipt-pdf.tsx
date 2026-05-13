@@ -12,6 +12,7 @@ const s = StyleSheet.create({
   topBar: { backgroundColor: GOLD, height: 5 },
   body: { padding: "28 44 60 44" },
 
+  // Header
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 },
   brandName: { fontSize: 20, fontFamily: "Helvetica-Bold", color: DARK, letterSpacing: 2 },
   brandSub: { fontSize: 7, color: MUTED, marginTop: 3 },
@@ -21,21 +22,26 @@ const s = StyleSheet.create({
 
   divider: { borderBottomWidth: 1, borderBottomColor: BORDER, marginBottom: 20 },
 
+  // Two-column top section
   topSection: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
 
+  // Recipient (left)
   recipientBlock: { flex: 1, paddingRight: 20 },
   recipientLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, marginBottom: 6, textTransform: "uppercase" },
   recipientName: { fontSize: 11, fontFamily: "Helvetica-Bold", color: DARK, marginBottom: 3 },
   recipientLine: { fontSize: 9, color: MUTED, marginBottom: 2 },
 
+  // Meta box (right)
   metaBox: { width: 200, borderWidth: 1, borderColor: BORDER },
   metaRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
   metaRowLast: { flexDirection: "row" },
   metaKey: { flex: 1, fontSize: 8, color: MUTED, padding: "7 10", borderRightWidth: 1, borderRightColor: BORDER },
   metaVal: { flex: 1.2, fontSize: 8, fontFamily: "Helvetica-Bold", color: DARK, padding: "7 10" },
 
+  // Payment details section
   sectionLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 },
 
+  // Table
   table: { borderWidth: 1, borderColor: BORDER, marginBottom: 0 },
   tableHead: { flexDirection: "row", backgroundColor: LIGHT, borderBottomWidth: 1, borderBottomColor: BORDER },
   tableRowLast: { flexDirection: "row" },
@@ -57,8 +63,8 @@ const s = StyleSheet.create({
   td: { fontSize: 9, color: DARK },
   tdRight: { fontSize: 9, color: DARK, textAlign: "right" },
   tdSub: { fontSize: 7.5, color: MUTED, marginTop: 2 },
-  tdSubItalic: { fontSize: 7, color: GOLD, marginTop: 2, fontFamily: "Helvetica-Oblique" },
 
+  // Totals
   totalsSection: { flexDirection: "row", justifyContent: "flex-end", marginBottom: 24 },
   totalsBox: { width: 280, borderWidth: 1, borderTopWidth: 0, borderColor: BORDER },
   totRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
@@ -68,6 +74,7 @@ const s = StyleSheet.create({
   totKeyBold: { flex: 1, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff", padding: "8 10", borderRightWidth: 1, borderRightColor: "#444" },
   totValBold: { width: 72, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff", textAlign: "right", padding: "8 8" },
 
+  // Payment details box
   paymentBox: { borderWidth: 1, borderColor: BORDER, marginBottom: 20 },
   paymentBoxHead: { backgroundColor: LIGHT, padding: "7 12", borderBottomWidth: 1, borderBottomColor: BORDER },
   paymentBoxHeadText: { fontSize: 8, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1 },
@@ -76,21 +83,21 @@ const s = StyleSheet.create({
   paymentKey: { width: 140, fontSize: 8, color: MUTED, padding: "7 12", borderRightWidth: 1, borderRightColor: BORDER },
   paymentVal: { flex: 1, fontSize: 8, fontFamily: "Helvetica-Bold", color: DARK, padding: "7 12" },
 
+  // Confirmation notice
   confirmBox: { borderWidth: 1, borderColor: GREEN, padding: "12 16", flexDirection: "row", alignItems: "center" },
   confirmText: { fontSize: 9, color: DARK, flex: 1 },
   confirmBold: { fontFamily: "Helvetica-Bold" },
   approvedStamp: { borderWidth: 2, borderColor: GREEN, paddingHorizontal: 10, paddingVertical: 5, marginLeft: 16 },
   approvedText: { fontSize: 11, fontFamily: "Helvetica-Bold", color: GREEN, letterSpacing: 1 },
 
+  // Footer
   footer: {
-    position: "absolute", bottom: 18, left: 44, right: 44,
+    position: "absolute", bottom: 24, left: 44, right: 44,
     borderTopWidth: 1, borderTopColor: BORDER, paddingTop: 8,
-    flexDirection: "column", gap: 3,
+    flexDirection: "row", justifyContent: "space-between",
   },
-  footerRow: { flexDirection: "row", justifyContent: "space-between" },
   footerText: { fontSize: 7.5, color: MUTED },
   footerGold: { fontSize: 7.5, color: GOLD },
-  footerOperator: { fontSize: 6.5, color: MUTED, textAlign: "center", marginTop: 2 },
 });
 
 function capitalize(s: string) {
@@ -103,10 +110,6 @@ interface ReceiptProps {
   participant: { name: string; email: string; country: string };
   cycle: string;
   round?: string;
-  programDates?: string;
-  subject?: string;
-  venue?: string;
-  isCamp?: boolean;
   amountCents: number;
   serviceFeeCents: number;
   cardLast4?: string | null;
@@ -117,7 +120,6 @@ interface ReceiptProps {
 
 export function ReceiptPDF({
   receiptNumber, paidAt, participant, cycle, round,
-  programDates, subject, venue, isCamp,
   amountCents, serviceFeeCents, cardLast4, cardBrand,
   stripeChargeId, stripePaymentIntentId,
 }: ReceiptProps) {
@@ -128,23 +130,17 @@ export function ReceiptPDF({
     ? `${capitalize(cardBrand)} **** **** **** ${cardLast4}`
     : "Card";
 
-  const programLine = round ?? "Registration Fee";
-  const metaParts = [cycle];
-  if (programDates) metaParts.push(programDates);
-  if (subject) metaParts.push(`Subject: ${subject}`);
-  if (venue && isCamp) metaParts.push(venue);
-  const programSub = metaParts.join(" · ");
-
   return (
     <Document>
       <Page size="A4" style={s.page}>
         <View style={s.topBar} />
 
         <View style={s.body}>
+          {/* Header */}
           <View style={s.header}>
             <View>
               <Text style={s.brandName}>G.A.T.E.</Text>
-              <Text style={s.brandSub}>International Academic Programs</Text>
+              <Text style={s.brandSub}>Global Assessment {"&"} Testing for Excellence</Text>
               <Text style={s.brandSite}>gate-assessment.org</Text>
             </View>
             <View>
@@ -155,6 +151,7 @@ export function ReceiptPDF({
 
           <View style={s.divider} />
 
+          {/* Recipient + Meta Box */}
           <View style={s.topSection}>
             <View style={s.recipientBlock}>
               <Text style={s.recipientLabel}>Received From</Text>
@@ -183,6 +180,7 @@ export function ReceiptPDF({
             </View>
           </View>
 
+          {/* Line Items Table */}
           <View style={s.table}>
             <View style={s.tableHead}>
               <View style={s.thItem}><Text style={s.th}>#</Text></View>
@@ -195,13 +193,8 @@ export function ReceiptPDF({
             <View style={serviceFeeCents > 0 ? s.tableRow : s.tableRowLast}>
               <View style={s.tdItem}><Text style={s.td}>1</Text></View>
               <View style={s.tdDesc}>
-                <Text style={s.td}>{programLine}</Text>
-                <Text style={s.tdSub}>{programSub}</Text>
-                {isCamp && (
-                  <Text style={s.tdSubItalic}>
-                    All-inclusive: dormitory, three meals daily, lectures, cultural program.
-                  </Text>
-                )}
+                <Text style={s.td}>Registration Fee</Text>
+                <Text style={s.tdSub}>{cycle}{round ? ` – ${round}` : ""}</Text>
               </View>
               <View style={s.tdQty}><Text style={[s.td, { textAlign: "right" }]}>1</Text></View>
               <View style={s.tdUnit}><Text style={s.tdRight}>{registrationAmt}</Text></View>
@@ -222,6 +215,7 @@ export function ReceiptPDF({
             )}
           </View>
 
+          {/* Totals */}
           <View style={s.totalsSection}>
             <View style={s.totalsBox}>
               {serviceFeeCents > 0 && (
@@ -243,6 +237,7 @@ export function ReceiptPDF({
             </View>
           </View>
 
+          {/* Payment Details */}
           <View style={s.paymentBox}>
             <View style={s.paymentBoxHead}>
               <Text style={s.paymentBoxHeadText}>PAYMENT DETAILS</Text>
@@ -275,10 +270,11 @@ export function ReceiptPDF({
             )}
           </View>
 
+          {/* Confirmation */}
           <View style={s.confirmBox}>
             <Text style={s.confirmText}>
               Payment has been <Text style={s.confirmBold}>received and confirmed</Text>.
-              {" "}This receipt is issued by G.A.T.E. upon successful payment.
+              {" "}This receipt is issued by G.A.T.E. Assessment upon successful payment.
               {" "}Reference: <Text style={s.confirmBold}>{receiptNumber}</Text>.
             </Text>
             <View style={s.approvedStamp}>
@@ -287,14 +283,10 @@ export function ReceiptPDF({
           </View>
         </View>
 
+        {/* Footer */}
         <View style={s.footer}>
-          <View style={s.footerRow}>
-            <Text style={s.footerText}>G.A.T.E. {"·"} International Academic Programs</Text>
-            <Text style={s.footerGold}>support@gate-assessment.org</Text>
-          </View>
-          <Text style={s.footerOperator}>
-            Operated by Chongqing Xinshijie Technology Service Co., LTD
-          </Text>
+          <Text style={s.footerText}>G.A.T.E. Assessment {"·"} Assessment Management Platform</Text>
+          <Text style={s.footerGold}>support@gate-assessment.org</Text>
         </View>
       </Page>
     </Document>
