@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { upsertResult, deleteResult } from "@/lib/actions/admin";
 
 const AWARD_LABELS: Record<string, string> = {
-  gold: "Gold",
-  silver: "Silver",
-  bronze: "Bronze",
-  honorable_mention: "Hon. Mention",
-  participation: "Participation",
+  gold: "Certificate of Distinction",
+  silver: "Certificate of High Achievement",
+  bronze: "Certificate of Merit",
+  honorable_mention: "Honorable Mention",
+  participation: "Certificate of Participation",
 };
 
 const AWARD_COLOR: Record<string, string> = {
@@ -392,11 +392,11 @@ export function CycleParticipantsManager({
                                   className="h-9 border border-border bg-input px-3 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
                                 >
                                   <option value="">— None —</option>
-                                  <option value="gold">Gold</option>
-                                  <option value="silver">Silver</option>
-                                  <option value="bronze">Bronze</option>
+                                  <option value="gold">Certificate of Distinction</option>
+                                  <option value="silver">Certificate of High Achievement</option>
+                                  <option value="bronze">Certificate of Merit</option>
                                   <option value="honorable_mention">Honorable Mention</option>
-                                  <option value="participation">Participation</option>
+                                  <option value="participation">Certificate of Participation</option>
                                 </select>
                               </div>
                             </div>
