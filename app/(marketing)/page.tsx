@@ -37,10 +37,6 @@ const FAQS = [
     a: "Yes. The Online Diagnostic Assessment is a complete, independent program. Every participant who completes the online assessment receives a detailed performance report and Certificate of Completion — regardless of whether they attend the Hangzhou camp.",
   },
   {
-    q: "Is this program compliant with China's regulations on academic competitions?",
-    a: "Yes. G.A.T.E. is structured as a diagnostic educational assessment program, not an academic competition. China's regulations target competitive olympiad-style programs that rank students for admission advantages. Our program does not rank participants competitively, does not determine winners/losers, and does not provide admission linkage or recruitment pathways. All participants receive educational feedback and certificates documenting their individual performance.",
-  },
-  {
     q: "What kind of recognition do top performers receive?",
     a: "Outstanding performance receives academic distinction in three tiers: Academic Distinction (Top 5%), Honors (Top 15%), and Merit Recognition (Top 30%). These are academic honors — not competition prizes — recognizing individual excellence within the diagnostic framework.",
   },
