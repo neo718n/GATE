@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 const BENEFITS = [
   { title: "Global Visibility", body: "Your institution is listed as an official G.A.T.E. partner across all program materials, certificates, and the platform." },
   { title: "Student Access", body: "Partner institutions gain facilitated access to bring their students into the Assessment through coordinated registration channels." },
-  { title: "Academic Network", body: "Join an international network of universities, schools, and academic organizations committed to excellence in theoretical education." },
+  { title: "Academic Network", body: "Join an international network of universities, schools, and academic organizations committed to rigorous diagnostic assessment and excellence in theoretical education." },
   { title: "Exam Center Status", body: "Qualified partner institutions may apply to serve as official examination centers for the Preliminary Round in their region." },
 ];
 
 const TYPES = [
-  { title: "Universities", desc: "Research universities and higher education institutions seeking to engage top secondary students and support academic talent pipelines." },
+  { title: "Universities", desc: "Research universities and higher education institutions seeking to provide their secondary students with access to meaningful academic assessment and evaluation opportunities." },
   { title: "Schools", desc: "Secondary schools and high schools seeking official assessment participation channels and recognition for their students." },
   { title: "Academic Institutions", desc: "Educational centers, research institutes, and academic foundations aligned with G.A.T.E. values." },
   { title: "Organizations", desc: "Educational NGOs, foundations, and national assessment bodies interested in cooperation and official representation." },
@@ -37,7 +37,7 @@ export default function PartnershipsPage() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Why Partner</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Join the Global Academic Network</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
-              <p>G.A.T.E. is building a long-term international network of institutions committed to academic excellence. Our partners play a direct role in identifying, supporting, and recognizing exceptional student talent.</p>
+              <p>G.A.T.E. is building a long-term international network of institutions committed to rigorous academic assessment and educational excellence. Our partners play a direct role in providing students with diagnostic evaluation opportunities and supporting their academic development through meaningful recognition.</p>
               <p>From facilitating registrations to hosting examination centers, G.A.T.E. partnership is designed to be meaningful — not ceremonial.</p>
             </div>
           </div>
