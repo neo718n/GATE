@@ -429,7 +429,7 @@ User roles in the system:
 - `question_provider` - Exam question contributor
 
 ### cycleStatusEnum
-Competition cycle status:
+Assessment cycle status:
 - `planning` - Initial planning phase
 - `registration_open` - Accepting registrations
 - `active` - Cycle in progress
@@ -635,7 +635,7 @@ Email verification and password reset tokens.
 ## Domain Tables
 
 ### cycles
-Competition cycles (annual events).
+Assessment cycles (annual events).
 
 **Columns:**
 - `id` (serial, PK) - Cycle identifier
@@ -726,7 +726,7 @@ Many-to-many junction table linking cycles to subjects.
 ---
 
 ### participants
-Registered competition participants.
+Registered assessment participants.
 
 **Columns:**
 - `id` (serial, PK) - Participant identifier
@@ -783,7 +783,7 @@ Many-to-many junction table linking participants to subjects.
 ---
 
 ### results
-Participant competition results.
+Participant assessment results.
 
 **Columns:**
 - `id` (serial, PK) - Result identifier
