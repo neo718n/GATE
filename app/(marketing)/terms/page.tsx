@@ -42,8 +42,8 @@ const SECTIONS = [
     title: "Visa, Travel, and Entry",
     content: [
       "Participants selected for the Global Onsite Assessment are solely responsible for obtaining all travel documentation necessary to enter the host country for their edition, including any required visas, passport validity requirements, and health documentation.",
-      "G.A.T.E. will issue an official invitation letter to finalists upon request to support visa applications. The issuance of an invitation letter does not constitute a guarantee of visa approval by any governmental authority.",
-      "A visa denial, travel restriction, illness, or any other circumstance preventing a finalist from attending Phase II does not entitle the participant to a refund of the registration fee, an alternative assessment pathway, or any form of compensation.",
+      "G.A.T.E. will issue an official invitation letter to selected participants upon request to support visa applications. The issuance of an invitation letter does not constitute a guarantee of visa approval by any governmental authority.",
+      "A visa denial, travel restriction, illness, or any other circumstance preventing a selected participant from attending Phase II does not entitle the participant to a refund of the registration fee, an alternative assessment pathway, or any form of compensation.",
       "G.A.T.E. is not responsible for costs incurred in connection with travel arrangements that cannot be fulfilled due to program modification, postponement, or cancellation.",
     ],
   },
@@ -53,7 +53,7 @@ const SECTIONS = [
     content: [
       "All examination content — including questions, problems, answer structures, scoring criteria, and assessment methodologies — is the exclusive intellectual property of G.A.T.E. Assessment. All rights are reserved.",
       "Participants must not reproduce, photograph, record, transcribe, share, publish, or distribute any examination content in any form or medium, whether during or after the examination period. Violation constitutes both academic misconduct and an infringement of G.A.T.E.'s intellectual property rights.",
-      "Certificates and medals issued to participants are provided for personal use and recognition only. G.A.T.E. retains the right to verify the authenticity of all credentials and to revoke certificates or medals in cases of fraud, misconduct, or material breach of these Terms.",
+      "Certificates issued to participants are provided for personal use and recognition only. G.A.T.E. retains the right to verify the authenticity of all credentials and to revoke certificates in cases of fraud, misconduct, or material breach of these Terms.",
       "Examination responses and answer submissions become the property of G.A.T.E. and may be retained, reviewed, and used for the purposes of scoring, quality assurance, academic research, and program improvement, without additional compensation to the participant.",
     ],
   },
@@ -138,7 +138,7 @@ export default function TermsPage() {
           <p className="text-sm font-light text-gate-800/65 leading-[1.9] pb-12 border-b border-gate-fog/60">
             Please read these Terms of Participation carefully before registering. They set out the binding
             legal relationship between you and G.A.T.E. Assessment, including your obligations as a participant,
-            the scope of our liability, your rights with respect to fees and awards, and the process for
+            the scope of our liability, your rights with respect to fees and credentials, and the process for
             resolving disputes. Registration constitutes unconditional acceptance of these Terms.
           </p>
 
