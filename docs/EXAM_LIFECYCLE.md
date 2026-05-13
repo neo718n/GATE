@@ -232,7 +232,7 @@ Authorized users create a new exam with initial configuration:
 
 // Optional fields
 - subjectId: integer (links to a specific subject)
-- roundId: integer (links to a competition round)
+- roundId: integer (links to an assessment round)
 - durationMinutes: integer
 - windowStart: timestamp
 - windowEnd: timestamp
@@ -812,7 +812,7 @@ type: "exam"
 - **Purpose:** Official evaluation
 - **Attempts:** One per participant
 - **Completion:** Status becomes `"submitted"`, no retries
-- **Use Case:** Competition rounds, placement tests
+- **Use Case:** Assessment rounds, placement tests
 
 ### Practice (Training Mode)
 
@@ -1025,7 +1025,7 @@ if (dbSession.deadlineAt && now > dbSession.deadlineAt) {
 | Practice | `null` | Unlimited time for self-paced learning |
 | Short Quiz | 15-30 min | Quick assessments |
 | Standard Exam | 60-120 min | Official evaluations |
-| Competition Round | 180+ min | Multi-section competitions |
+| Assessment Round | 180+ min | Multi-section assessments |
 
 **Time Window vs Duration:**
 
