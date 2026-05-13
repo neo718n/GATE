@@ -73,7 +73,7 @@ export default async function CyclesPage() {
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Admin</span>
         <h1 className="font-serif text-4xl font-light text-foreground">Assessment Cycles</h1>
         <p className="text-sm font-light text-foreground/60 mt-1">
-          Create and manage competition cycles, rounds, subjects, and participant results.
+          Create and manage assessment cycles, rounds, subjects, and participant results.
         </p>
       </div>
 
