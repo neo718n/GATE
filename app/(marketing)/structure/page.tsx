@@ -19,20 +19,20 @@ const PHASES = [
       { label: "Mode", value: "Online, remotely proctored" },
       { label: "Eligibility", value: "Open to all qualifying students worldwide" },
       { label: "Subjects", value: "Mathematics, Physics, Chemistry, Biology, Competitive Programming, English" },
-      { label: "Outcome", value: "Top scorers per subject advance to the Global Final" },
+      { label: "Outcome", value: "Top-performing participants per subject advance to the Global Final" },
     ],
   },
   {
     phase: "Phase II",
     label: "Global Onsite Assessment",
     description:
-      "Finalists are invited to compete in person at the edition's designated host venue. The onsite assessment features more advanced theoretical problems, collaboration events, and a formal awards ceremony.",
+      "Finalists are invited to participate in person at the edition's designated host venue. The onsite assessment features more advanced theoretical problems, collaboration events, and a formal awards ceremony.",
     details: [
       { label: "Location", value: "Announced per edition" },
       { label: "Format", value: "Onsite theoretical examination + awards ceremony" },
       { label: "Eligibility", value: "Invitation only — top performers from Phase I" },
       { label: "Hospitality", value: "Accommodation and local transport arrangements provided for finalists" },
-      { label: "Outcome", value: "Gold, Silver, Bronze medals awarded per subject" },
+      { label: "Outcome", value: "Certificates of Distinction, High Achievement, and Merit awarded per subject" },
     ],
   },
 ];
@@ -42,7 +42,7 @@ const TIMELINE = [
   { period: "Preliminary Round", detail: "Online examination across all subject areas" },
   { period: "Results Announced", detail: "Phase I results published; finalists notified" },
   { period: "Global Onsite Assessment", detail: "In-person finals at the edition's host venue" },
-  { period: "Awards Ceremony", detail: "Medal presentation and closing celebration" },
+  { period: "Awards Ceremony", detail: "Certificate presentation and closing celebration" },
 ];
 
 export default function StructurePage() {
