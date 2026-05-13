@@ -172,16 +172,20 @@ export const auth = betterAuth({
       create: {
         async after(user) {
           try {
-            const firstName = user.firstName || "";
-            const lastName = user.lastName || "";
+            const firstName = (user.firstName as string) || "";
+            const lastName = (user.lastName as string) || "";
             const fullName = `${firstName} ${lastName}`.trim() || "Unnamed Participant";
+            const country = (user.country as string) || "Not specified";
+            const phone = (user.phone as string) || null;
 
-            await db.insert(participants).values({
+            const participantData: typeof participants.$inferInsert = {
               userId: user.id,
-              fullName,
-              country: user.country || "Not specified",
-              phone: user.phone,
-            });
+              fullName: fullName,
+              country: country,
+              phone: phone,
+            };
+
+            await db.insert(participants).values(participantData);
           } catch (error) {
             console.error("Failed to create participant record for user:", user.id, error);
           }

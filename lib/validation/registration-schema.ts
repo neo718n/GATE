@@ -104,7 +104,7 @@ export const registrationSchema = z.object({
 
   gender: z
     .enum(genderValues, {
-      errorMap: () => ({ message: "Gender must be one of: male, female, prefer_not_to_say" }),
+      message: "Gender must be one of: male, female, prefer_not_to_say",
     }),
 });
 
