@@ -14,7 +14,7 @@ const SECTIONS = [
       "Participation in the G.A.T.E. Assessment is open to any student who, at the time of the Preliminary Round, is currently enrolled in secondary or pre-university education (equivalent to grades 9–12) and is between the ages of 14 and 19. Students in their final year of secondary education are eligible regardless of age at the time of application.",
       "There are no restrictions on nationality, country of residence, language background, or institutional affiliation. Homeschooled students are eligible provided they can supply documentation confirming active secondary-level enrollment.",
       "Each participant must register individually and in exactly one (1) subject area. No participant may register in more than one discipline per assessment cycle. Subject selection is final upon registration confirmation and cannot be altered under any circumstances.",
-      "G.A.T.E. reserves the right to verify eligibility at any stage of the program. Participants who are found to be ineligible — at any point before, during, or after the assessment — will be disqualified, and any awards or certificates issued will be revoked.",
+      "G.A.T.E. reserves the right to verify eligibility at any stage of the program. Participants who are found to be ineligible — at any point before, during, or after the assessment — will be disqualified, and any recognition or certificates issued will be revoked.",
     ],
   },
   {
@@ -59,12 +59,12 @@ const SECTIONS = [
   },
   {
     number: "06",
-    title: "Awards and Certificates",
+    title: "Recognition and Certificates",
     content: [
-      "Awards — including Gold Medal, Silver Medal, Bronze Medal, Honorable Mention, and Certificate of Participation — are issued solely at G.A.T.E.'s discretion based on final scores and performance thresholds. G.A.T.E. does not guarantee that any specific award level will be awarded in any given cycle.",
-      "Award decisions are final and not subject to appeal or external review.",
-      "Phase II participants receive physical medals and certificates at the awards ceremony. Participants who do not attend Phase II but are otherwise eligible for recognition will receive digital certificates. Certificate authenticity can be verified through the G.A.T.E. credential verification portal.",
-      "G.A.T.E. reserves the right to revoke any award or certificate if, at any time, it is determined that the participant engaged in academic misconduct, provided false information, or violated these Rules.",
+      "Recognition — including Certificate of Distinction, Certificate of High Achievement, Certificate of Merit, Honorable Mention, and Certificate of Participation — is issued solely at G.A.T.E.'s discretion based on final scores and performance thresholds. G.A.T.E. does not guarantee that any specific recognition level will be awarded in any given cycle.",
+      "Recognition decisions are final and not subject to appeal or external review.",
+      "Phase II participants receive physical certificates at the recognition ceremony. Participants who do not attend Phase II but are otherwise eligible for recognition will receive digital certificates. Certificate authenticity can be verified through the G.A.T.E. credential verification portal.",
+      "G.A.T.E. reserves the right to revoke any certificate or recognition if, at any time, it is determined that the participant engaged in academic misconduct, provided false information, or violated these Rules.",
     ],
   },
   {
