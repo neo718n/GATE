@@ -112,9 +112,9 @@ export function ResultsForm({ allParticipants, allSubjects, allCycles }: Results
             className="flex h-11 w-full border border-border bg-input px-3 py-2 text-sm font-light text-foreground focus-visible:outline-none focus-visible:border-gate-gold rounded-none"
           >
             <option value="">No award</option>
-            <option value="gold">Gold Medal</option>
-            <option value="silver">Silver Medal</option>
-            <option value="bronze">Bronze Medal</option>
+            <option value="gold">Certificate of Distinction</option>
+            <option value="silver">Certificate of High Achievement</option>
+            <option value="bronze">Certificate of Merit</option>
             <option value="honorable_mention">Honorable Mention</option>
             <option value="participation">Participation</option>
           </select>
