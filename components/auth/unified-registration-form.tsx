@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Fragment } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signUp, authClient, signIn } from "@/lib/auth-client";
+import { registerUser } from "@/lib/actions/auth-actions";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -182,21 +183,33 @@ export function UnifiedRegistrationForm() {
     setPending(true);
 
     try {
-      const { error: err } = await signUp.email({
-        email: form.email,
-        password: form.password,
-        name: `${form.firstName} ${form.lastName}`.trim(),
-        firstName: form.firstName,
-        lastName: form.lastName,
-        country: form.country,
-      } as Parameters<typeof signUp.email>[0]);
+      // Combine phoneCode + phone into E.164 format
+      const fullPhone = `${form.phoneCode}${form.phone}`.replace(/\s/g, '');
 
-      if (err) {
-        setError(err.message ?? "Registration failed. Please try again.");
+      // Create FormData for server action
+      const formData = new FormData();
+      formData.append("email", form.email);
+      formData.append("password", form.password);
+      formData.append("firstName", form.firstName);
+      formData.append("lastName", form.lastName);
+      formData.append("country", form.country);
+      formData.append("phone", fullPhone);
+      formData.append("city", form.city);
+      formData.append("school", form.school);
+      formData.append("grade", form.grade);
+      formData.append("dateOfBirth", form.dateOfBirth);
+      formData.append("gender", form.gender);
+
+      // ✓ FIX: Call server action instead of signUp.email directly
+      const result = await registerUser(formData);
+
+      if (!result.success) {
+        setError(result.error ?? "Registration failed. Please try again.");
         setPending(false);
         return;
       }
 
+      // Send OTP verification email
       await authClient.emailOtp.sendVerificationOtp({
         email: form.email,
         type: "email-verification",
