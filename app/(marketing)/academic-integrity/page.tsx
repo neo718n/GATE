@@ -21,7 +21,7 @@ const VIOLATIONS = [
 
 const CONSEQUENCES = [
   "Immediate disqualification from the current G.A.T.E. Assessment cycle, with no refund of the registration fee",
-  "Cancellation and permanent revocation of any awards, medals, or certificates issued in connection with the affected cycle",
+  "Cancellation and permanent revocation of any recognition, distinctions, or certificates issued in connection with the affected cycle",
   "A temporary or permanent ban from participating in future G.A.T.E. Assessment cycles, at G.A.T.E.'s sole discretion",
   "Notification of the participant's school or institution, at G.A.T.E.'s discretion, where the misconduct warrants institutional awareness",
   "Referral to relevant law enforcement or regulatory authorities where the conduct may constitute a criminal offense under applicable law",
@@ -33,7 +33,7 @@ const SECTIONS = [
     number: "01",
     title: "Our Commitment",
     content: [
-      "Academic integrity is the foundation of the G.A.T.E. Assessment. The value of a G.A.T.E. certificate, medal, or recognition depends entirely on the trust that participants, institutions, universities, and academic partners place in the credibility of our process.",
+      "Academic integrity is the foundation of the G.A.T.E. Assessment. The value of a G.A.T.E. certificate or recognition depends entirely on the trust that participants, institutions, universities, and academic partners place in the credibility of our process.",
       "G.A.T.E. Assessment is committed to maintaining the highest standards of fairness, transparency, and independent verification across every phase of the program. We invest in examination design, independent evaluation, and proctoring systems precisely to ensure that every result accurately reflects the individual merit of the participant.",
       "Every person who registers for and participates in the G.A.T.E. Assessment accepts a personal obligation to uphold these standards — not only because it is required, but because the integrity of the program belongs to the entire community of participants.",
     ],
@@ -110,7 +110,7 @@ const SECTIONS = [
       "I will not access, share, or distribute examination content in any form.",
       "All personal information I have provided during registration is accurate and truthful.",
       "I understand the standards of academic integrity required by G.A.T.E. Assessment, and I accept the consequences that may result from any violation.",
-      "This declaration is not merely procedural — it is a personal commitment to the academic community and to all participants who compete under the same conditions.",
+      "This declaration is not merely procedural — it is a personal commitment to the academic community and to all participants who take the assessment under the same conditions.",
     ],
   },
 ];
