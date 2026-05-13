@@ -39,10 +39,19 @@ const FAQS = [
   {
     section: "Results & Integrity",
     items: [
-      { q: "How are results determined?", a: "Examinations are independently scored by subject-matter experts. Scores are calculated based on accuracy, method, and proof quality. Rankings are determined per discipline." },
+      { q: "How are results determined?", a: "Examinations are independently scored by subject-matter experts. Scores are calculated based on accuracy, method, and proof quality. Performance is evaluated against established academic standards per discipline." },
       { q: "How are Round II participants selected?", a: "Participants who achieve a score at or above the qualifying threshold in Round I receive an official invitation to the Global Onsite Assessment. The threshold is determined per cycle." },
       { q: "What constitutes academic misconduct?", a: "Any form of external assistance during examination, impersonation, unauthorized materials, or communication with other participants. Violations result in immediate disqualification." },
       { q: "How can I verify my certificate?", a: "All certificates include a unique verification code. Certificates can be verified through the G.A.T.E. platform using this code." },
+    ],
+  },
+  {
+    section: "China Compliance",
+    items: [
+      { q: "Is this program compliant with China's regulations on academic competitions?", a: "Yes. G.A.T.E. is structured as a diagnostic educational assessment program, not an academic competition. China's regulations target competitive olympiad-style programs that rank students for admission advantages. Our program does not rank participants competitively, does not determine winners/losers, and does not provide admission linkage or recruitment pathways. All participants receive educational feedback and certificates documenting their individual performance." },
+      { q: "Can students from China participate?", a: "Yes. Students from China and all other countries are eligible to participate in G.A.T.E. as an educational assessment program. Participation is voluntary, and the program is designed to complement formal education through diagnostic feedback and skill evaluation." },
+      { q: "Does this program provide admission advantages?", a: "No. G.A.T.E. does not coordinate with universities for admissions, does not provide recruitment pathways, and does not guarantee admission advantages. Certificates of distinction are academic credentials documenting individual achievement, similar to course completion certificates or standardized test score reports." },
+      { q: "What kind of recognition do participants receive?", a: "All participants receive a Certificate of Completion and detailed performance report. Outstanding performance receives additional academic recognition through Certificates of Distinction (Top 5%), High Achievement (Top 15%), or Merit (Top 30%). These are academic honors recognizing individual excellence within the diagnostic framework — not competitive prizes." },
     ],
   },
 ];
@@ -58,12 +67,13 @@ export default function AcademicInfoPage() {
       </section>
 
       <section className="py-12 px-6 bg-gate-fog/40 border-b border-gate-fog/60">
-        <div className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-4 gap-px bg-border/30">
+        <div className="mx-auto max-w-7xl grid grid-cols-2 md:grid-cols-5 gap-px bg-border/30">
           {[
             { label: "Eligibility", href: "#eligibility" },
             { label: "Registration", href: "#registration" },
             { label: "Exam Format", href: "#examination-format" },
             { label: "Results & Integrity", href: "#results-integrity" },
+            { label: "China Compliance", href: "#china-compliance" },
           ].map((item) => (
             <a key={item.label} href={item.href} className="flex items-center justify-center bg-gate-white px-6 py-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray hover:text-gate-gold transition-colors">
               {item.label}
