@@ -55,8 +55,8 @@ export default async function CertificatesPage() {
             No Certificates Issued
           </p>
           <p className="text-sm font-light text-foreground/65 leading-[1.9]">
-            Certificates are issued after results are published. A Certificate of Participation will
-            be issued to all participants who complete the Preliminary Round.
+            Certificates are issued after results are published. A Certificate of Completion is
+            issued to every participant who completes the program.
           </p>
         </div>
       ) : (

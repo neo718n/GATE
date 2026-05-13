@@ -29,15 +29,15 @@ const MEDALS = [
   {
     tier: "Honorable Mention",
     hex: "#2B5591",
-    eligibility: "Notable performance — onsite final participants",
+    eligibility: "Notable performance — recognized in performance reports",
     desc: "Awarded to participants who demonstrate exceptional ability in specific problem areas or show outstanding effort relative to performance.",
   },
 ];
 
 const CERTIFICATES = [
-  { title: "Certificate of Excellence", desc: "Issued to all medal and Honorable Mention recipients at the Global Final. Includes medal tier, subject, and academic year." },
-  { title: "Certificate of Participation", desc: "Issued to all participants who complete the Preliminary Round. Verifiable and suitable for academic portfolios and university applications." },
-  { title: "Certificate of Qualification", desc: "Issued to participants who qualify for Round II. Confirms successful completion of the global qualification stage." },
+  { title: "Certificate of Completion", desc: "Issued to every participant who completes their program. Verifiable, includes program name, subject, and academic year — suitable for academic portfolios and university applications." },
+  { title: "Camp Experience Certificate", desc: "Additional certificate for Hangzhou Camp participants documenting the 7-day onsite educational program at Xidian University." },
+  { title: "Distinction Certificate", desc: "Issued to outstanding performers — Top 5% Academic Distinction, Top 15% Honors, Top 30% Merit. Recognizes individual academic achievement." },
 ];
 
 export default function AwardsPage() {
@@ -122,7 +122,7 @@ export default function AwardsPage() {
       <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="font-serif text-4xl font-light text-gate-800">Begin Your Path to Recognition</h2>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. The top performers earn medals at the invitation-only Global Final.</p>
+          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Register for G.A.T.E. Academic Programs. Every participant receives a detailed performance report and a Certificate of Completion. Outstanding performance is recognized with academic distinction.</p>
           <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
         </div>
       </section>

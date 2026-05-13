@@ -12,8 +12,8 @@ const FAQS = [
   {
     section: "Eligibility",
     items: [
-      { q: "Who can participate in G.A.T.E.?", a: "Any student currently enrolled in secondary or pre-university education (equivalent to grades 9–12 or ages 14–19). There are no nationality, language, or geographic restrictions." },
-      { q: "Is there an age limit?", a: "Participants must be 14–19 years of age at the time of the Preliminary Round. Students currently enrolled in the final year of secondary school are eligible regardless of age if they meet the academic criteria." },
+      { q: "Who can participate in G.A.T.E.?", a: "Any student in Grades 1–12 worldwide. There are no nationality, language, or geographic restrictions. The two programs (Online Diagnostic and Hangzhou Camp) are independent — you may register for either, both, or neither." },
+      { q: "Is there an age limit?", a: "Programs are open to students in Grades 1–12. Participants under 18 require parental or guardian consent. For the Hangzhou camp, a valid passport is also required." },
       { q: "Can a student participate in more than one subject?", a: "No. Each participant registers in a single subject area. Subject selection is made during the registration process and cannot be changed after submission." },
       { q: "Are homeschooled students eligible?", a: "Yes. Students who are homeschooled or enrolled in non-traditional academic programs may participate if they can provide documentation of secondary-level academic enrollment." },
     ],
@@ -30,8 +30,8 @@ const FAQS = [
   {
     section: "Examination Format",
     items: [
-      { q: "What format does Round I take?", a: "Round I is a theory-based written examination conducted online. It consists of structured problems requiring written solutions, proofs, and analytical reasoning. Duration varies by subject." },
-      { q: "What format does Round II take?", a: "Round II is conducted in-person at the edition's designated host venue. It uses university examination conditions — supervised, timed, written. The format is comparable to international assessment standards." },
+      { q: "What format does the Online Diagnostic Assessment take?", a: "A theory-based written assessment conducted online under supervised conditions. It consists of structured problems requiring written solutions, proofs, and analytical reasoning. Duration varies by subject and grade level." },
+      { q: "What format does the Hangzhou Camp take?", a: "A 7-day onsite educational program at Xidian University, Hangzhou. It combines faculty lectures, workshops, a diagnostic academic evaluation, cultural excursions, and a closing ceremony — all under university examination standards." },
       { q: "Are calculators or reference materials allowed?", a: "No. Examinations at both stages are conducted without calculators or reference materials. This is a theoretical assessment; solutions must be derived from first principles." },
       { q: "In what language are the examinations?", a: "Examinations are available in English. Additional language versions may be provided for specific regions — confirmed during the registration cycle." },
     ],
@@ -40,7 +40,7 @@ const FAQS = [
     section: "Results & Integrity",
     items: [
       { q: "How are results determined?", a: "Examinations are independently scored by subject-matter experts. Scores are calculated based on accuracy, method, and proof quality. Rankings are determined per discipline." },
-      { q: "How are Round II participants selected?", a: "Participants who achieve a score at or above the qualifying threshold in Round I receive an official invitation to the Global Onsite Assessment. The threshold is determined per cycle." },
+      { q: "How do I join the Hangzhou Camp?", a: "Registration for the Hangzhou Academic Training Camp is direct and independent of the online program. You apply, pay the program tuition, and complete the camp registration form (passport, parental consent, dietary needs)." },
       { q: "What constitutes academic misconduct?", a: "Any form of external assistance during examination, impersonation, unauthorized materials, or communication with other participants. Violations result in immediate disqualification." },
       { q: "How can I verify my certificate?", a: "All certificates include a unique verification code. Certificates can be verified through the G.A.T.E. platform using this code." },
     ],

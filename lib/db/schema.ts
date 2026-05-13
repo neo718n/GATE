@@ -262,6 +262,12 @@ export const participants = pgTable("participants", {
   paymentStatus: paymentStatusEnum("payment_status")
     .notNull()
     .default("unpaid"),
+  // Camp-specific (only populated when registered for onsite camp)
+  passportNumber: text("passport_number"),
+  passportExpiry: date("passport_expiry"),
+  parentalConsent: boolean("parental_consent").notNull().default(false),
+  dietaryNeeds: text("dietary_needs"),
+  emergencyContact: text("emergency_contact"),
   notes: text("notes"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),

@@ -12,12 +12,12 @@ function dollarsFromCents(cents: number) {
 }
 
 const SUBJECTS = [
-  { code: "MAT", name: "Mathematics", desc: "Algebra, analysis, combinatorics, geometry, number theory" },
-  { code: "PHY", name: "Physics", desc: "Classical mechanics, electrodynamics, thermodynamics, optics" },
-  { code: "CHM", name: "Chemistry", desc: "Organic, inorganic, physical and analytical chemistry" },
-  { code: "BIO", name: "Biology", desc: "Molecular biology, genetics, biochemistry, cell biology" },
-  { code: "CP", name: "Competitive Programming", desc: "Algorithms, data structures, computational problem-solving" },
-  { code: "ENG", name: "English", desc: "Academic English — reading, writing, language analysis" },
+  { code: "MAT", slug: "mathematics", name: "Mathematics", desc: "Algebra, analysis, combinatorics, geometry, number theory" },
+  { code: "PHY", slug: "physics", name: "Physics", desc: "Classical mechanics, electrodynamics, thermodynamics, optics" },
+  { code: "CHM", slug: "chemistry", name: "Chemistry", desc: "Organic, inorganic, physical and analytical chemistry" },
+  { code: "BIO", slug: "biology", name: "Biology", desc: "Molecular biology, genetics, biochemistry, cell biology" },
+  { code: "CP", slug: "competitive-programming", name: "Competitive Programming", desc: "Algorithms, data structures, computational problem-solving" },
+  { code: "ENG", slug: "english", name: "English", desc: "Academic English — reading, writing, language analysis" },
 ];
 
 const STEPS = [
@@ -27,7 +27,14 @@ const STEPS = [
   { n: "04", title: "Earn Your Certificate", desc: "Receive your Certificate of Completion and any awarded distinctions." },
 ];
 
-export function OnlineProgramSection({ round }: { round: Round | undefined }) {
+export function OnlineProgramSection({
+  round,
+  availableSubjectSlugs,
+}: {
+  round: Round | undefined;
+  availableSubjectSlugs: string[];
+}) {
+  const openSet = new Set(availableSubjectSlugs);
   return (
     <section id="online-program" className="bg-background border-b border-border">
       {/* INTRO */}
@@ -113,13 +120,30 @@ export function OnlineProgramSection({ round }: { round: Round | undefined }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
-          {SUBJECTS.map((s) => (
-            <div key={s.code} className="flex flex-col gap-3 bg-card p-8 hover:bg-muted/30 transition-colors">
-              <span className="text-[9px] font-semibold tracking-[0.35em] text-gate-gold">{s.code}</span>
-              <span className="font-serif text-xl font-light text-foreground">{s.name}</span>
-              <span className="text-[11px] font-light text-foreground/45 leading-relaxed">{s.desc}</span>
-            </div>
-          ))}
+          {SUBJECTS.map((s) => {
+            const isOpen = openSet.has(s.slug);
+            return (
+              <div
+                key={s.code}
+                className={`flex flex-col gap-3 bg-card p-8 transition-colors ${isOpen ? "hover:bg-muted/30" : "opacity-65"}`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-[9px] font-semibold tracking-[0.35em] text-gate-gold">{s.code}</span>
+                  {isOpen ? (
+                    <span className="text-[8px] font-semibold uppercase tracking-[0.25em] text-emerald-700 dark:text-emerald-400 border border-emerald-700/30 dark:border-emerald-400/30 px-2 py-0.5">
+                      Open
+                    </span>
+                  ) : (
+                    <span className="text-[8px] font-semibold uppercase tracking-[0.25em] text-foreground/40 border border-foreground/15 px-2 py-0.5">
+                      Coming Soon
+                    </span>
+                  )}
+                </div>
+                <span className="font-serif text-xl font-light text-foreground">{s.name}</span>
+                <span className="text-[11px] font-light text-foreground/45 leading-relaxed">{s.desc}</span>
+              </div>
+            );
+          })}
         </div>
 
         <div className="flex justify-center mt-12">

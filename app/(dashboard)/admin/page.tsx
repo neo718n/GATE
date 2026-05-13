@@ -67,7 +67,7 @@ export default async function AdminDashboard() {
           },
           {
             title: "Results Publishing",
-            desc: "Input and publish Round I and Round II results. Manage score uploads and ranking calculations per discipline.",
+            desc: "Input and publish results for both programs. Manage score uploads and rankings per discipline.",
             href: "/admin/results",
             action: "Manage Results",
           },

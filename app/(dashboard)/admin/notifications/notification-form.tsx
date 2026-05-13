@@ -111,7 +111,7 @@ export function NotificationForm({ cycles }: { cycles: Cycle[] }) {
         <Input
           id="subject"
           name="subject"
-          placeholder="e.g. Important update about Round II"
+          placeholder="e.g. Important update about the Hangzhou Camp"
           required
         />
       </div>

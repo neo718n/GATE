@@ -122,9 +122,9 @@ export default function SubjectsPage() {
             Choose Your Discipline
           </h2>
           <p className="text-sm font-light text-gate-800/65 leading-relaxed">
-            Each participant registers in a single subject area for the
-            Preliminary Round. Your subject selection is made during the
-            application process and cannot be changed after submission.
+            Each participant registers in a single subject area per program.
+            Your subject selection is made during the application process and
+            cannot be changed after submission.
           </p>
           <div className="flex flex-wrap justify-center gap-4 mt-2">
             <Button variant="gold" size="lg" asChild>

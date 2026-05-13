@@ -9,9 +9,8 @@ const LIGHT = "#f5f5f5";
 const s = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: DARK, backgroundColor: "#ffffff" },
   topBar: { backgroundColor: GOLD, height: 5 },
-  body: { padding: "28 44 60 44" },
+  body: { padding: "28 44 70 44" },
 
-  // Header
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 },
   brandName: { fontSize: 20, fontFamily: "Helvetica-Bold", color: DARK, letterSpacing: 2 },
   brandSub: { fontSize: 7, color: MUTED, marginTop: 3 },
@@ -21,27 +20,24 @@ const s = StyleSheet.create({
 
   divider: { borderBottomWidth: 1, borderBottomColor: BORDER, marginBottom: 20 },
 
-  // Two-column: recipient + meta box
   topSection: { flexDirection: "row", justifyContent: "space-between", marginBottom: 24 },
 
-  // Recipient (left)
   recipientBlock: { flex: 1, paddingRight: 20 },
   recipientLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, marginBottom: 6, textTransform: "uppercase" },
   recipientName: { fontSize: 11, fontFamily: "Helvetica-Bold", color: DARK, marginBottom: 3 },
   recipientLine: { fontSize: 9, color: MUTED, marginBottom: 2 },
 
-  // Meta box (right)
-  metaBox: {
-    width: 200,
-    borderWidth: 1,
-    borderColor: BORDER,
-  },
+  metaBox: { width: 200, borderWidth: 1, borderColor: BORDER },
   metaRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
   metaRowLast: { flexDirection: "row" },
   metaKey: { flex: 1, fontSize: 8, color: MUTED, padding: "7 10", borderRightWidth: 1, borderRightColor: BORDER },
   metaVal: { flex: 1.2, fontSize: 8, fontFamily: "Helvetica-Bold", color: DARK, padding: "7 10" },
 
-  // Table
+  soldByBlock: { borderWidth: 1, borderColor: BORDER, padding: "10 14", marginBottom: 24 },
+  soldByLabel: { fontSize: 7, fontFamily: "Helvetica-Bold", color: MUTED, letterSpacing: 1, marginBottom: 4, textTransform: "uppercase" },
+  soldByName: { fontSize: 9, fontFamily: "Helvetica-Bold", color: DARK },
+  soldByLine: { fontSize: 8, color: MUTED, marginTop: 1 },
+
   table: { borderWidth: 1, borderColor: BORDER, marginBottom: 0 },
   tableHead: { flexDirection: "row", backgroundColor: LIGHT, borderBottomWidth: 1, borderBottomColor: BORDER },
   tableRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
@@ -63,8 +59,8 @@ const s = StyleSheet.create({
   td: { fontSize: 9, color: DARK },
   tdRight: { fontSize: 9, color: DARK, textAlign: "right" },
   tdSub: { fontSize: 7.5, color: MUTED, marginTop: 2 },
+  tdSubItalic: { fontSize: 7, color: GOLD, marginTop: 2, fontFamily: "Helvetica-Oblique" },
 
-  // Totals below table
   totalsSection: { flexDirection: "row", justifyContent: "flex-end", marginTop: 0 },
   totalsBox: { width: 280, borderWidth: 1, borderTopWidth: 0, borderColor: BORDER },
   totRow: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
@@ -74,41 +70,23 @@ const s = StyleSheet.create({
   totKeyBold: { flex: 1, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff", padding: "8 10", borderRightWidth: 1, borderRightColor: "#444" },
   totValBold: { width: 72, fontSize: 9, fontFamily: "Helvetica-Bold", color: "#ffffff", textAlign: "right", padding: "8 8" },
 
-  // Paid notice
   noticeSection: { marginTop: 24, borderWidth: 1, borderColor: BORDER, padding: "12 16", flexDirection: "row", alignItems: "center" },
   noticeText: { fontSize: 9, color: DARK, flex: 1 },
   noticeBold: { fontFamily: "Helvetica-Bold" },
-  paidStamp: {
-    borderWidth: 2,
-    borderColor: "#166534",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginLeft: 16,
-  },
+  paidStamp: { borderWidth: 2, borderColor: "#166534", paddingHorizontal: 10, paddingVertical: 5, marginLeft: 16 },
   paidText: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#166534", letterSpacing: 1 },
-  pendingStamp: {
-    borderWidth: 2,
-    borderColor: "#92400e",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginLeft: 16,
-  },
+  pendingStamp: { borderWidth: 2, borderColor: "#92400e", paddingHorizontal: 10, paddingVertical: 5, marginLeft: 16 },
   pendingText: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#92400e", letterSpacing: 1 },
 
-  // Footer
   footer: {
-    position: "absolute",
-    bottom: 24,
-    left: 44,
-    right: 44,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    paddingTop: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    position: "absolute", bottom: 18, left: 44, right: 44,
+    borderTopWidth: 1, borderTopColor: BORDER, paddingTop: 8,
+    flexDirection: "column", gap: 3,
   },
+  footerRow: { flexDirection: "row", justifyContent: "space-between" },
   footerText: { fontSize: 7.5, color: MUTED },
   footerGold: { fontSize: 7.5, color: GOLD },
+  footerOperator: { fontSize: 6.5, color: MUTED, textAlign: "center", marginTop: 2 },
 });
 
 interface InvoiceProps {
@@ -117,13 +95,28 @@ interface InvoiceProps {
   participant: { name: string; email: string; country: string };
   cycle: string;
   round?: string;
+  programDates?: string;
+  subject?: string;
+  venue?: string;
+  isCamp?: boolean;
   amountCents: number;
   status: string;
 }
 
-export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round, amountCents, status }: InvoiceProps) {
+export function InvoicePDF({
+  invoiceNumber, issuedAt, participant, cycle, round,
+  programDates, subject, venue, isCamp,
+  amountCents, status,
+}: InvoiceProps) {
   const amount = `$${(amountCents / 100).toFixed(2)}`;
   const isPaid = status === "paid";
+
+  const programLine = round ?? "Registration Fee";
+  const metaParts = [cycle];
+  if (programDates) metaParts.push(programDates);
+  if (subject) metaParts.push(`Subject: ${subject}`);
+  if (venue && isCamp) metaParts.push(venue);
+  const programSub = metaParts.join(" · ");
 
   return (
     <Document>
@@ -131,11 +124,10 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
         <View style={s.topBar} />
 
         <View style={s.body}>
-          {/* Header */}
           <View style={s.header}>
             <View>
               <Text style={s.brandName}>G.A.T.E.</Text>
-              <Text style={s.brandSub}>Global Assessment {"&"} Testing for Excellence</Text>
+              <Text style={s.brandSub}>International Academic Programs</Text>
               <Text style={s.brandSite}>gate-assessment.org</Text>
             </View>
             <View>
@@ -146,7 +138,6 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
 
           <View style={s.divider} />
 
-          {/* Recipient + Meta Box */}
           <View style={s.topSection}>
             <View style={s.recipientBlock}>
               <Text style={s.recipientLabel}>Bill To</Text>
@@ -175,9 +166,14 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
             </View>
           </View>
 
-          {/* Line Items Table */}
+          <View style={s.soldByBlock}>
+            <Text style={s.soldByLabel}>Sold By</Text>
+            <Text style={s.soldByName}>Chongqing Xinshijie Technology Service Co., LTD</Text>
+            <Text style={s.soldByLine}>support@gate-assessment.org</Text>
+            <Text style={s.soldByLine}>gate-assessment.org</Text>
+          </View>
+
           <View style={s.table}>
-            {/* Head */}
             <View style={s.tableHead}>
               <View style={s.thItem}><Text style={s.th}>#</Text></View>
               <View style={s.thDesc}><Text style={s.th}>Description</Text></View>
@@ -186,12 +182,16 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
               <View style={s.thTotal}><Text style={s.thRight}>Total (USD)</Text></View>
             </View>
 
-            {/* Row */}
             <View style={s.tableRowLast}>
               <View style={s.tdItem}><Text style={s.td}>1</Text></View>
               <View style={s.tdDesc}>
-                <Text style={s.td}>Registration Fee</Text>
-                <Text style={s.tdSub}>{cycle}{round ? ` – ${round}` : ""}</Text>
+                <Text style={s.td}>{programLine}</Text>
+                <Text style={s.tdSub}>{programSub}</Text>
+                {isCamp && (
+                  <Text style={s.tdSubItalic}>
+                    All-inclusive: dormitory, three meals daily, lectures, cultural program.
+                  </Text>
+                )}
               </View>
               <View style={s.tdQty}><Text style={[s.td, { textAlign: "right" }]}>1</Text></View>
               <View style={s.tdUnit}><Text style={s.tdRight}>{amount}</Text></View>
@@ -199,20 +199,11 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
             </View>
           </View>
 
-          {/* Totals */}
           <View style={s.totalsSection}>
             <View style={s.totalsBox}>
               <View style={s.totRow}>
                 <Text style={s.totKey}>Subtotal</Text>
                 <Text style={s.totVal}>{amount}</Text>
-              </View>
-              <View style={s.totRow}>
-                <Text style={s.totKey}>Tax / VAT</Text>
-                <Text style={s.totVal}>$0.00</Text>
-              </View>
-              <View style={s.totRow}>
-                <Text style={s.totKey}>Discount</Text>
-                <Text style={s.totVal}>$0.00</Text>
               </View>
               <View style={s.totRowLast}>
                 <Text style={s.totKeyBold}>Total Due (USD)</Text>
@@ -221,7 +212,6 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
             </View>
           </View>
 
-          {/* Payment notice */}
           <View style={s.noticeSection}>
             <Text style={s.noticeText}>
               {isPaid
@@ -234,10 +224,14 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
           </View>
         </View>
 
-        {/* Footer */}
         <View style={s.footer}>
-          <Text style={s.footerText}>G.A.T.E. Assessment {"·"} Assessment Management Platform</Text>
-          <Text style={s.footerGold}>support@gate-assessment.org</Text>
+          <View style={s.footerRow}>
+            <Text style={s.footerText}>G.A.T.E. {"·"} International Academic Programs</Text>
+            <Text style={s.footerGold}>support@gate-assessment.org</Text>
+          </View>
+          <Text style={s.footerOperator}>
+            Operated by Chongqing Xinshijie Technology Service Co., LTD
+          </Text>
         </View>
       </Page>
     </Document>
