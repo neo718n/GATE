@@ -90,3 +90,42 @@ export async function createEnrollment(formData: FormData) {
 
   return enrollment;
 }
+
+/**
+ * Fetches all enrollments for a specific participant with related data.
+ * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
+ * Returns enrollments sorted by most recent first (enrolledAt DESC).
+ * Includes related data: round, subject, and payment information.
+ * @param participantId - The ID of the participant whose enrollments to fetch
+ * @returns Array of enrollment records with related round, subject, and payment data
+ * @throws {Error} "Invalid participant ID" if participantId is missing or invalid
+ * @throws {Error} "Unauthorized" if participant doesn't belong to session user
+ */
+export async function getParticipantEnrollments(participantId: number) {
+  const session = await requireRole(["participant", "admin", "super_admin"]);
+
+  if (!participantId || isNaN(participantId)) {
+    throw new Error("Invalid participant ID");
+  }
+
+  // Verify participant belongs to session user
+  const participant = await db.query.participants.findFirst({
+    where: eq(participants.id, participantId),
+  });
+  if (!participant || participant.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // Fetch all enrollments for this participant with related data
+  const participantEnrollments = await db.query.enrollments.findMany({
+    where: eq(enrollments.participantId, participantId),
+    with: {
+      round: true,
+      subject: true,
+      payment: true,
+    },
+    orderBy: [desc(enrollments.enrolledAt)],
+  });
+
+  return participantEnrollments;
+}
