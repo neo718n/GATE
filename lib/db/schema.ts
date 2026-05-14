@@ -120,6 +120,19 @@ export const genderEnum = pgEnum("gender", [
   "prefer_not_to_say",
 ]);
 
+export const enrollmentStatusEnum = pgEnum("enrollment_status", [
+  "draft",
+  "pending_payment",
+  "confirmed",
+  "cancelled",
+]);
+
+export const enrollmentPaymentStatusEnum = pgEnum("enrollment_payment_status", [
+  "unpaid",
+  "paid",
+  "refunded",
+]);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Better Auth core tables
 // ────────────────────────────────────────────────────────────────────────────
