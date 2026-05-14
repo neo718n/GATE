@@ -47,7 +47,7 @@ export async function GET(
       issuedAt: new Date(payment.createdAt).toLocaleDateString("en-US"),
       participant: {
         name: participant?.fullName ?? "-",
-        email: participant?.user?.email ?? "-",
+        email: (participant?.user as any)?.email ?? "-",
         country: participant?.country ?? "-",
       },
       cycle: payment.cycle?.name ?? "-",
