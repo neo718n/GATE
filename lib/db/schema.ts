@@ -409,6 +409,7 @@ export const payments = pgTable("payments", {
   }),
   cycleId: integer("cycle_id").references(() => cycles.id),
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
+  enrollmentId: integer("enrollment_id").references(() => enrollments.id, { onDelete: "set null" }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   stripeChargeId: text("stripe_charge_id"),
@@ -428,6 +429,7 @@ export const payments = pgTable("payments", {
 }, (t) => ({
   userIdIdx: index("payments_user_id_idx").on(t.userId),
   participantIdIdx: index("payments_participant_id_idx").on(t.participantId),
+  enrollmentIdIdx: index("payments_enrollment_id_idx").on(t.enrollmentId),
   statusIdx: index("payments_status_idx").on(t.status),
 }));
 
@@ -727,6 +729,10 @@ export const paymentRelations = relations(payments, ({ one, many }) => ({
   }),
   cycle: one(cycles, { fields: [payments.cycleId], references: [cycles.id] }),
   round: one(rounds, { fields: [payments.roundId], references: [rounds.id] }),
+  enrollment: one(enrollments, {
+    fields: [payments.enrollmentId],
+    references: [enrollments.id],
+  }),
   enrollments: many(enrollments),
 }));
 
