@@ -1,7 +1,7 @@
 ﻿"use server";
 
 import { db } from "@/lib/db";
-import { participants, participantSubjects, cycles, rounds, payments } from "@/lib/db/schema";
+import { participants, participantSubjects, cycles, rounds, payments, enrollments } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
@@ -75,7 +75,8 @@ export async function saveParticipantProfile(formData: FormData) {
 /**
  * Assigns a round to a participant for competition enrollment.
  * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
- * Prevents modification if payment has already been completed (paymentStatus === "paid").
+ * Creates a new enrollment record or updates existing draft enrollment.
+ * Prevents modification if enrollment payment has already been completed (paymentStatus === "paid").
  * @param formData - Form data containing: participantId, roundId
  * @throws {Error} If participant doesn't belong to session user (Unauthorized)
  */
@@ -93,12 +94,30 @@ export async function selectRound(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
-  if (participant.paymentStatus === "paid") return;
+  // Check if enrollment already exists for this participant+round
+  const existingEnrollment = await db.query.enrollments.findFirst({
+    where: and(
+      eq(enrollments.participantId, participantId),
+      eq(enrollments.roundId, roundId)
+    ),
+  });
 
-  await db
-    .update(participants)
-    .set({ roundId, cycleId: participant.cycleId, updatedAt: new Date() })
-    .where(eq(participants.id, participantId));
+  if (existingEnrollment) {
+    // If enrollment exists and is already paid, don't allow changes
+    if (existingEnrollment.paymentStatus === "paid") return;
+
+    // Enrollment exists but not paid, just return (no update needed)
+    return;
+  }
+
+  // Create new enrollment record
+  await db.insert(enrollments).values({
+    participantId,
+    roundId,
+    subjectId: null,
+    enrollmentStatus: "draft",
+    paymentStatus: "unpaid",
+  });
 
   revalidatePath("/participant/enrollment");
 }
