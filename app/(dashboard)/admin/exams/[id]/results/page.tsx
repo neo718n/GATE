@@ -115,7 +115,7 @@ export default async function ExamResultsPage({ params }: { params: Promise<{ id
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
             Open-Ended Grading
           </p>
-          {exam.sessions
+          {(exam.sessions as any[])
             .filter((s) => s.status === "submitted")
             .map((s) =>
               openQuestions.map((q) => {

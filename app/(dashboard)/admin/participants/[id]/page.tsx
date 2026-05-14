@@ -246,7 +246,7 @@ export default async function ParticipantDetailPage({
 
       {/* Documents */}
       <ParticipantDocuments
-        docs={participant.documents}
+        docs={participant.documents as any}
         participantId={participant.id}
       />
     </div>

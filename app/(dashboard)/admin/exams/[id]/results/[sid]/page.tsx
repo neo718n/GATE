@@ -74,7 +74,7 @@ export default async function SessionDetailPage({
 
       <div className="flex flex-col gap-3">
         {exam.questions.map((q, idx) => {
-          const ans = session.answers.find((a) => a.questionId === q.id);
+          const ans = (session.answers as any[]).find((a) => a.questionId === q.id);
           const correct = ans?.isCorrect;
           const pending = q.type === "open" && ans?.answer && ans?.isCorrect === null;
 
