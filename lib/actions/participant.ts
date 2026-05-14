@@ -179,16 +179,16 @@ export async function selectSubject(formData: FormData) {
  * Math.ceil ensures we round up to avoid underpayment due to fractional cents.
  *
  * @param formData - Form data containing: enrollmentId
- * @throws {Error} “Invalid request” if enrollmentId is NaN
- * @throws {Error} “Unauthorized” if enrollment doesn't belong to session user
- * @throws {Error} “Enrollment not found” if enrollment doesn't exist
+ * @throws {Error} "Invalid request" if enrollmentId is NaN
+ * @throws {Error} "Unauthorized" if enrollment doesn't belong to session user
+ * @throws {Error} "Enrollment not found" if enrollment doesn't exist
  */
 export async function initiatePayment(formData: FormData) {
-  const session = await requireRole([“participant”]);
-  const enrollmentId = parseInt(formData.get(“enrollmentId”) as string);
+  const session = await requireRole(["participant"]);
+  const enrollmentId = parseInt(formData.get("enrollmentId") as string);
 
   if (isNaN(enrollmentId)) {
-    throw new Error(“Invalid request”);
+    throw new Error("Invalid request");
   }
 
   // Fetch enrollment with related data
@@ -205,17 +205,17 @@ export async function initiatePayment(formData: FormData) {
   });
 
   if (!enrollment) {
-    throw new Error(“Enrollment not found”);
+    throw new Error("Enrollment not found");
   }
 
   // Verify enrollment belongs to session user
   if (enrollment.participant.userId !== session.user.id) {
-    throw new Error(“Unauthorized”);
+    throw new Error("Unauthorized");
   }
 
   // Idempotency: already paid
-  if (enrollment.paymentStatus === “paid”) {
-    redirect(“/participant/enrollment?payment=success”);
+  if (enrollment.paymentStatus === "paid") {
+    redirect("/participant/enrollment?payment=success");
   }
 
   const round = enrollment.round;
@@ -224,17 +224,17 @@ export async function initiatePayment(formData: FormData) {
   if (round.feeUsd === 0) {
     await db
       .update(enrollments)
-      .set({ paymentStatus: “paid”, enrollmentStatus: “confirmed”, updatedAt: new Date() })
+      .set({ paymentStatus: "paid", enrollmentStatus: "confirmed", updatedAt: new Date() })
       .where(eq(enrollments.id, enrollmentId));
-    revalidatePath(“/participant”);
-    redirect(“/participant/enrollment?payment=success”);
+    revalidatePath("/participant");
+    redirect("/participant/enrollment?payment=success");
   }
 
   // Idempotency: re-use an existing open Stripe session for this enrollment
   const existingPayment = await db.query.payments.findFirst({
     where: and(
       eq(payments.enrollmentId, enrollmentId),
-      eq(payments.status, “pending”)
+      eq(payments.status, "pending")
     ),
   });
   if (existingPayment?.stripeCheckoutSessionId) {
@@ -242,11 +242,11 @@ export async function initiatePayment(formData: FormData) {
       const existingSession = await stripe.checkout.sessions.retrieve(
         existingPayment.stripeCheckoutSessionId
       );
-      if (existingSession.url && existingSession.status === “open”) {
+      if (existingSession.url && existingSession.status === "open") {
         redirect(existingSession.url);
       }
     } catch {
-      // Session expired or invalid вЂ” fall through and create a new one
+      // Session expired or invalid вЂ" fall through and create a new one
     }
   }
 
@@ -262,19 +262,19 @@ export async function initiatePayment(formData: FormData) {
   // feeAmount is the total service fee charged to the participant (Stripe's cut)
   const feeAmount = grossAmount - round.feeUsd;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? “http://localhost:3000”;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const checkoutSession = await stripe.checkout.sessions.create({
-    mode: “payment”,
-    payment_method_types: [“card”],
+    mode: "payment",
+    payment_method_types: ["card"],
     customer_email: session.user.email,
     line_items: [
       {
         quantity: 1,
         price_data: {
-          currency: “usd”,
+          currency: "usd",
           unit_amount: grossAmount,
           product_data: {
-            name: `${round.name} вЂ” Registration Fee`,
+            name: `${round.name} вЂ" Registration Fee`,
             description: `Includes $${(feeAmount / 100).toFixed(2)} service fee`,
           },
         },
@@ -299,8 +299,8 @@ export async function initiatePayment(formData: FormData) {
     roundId: round.id,
     stripeCheckoutSessionId: checkoutSession.id,
     amountCents: grossAmount,
-    currency: “usd”,
-    status: “pending”,
+    currency: "usd",
+    status: "pending",
   });
 
   redirect(checkoutSession.url!);
