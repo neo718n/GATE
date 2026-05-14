@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
         with: { user: true },
       });
 
-      const email = participant?.user?.email;
+      const email = (participant?.user as any)?.email;
       // Guard against duplicate emails on Stripe webhook retries:
       // Stripe may retry webhooks multiple times if our server is slow to respond or times out.
       // The receiptPdfKey is set by sendPaymentConfirmationEmail after successfully generating
@@ -132,8 +132,8 @@ export async function POST(req: NextRequest) {
           cardBrand: payment.cardBrand ?? cardBrand,
           stripeChargeId: payment.stripeChargeId ?? stripeChargeId,
           stripePaymentIntentId: payment.stripePaymentIntentId,
-          cycle: payment.cycle?.name ?? "-",
-          round: payment.round?.name,
+          cycle: (payment.cycle as any)?.name ?? "-",
+          round: (payment.round as any)?.name,
           participant: {
             name: participant.fullName,
             email,

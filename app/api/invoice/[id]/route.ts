@@ -50,8 +50,8 @@ export async function GET(
         email: (participant?.user as any)?.email ?? "-",
         country: participant?.country ?? "-",
       },
-      cycle: payment.cycle?.name ?? "-",
-      round: payment.round?.name,
+      cycle: (payment.cycle as any)?.name ?? "-",
+      round: (payment.round as any)?.name,
       amountCents: payment.amountCents,
       status: payment.status,
     })).key;
