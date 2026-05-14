@@ -123,31 +123,42 @@ export async function selectRound(formData: FormData) {
 }
 
 /**
- * Assigns a subject to a participant for competition enrollment.
- * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
- * Prevents modification if payment has already been completed (paymentStatus === "paid").
- * Replaces any existing subject selection by deleting old records before inserting new one.
- * @param formData - Form data containing: participantId, subjectId
- * @throws {Error} If participant doesn't belong to session user (Unauthorized)
+ * Assigns a subject to an enrollment for competition.
+ * Authorization: Requires participant, admin, or super_admin role. Verifies enrollment.participant.userId matches session user.
+ * Prevents modification if enrollment payment has already been completed (paymentStatus === "paid").
+ * Updates the enrollment's subjectId field directly.
+ * @param formData - Form data containing: enrollmentId, subjectId
+ * @throws {Error} If enrollment doesn't belong to session user (Unauthorized)
  */
 export async function selectSubject(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
-  const participantId = parseInt(formData.get("participantId") as string);
+  const enrollmentId = parseInt(formData.get("enrollmentId") as string);
   const subjectId = parseInt(formData.get("subjectId") as string);
 
-  if (isNaN(participantId) || isNaN(subjectId) || !participantId || !subjectId) return;
+  if (isNaN(enrollmentId) || isNaN(subjectId) || !enrollmentId || !subjectId) return;
 
-  const participant = await db.query.participants.findFirst({
-    where: eq(participants.id, participantId),
+  // Fetch enrollment with participant data to verify ownership
+  const enrollment = await db.query.enrollments.findFirst({
+    where: eq(enrollments.id, enrollmentId),
+    with: {
+      participant: true,
+    },
   });
-  if (!participant || participant.userId !== session.user.id) {
+
+  if (!enrollment || enrollment.participant.userId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
-  if (participant.paymentStatus === "paid") return;
+  // Prevent modification if enrollment is already paid
+  if (enrollment.paymentStatus === "paid") return;
 
-  await db.delete(participantSubjects).where(eq(participantSubjects.participantId, participantId));
-  await db.insert(participantSubjects).values({ participantId, subjectId });
+  // Update enrollment's subjectId
+  await db.update(enrollments)
+    .set({
+      subjectId,
+      updatedAt: new Date(),
+    })
+    .where(eq(enrollments.id, enrollmentId));
 
   revalidatePath("/participant/enrollment");
   revalidatePath("/participant");
