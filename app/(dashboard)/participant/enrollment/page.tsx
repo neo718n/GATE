@@ -1,13 +1,15 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, cycles, payments } from "@/lib/db/schema";
+import { participants, cycles, payments, enrollments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { LocalDate } from "@/components/ui/local-date";
 import Link from "next/link";
 import { selectRound, selectSubject, initiatePayment } from "@/lib/actions/participant";
+import { getParticipantEnrollments, createEnrollment } from "@/lib/actions/enrollments";
 import { stripe } from "@/lib/stripe";
 import { PaymentSubmitButton } from "@/components/payment-submit-button";
+import { EnrollmentCard } from "@/components/participant/enrollment-card";
 
 export default async function EnrollmentPage({
   searchParams,
@@ -25,10 +27,15 @@ export default async function EnrollmentPage({
   });
 
   // Verify Stripe payment when redirected back from checkout (webhook fallback)
-  if (sp.payment === "success" && sp.sid && participant?.paymentStatus !== "paid") {
+  if (sp.payment === "success" && sp.sid) {
     try {
       const sess = await stripe.checkout.sessions.retrieve(sp.sid);
       if (sess.payment_status === "paid") {
+        // Extract enrollmentId from session metadata
+        const enrollmentIdStr = sess.metadata?.enrollmentId;
+        const enrollmentId = enrollmentIdStr ? parseInt(enrollmentIdStr, 10) : null;
+
+        // Update payment record
         await db
           .update(payments)
           .set({
@@ -38,7 +45,19 @@ export default async function EnrollmentPage({
             updatedAt: new Date(),
           })
           .where(eq(payments.stripeCheckoutSessionId, sp.sid));
-        if (participant) {
+
+        if (enrollmentId) {
+          // New enrollment-based flow: Update enrollment status
+          await db
+            .update(enrollments)
+            .set({
+              paymentStatus: "paid",
+              enrollmentStatus: "confirmed",
+              updatedAt: new Date(),
+            })
+            .where(eq(enrollments.id, enrollmentId));
+        } else if (participant && participant.paymentStatus !== "paid") {
+          // Legacy flow: Update participant payment status for backward compatibility
           await db
             .update(participants)
             .set({ paymentStatus: "paid", updatedAt: new Date() })
@@ -78,6 +97,14 @@ export default async function EnrollmentPage({
     );
   }
 
+  // Fetch existing enrollments for this participant
+  const existingEnrollments = await getParticipantEnrollments(participant.id);
+
+  // Get the set of round IDs user is already enrolled in
+  const enrolledRoundIds = new Set(
+    existingEnrollments.map((enrollment) => enrollment.roundId)
+  );
+
   const activeCycle = await db.query.cycles.findFirst({
     where: eq(cycles.status, "registration_open"),
     with: {
@@ -87,6 +114,8 @@ export default async function EnrollmentPage({
   });
 
   const openRounds = activeCycle?.rounds.filter((r) => r.registrationStatus === "open") ?? [];
+
+  // For backward compatibility: show old single enrollment data if exists
   const selectedSubjectId = participant.subjects[0]?.subjectId ?? null;
   const selectedSubject = participant.subjects[0]?.subject ?? null;
   const selectedRoundId = participant.roundId ?? null;
@@ -145,7 +174,39 @@ export default async function EnrollmentPage({
         </div>
       )}
 
-      {activeCycle && isPaid && (
+      {/* Current Enrollments */}
+      {existingEnrollments.length > 0 && (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border flex-1">
+              Current Enrollments
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {existingEnrollments.map((enrollment) => (
+              <EnrollmentCard
+                key={enrollment.id}
+                enrollment={enrollment}
+                onPaymentClick={(enrollmentId) => {
+                  // Payment will be handled by the EnrollmentCard component
+                  // This could navigate to a payment page or open a modal
+                }}
+              />
+            ))}
+          </div>
+          <div className="border-t border-border pt-2">
+            <Link
+              href="/participant/enrollments"
+              className="text-sm text-gate-gold hover:underline"
+            >
+              View All Enrollments →
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Backward compatibility: Show old single enrollment if exists and no new enrollments */}
+      {activeCycle && isPaid && existingEnrollments.length === 0 && (
         <div className="border border-gate-gold/30 bg-gate-gold/5 p-6 flex flex-col gap-3">
           <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
             Enrolled
@@ -162,8 +223,20 @@ export default async function EnrollmentPage({
         </div>
       )}
 
-      {activeCycle && !isPaid && (
-        <>
+      {/* New Enrollment Form */}
+      {activeCycle && (
+        <div className="flex flex-col gap-6 border border-border p-6 bg-muted/10">
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50">
+              {existingEnrollments.length > 0 ? "Enroll in Another Program" : "Select Program"}
+            </p>
+            {existingEnrollments.length > 0 && (
+              <p className="text-sm font-light text-foreground/60">
+                You can enroll in multiple programs simultaneously.
+              </p>
+            )}
+          </div>
+
           {/* Round selection */}
           <div className="flex flex-col gap-4">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
@@ -179,39 +252,58 @@ export default async function EnrollmentPage({
               <form action={selectRound} className="flex flex-col gap-3">
                 <input type="hidden" name="participantId" value={participant.id} />
                 <div className="flex flex-col gap-2">
-                  {openRounds.map((r) => (
-                    <label
-                      key={r.id}
-                      className="flex items-start gap-3 border border-border p-4 cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
-                    >
-                      <input
-                        type="radio"
-                        name="roundId"
-                        value={r.id}
-                        defaultChecked={r.id === selectedRoundId}
-                        className="mt-1 accent-[#C9993A]"
-                      />
-                      <div className="flex flex-col gap-0.5 flex-1">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-sm font-semibold text-foreground">{r.name}</span>
-                          <span className="text-sm font-light text-foreground">
-                            {r.feeUsd > 0 ? `$${(r.feeUsd / 100).toFixed(2)}` : "Free"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-3 flex-wrap">
-                          <span className="text-xs font-light text-foreground/50 capitalize">{r.format}</span>
-                          {r.startDate && (
-                            <span className="text-xs font-light text-foreground/50">
-                              <LocalDate date={r.startDate} />
+                  {openRounds.map((r) => {
+                    const isEnrolled = enrolledRoundIds.has(r.id);
+                    return (
+                      <label
+                        key={r.id}
+                        className={`flex items-start gap-3 border border-border p-4 ${
+                          isEnrolled
+                            ? "opacity-60 cursor-not-allowed bg-muted/50"
+                            : "cursor-pointer hover:border-gate-gold/50 hover:bg-gate-gold/5 transition-colors has-[:checked]:border-gate-gold has-[:checked]:bg-gate-gold/8"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="roundId"
+                          value={r.id}
+                          defaultChecked={r.id === selectedRoundId}
+                          disabled={isEnrolled}
+                          className="mt-1 accent-[#C9993A] disabled:opacity-50"
+                        />
+                        <div className="flex flex-col gap-0.5 flex-1">
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-semibold text-foreground">
+                                {r.name}
+                              </span>
+                              {isEnrolled && (
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] px-2 py-0.5 bg-gate-gold/10 text-gate-800 border border-gate-gold/30">
+                                  Already Enrolled
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-sm font-light text-foreground">
+                              {r.feeUsd > 0 ? `$${(r.feeUsd / 100).toFixed(2)}` : "Free"}
                             </span>
-                          )}
-                          {r.venue && (
-                            <span className="text-xs font-light text-foreground/50">{r.venue}</span>
-                          )}
+                          </div>
+                          <div className="flex items-center gap-3 flex-wrap">
+                            <span className="text-xs font-light text-foreground/50 capitalize">
+                              {r.format}
+                            </span>
+                            {r.startDate && (
+                              <span className="text-xs font-light text-foreground/50">
+                                <LocalDate date={r.startDate} />
+                              </span>
+                            )}
+                            {r.venue && (
+                              <span className="text-xs font-light text-foreground/50">{r.venue}</span>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </label>
-                  ))}
+                      </label>
+                    );
+                  })}
                 </div>
                 <div className="pt-1">
                   <Button type="submit" variant="outline" size="sm">
@@ -222,8 +314,8 @@ export default async function EnrollmentPage({
             )}
           </div>
 
-          {/* Subject selection */}
-          {activeCycle.subjects.length > 0 && (
+          {/* Subject selection - Only show if round is selected and not already enrolled */}
+          {!isPaid && activeCycle.subjects.length > 0 && (
             <div className="flex flex-col gap-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
                 Select Subject
@@ -265,8 +357,8 @@ export default async function EnrollmentPage({
             </div>
           )}
 
-          {/* Payment */}
-          {selectedRoundId && selectedSubjectId && (
+          {/* Payment - Only show if round and subject are selected and not already paid */}
+          {!isPaid && selectedRoundId && selectedSubjectId && (
             <div className="border border-border p-6 flex flex-col gap-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
                 Payment
@@ -311,7 +403,7 @@ export default async function EnrollmentPage({
               </form>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

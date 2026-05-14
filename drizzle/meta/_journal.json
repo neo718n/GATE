@@ -43,6 +43,20 @@
       "when": 1777918799297,
       "tag": "0005_sad_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778729528374,
+      "tag": "0006_yummy_falcon",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1778740635048,
+      "tag": "0007_wet_pixie",
+      "breakpoints": true
     }
   ]
 }

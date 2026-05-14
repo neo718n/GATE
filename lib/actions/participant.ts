@@ -1,7 +1,7 @@
 ﻿"use server";
 
 import { db } from "@/lib/db";
-import { participants, participantSubjects, cycles, rounds, payments } from "@/lib/db/schema";
+import { participants, participantSubjects, cycles, rounds, payments, enrollments } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
@@ -75,7 +75,8 @@ export async function saveParticipantProfile(formData: FormData) {
 /**
  * Assigns a round to a participant for competition enrollment.
  * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
- * Prevents modification if payment has already been completed (paymentStatus === "paid").
+ * Creates a new enrollment record or updates existing draft enrollment.
+ * Prevents modification if enrollment payment has already been completed (paymentStatus === "paid").
  * @param formData - Form data containing: participantId, roundId
  * @throws {Error} If participant doesn't belong to session user (Unauthorized)
  */
@@ -93,42 +94,71 @@ export async function selectRound(formData: FormData) {
     throw new Error("Unauthorized");
   }
 
-  if (participant.paymentStatus === "paid") return;
+  // Check if enrollment already exists for this participant+round
+  const existingEnrollment = await db.query.enrollments.findFirst({
+    where: and(
+      eq(enrollments.participantId, participantId),
+      eq(enrollments.roundId, roundId)
+    ),
+  });
 
-  await db
-    .update(participants)
-    .set({ roundId, cycleId: participant.cycleId, updatedAt: new Date() })
-    .where(eq(participants.id, participantId));
+  if (existingEnrollment) {
+    // If enrollment exists and is already paid, don't allow changes
+    if (existingEnrollment.paymentStatus === "paid") return;
+
+    // Enrollment exists but not paid, just return (no update needed)
+    return;
+  }
+
+  // Create new enrollment record
+  await db.insert(enrollments).values({
+    participantId,
+    roundId,
+    subjectId: null,
+    enrollmentStatus: "draft",
+    paymentStatus: "unpaid",
+  });
 
   revalidatePath("/participant/enrollment");
 }
 
 /**
- * Assigns a subject to a participant for competition enrollment.
- * Authorization: Requires participant, admin, or super_admin role. Verifies participant.userId matches session user.
- * Prevents modification if payment has already been completed (paymentStatus === "paid").
- * Replaces any existing subject selection by deleting old records before inserting new one.
- * @param formData - Form data containing: participantId, subjectId
- * @throws {Error} If participant doesn't belong to session user (Unauthorized)
+ * Assigns a subject to an enrollment for competition.
+ * Authorization: Requires participant, admin, or super_admin role. Verifies enrollment.participant.userId matches session user.
+ * Prevents modification if enrollment payment has already been completed (paymentStatus === "paid").
+ * Updates the enrollment's subjectId field directly.
+ * @param formData - Form data containing: enrollmentId, subjectId
+ * @throws {Error} If enrollment doesn't belong to session user (Unauthorized)
  */
 export async function selectSubject(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
-  const participantId = parseInt(formData.get("participantId") as string);
+  const enrollmentId = parseInt(formData.get("enrollmentId") as string);
   const subjectId = parseInt(formData.get("subjectId") as string);
 
-  if (isNaN(participantId) || isNaN(subjectId) || !participantId || !subjectId) return;
+  if (isNaN(enrollmentId) || isNaN(subjectId) || !enrollmentId || !subjectId) return;
 
-  const participant = await db.query.participants.findFirst({
-    where: eq(participants.id, participantId),
+  // Fetch enrollment with participant data to verify ownership
+  const enrollment = await db.query.enrollments.findFirst({
+    where: eq(enrollments.id, enrollmentId),
+    with: {
+      participant: true,
+    },
   });
-  if (!participant || participant.userId !== session.user.id) {
+
+  if (!enrollment || enrollment.participant.userId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
-  if (participant.paymentStatus === "paid") return;
+  // Prevent modification if enrollment is already paid
+  if (enrollment.paymentStatus === "paid") return;
 
-  await db.delete(participantSubjects).where(eq(participantSubjects.participantId, participantId));
-  await db.insert(participantSubjects).values({ participantId, subjectId });
+  // Update enrollment's subjectId
+  await db.update(enrollments)
+    .set({
+      subjectId,
+      updatedAt: new Date(),
+    })
+    .where(eq(enrollments.id, enrollmentId));
 
   revalidatePath("/participant/enrollment");
   revalidatePath("/participant");
@@ -136,7 +166,7 @@ export async function selectSubject(formData: FormData) {
 
 /**
  * Initiates Stripe payment checkout for participant enrollment fee.
- * Authorization: Requires participant role. Verifies participant.userId matches session user.
+ * Authorization: Requires participant role. Verifies enrollment.participant.userId matches session user.
  * Implements idempotency: redirects if already paid or re-uses existing open Stripe session.
  *
  * Stripe Fee Reverse-Calculation Formula:
@@ -148,60 +178,62 @@ export async function selectSubject(formData: FormData) {
  * we rearrange to: grossAmount = (netAmount + fixedFee) / (1 - percentFee/10000).
  * Math.ceil ensures we round up to avoid underpayment due to fractional cents.
  *
- * @param formData - Form data containing: cycleId, roundId, participantId
- * @throws {Error} "Invalid request" if any ID is NaN
- * @throws {Error} "Unauthorized" if participant doesn't belong to session user
- * @throws {Error} "Cycle or round not found" if referenced records don't exist
+ * @param formData - Form data containing: enrollmentId
+ * @throws {Error} "Invalid request" if enrollmentId is NaN
+ * @throws {Error} "Unauthorized" if enrollment doesn't belong to session user
+ * @throws {Error} "Enrollment not found" if enrollment doesn't exist
  */
 export async function initiatePayment(formData: FormData) {
   const session = await requireRole(["participant"]);
-  const cycleId = parseInt(formData.get("cycleId") as string);
-  const roundId = parseInt(formData.get("roundId") as string);
-  const participantId = parseInt(formData.get("participantId") as string);
+  const enrollmentId = parseInt(formData.get("enrollmentId") as string);
 
-  if (isNaN(cycleId) || isNaN(roundId) || isNaN(participantId)) {
+  if (isNaN(enrollmentId)) {
     throw new Error("Invalid request");
   }
 
-  // Verify participant belongs to session user
-  const participant = await db.query.participants.findFirst({
-    where: eq(participants.id, participantId),
+  // Fetch enrollment with related data
+  const enrollment = await db.query.enrollments.findFirst({
+    where: eq(enrollments.id, enrollmentId),
+    with: {
+      participant: true,
+      round: {
+        with: {
+          cycle: true,
+        },
+      },
+    },
   });
-  if (!participant || participant.userId !== session.user.id) {
+
+  if (!enrollment) {
+    throw new Error("Enrollment not found");
+  }
+
+  // Verify enrollment belongs to session user
+  if (enrollment.participant.userId !== session.user.id) {
     throw new Error("Unauthorized");
   }
 
   // Idempotency: already paid
-  if (participant.paymentStatus === "paid") {
+  if (enrollment.paymentStatus === "paid") {
     redirect("/participant/enrollment?payment=success");
   }
 
-  const [cycle, round] = await Promise.all([
-    db.query.cycles.findFirst({ where: eq(cycles.id, cycleId) }),
-    db.query.rounds.findFirst({ where: eq(rounds.id, roundId) }),
-  ]);
-  if (!cycle || !round) throw new Error("Cycle or round not found");
-
-  // Update participant's roundId
-  await db
-    .update(participants)
-    .set({ roundId, updatedAt: new Date() })
-    .where(eq(participants.id, participantId));
+  const round = enrollment.round;
+  const cycle = enrollment.round.cycle;
 
   if (round.feeUsd === 0) {
     await db
-      .update(participants)
-      .set({ paymentStatus: "paid", updatedAt: new Date() })
-      .where(eq(participants.id, participantId));
+      .update(enrollments)
+      .set({ paymentStatus: "paid", enrollmentStatus: "confirmed", updatedAt: new Date() })
+      .where(eq(enrollments.id, enrollmentId));
     revalidatePath("/participant");
     redirect("/participant/enrollment?payment=success");
   }
 
-  // Idempotency: re-use an existing open Stripe session for this participant+round
+  // Idempotency: re-use an existing open Stripe session for this enrollment
   const existingPayment = await db.query.payments.findFirst({
     where: and(
-      eq(payments.participantId, participantId),
-      eq(payments.roundId, roundId),
+      eq(payments.enrollmentId, enrollmentId),
       eq(payments.status, "pending")
     ),
   });
@@ -214,7 +246,7 @@ export async function initiatePayment(formData: FormData) {
         redirect(existingSession.url);
       }
     } catch {
-      // Session expired or invalid вЂ” fall through and create a new one
+      // Session expired or invalid вЂ" fall through and create a new one
     }
   }
 
@@ -242,7 +274,7 @@ export async function initiatePayment(formData: FormData) {
           currency: "usd",
           unit_amount: grossAmount,
           product_data: {
-            name: `${round.name} вЂ” Registration Fee`,
+            name: `${round.name} вЂ" Registration Fee`,
             description: `Includes $${(feeAmount / 100).toFixed(2)} service fee`,
           },
         },
@@ -250,9 +282,10 @@ export async function initiatePayment(formData: FormData) {
     ],
     metadata: {
       userId: session.user.id,
-      cycleId: String(cycleId),
-      roundId: String(roundId),
-      participantId: String(participantId),
+      enrollmentId: String(enrollmentId),
+      cycleId: String(cycle.id),
+      roundId: String(round.id),
+      participantId: String(enrollment.participantId),
     },
     success_url: `${appUrl}/participant/enrollment?payment=success&sid={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/participant/enrollment?payment=cancelled`,
@@ -260,9 +293,10 @@ export async function initiatePayment(formData: FormData) {
 
   await db.insert(payments).values({
     userId: session.user.id,
-    participantId,
-    cycleId,
-    roundId,
+    enrollmentId,
+    participantId: enrollment.participantId,
+    cycleId: cycle.id,
+    roundId: round.id,
     stripeCheckoutSessionId: checkoutSession.id,
     amountCents: grossAmount,
     currency: "usd",

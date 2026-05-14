@@ -120,6 +120,19 @@ export const genderEnum = pgEnum("gender", [
   "prefer_not_to_say",
 ]);
 
+export const enrollmentStatusEnum = pgEnum("enrollment_status", [
+  "draft",
+  "pending_payment",
+  "confirmed",
+  "cancelled",
+]);
+
+export const enrollmentPaymentStatusEnum = pgEnum("enrollment_payment_status", [
+  "unpaid",
+  "paid",
+  "refunded",
+]);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Better Auth core tables
 // ────────────────────────────────────────────────────────────────────────────
@@ -281,11 +294,41 @@ export const participantSubjects = pgTable(
     subjectId: integer("subject_id")
       .notNull()
       .references(() => subjects.id, { onDelete: "cascade" }),
+    enrollmentId: integer("enrollment_id")
+      .notNull()
+      .references(() => enrollments.id, { onDelete: "cascade" }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.participantId, t.subjectId] }),
   }),
 );
+
+export const enrollments = pgTable("enrollments", {
+  id: serial("id").primaryKey(),
+  participantId: integer("participant_id")
+    .notNull()
+    .references(() => participants.id, { onDelete: "cascade" }),
+  roundId: integer("round_id")
+    .notNull()
+    .references(() => rounds.id, { onDelete: "cascade" }),
+  subjectId: integer("subject_id").references(() => subjects.id, { onDelete: "set null" }),
+  enrollmentStatus: enrollmentStatusEnum("enrollment_status")
+    .notNull()
+    .default("draft"),
+  paymentStatus: enrollmentPaymentStatusEnum("payment_status")
+    .notNull()
+    .default("unpaid"),
+  paymentId: integer("payment_id").references(() => payments.id, { onDelete: "set null" }),
+  enrolledAt: timestamp("enrolled_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (t) => ({
+  uniqueEnrollment: unique().on(t.participantId, t.roundId, t.subjectId),
+  participantIdIdx: index("enrollments_participant_id_idx").on(t.participantId),
+  roundIdIdx: index("enrollments_round_id_idx").on(t.roundId),
+  participantStatusIdx: index("enrollments_participant_status_idx").on(t.participantId, t.enrollmentStatus),
+  roundStatusIdx: index("enrollments_round_status_idx").on(t.roundId, t.enrollmentStatus),
+}));
 
 export const results = pgTable("results", {
   id: serial("id").primaryKey(),
@@ -366,6 +409,7 @@ export const payments = pgTable("payments", {
   }),
   cycleId: integer("cycle_id").references(() => cycles.id),
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
+  enrollmentId: integer("enrollment_id").references(() => enrollments.id, { onDelete: "set null" }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   stripeChargeId: text("stripe_charge_id"),
@@ -385,6 +429,7 @@ export const payments = pgTable("payments", {
 }, (t) => ({
   userIdIdx: index("payments_user_id_idx").on(t.userId),
   participantIdIdx: index("payments_participant_id_idx").on(t.participantId),
+  enrollmentIdIdx: index("payments_enrollment_id_idx").on(t.enrollmentId),
   statusIdx: index("payments_status_idx").on(t.status),
 }));
 
@@ -565,6 +610,7 @@ export const roundRelations = relations(rounds, ({ one, many }) => ({
   participants: many(participants),
   results: many(results),
   payments: many(payments),
+  enrollments: many(enrollments),
 }));
 
 export const cycleSubjectRelations = relations(cycleSubjects, ({ one }) => ({
@@ -582,6 +628,7 @@ export const subjectRelations = relations(subjects, ({ many }) => ({
   results: many(results),
   participants: many(participantSubjects),
   cycles: many(cycleSubjects),
+  enrollments: many(enrollments),
 }));
 
 export const participantRelations = relations(participants, ({ one, many }) => ({
@@ -598,6 +645,7 @@ export const participantRelations = relations(participants, ({ one, many }) => (
   results: many(results),
   payments: many(payments),
   documents: many(documents),
+  enrollments: many(enrollments),
 }));
 
 export const participantSubjectRelations = relations(
@@ -611,8 +659,32 @@ export const participantSubjectRelations = relations(
       fields: [participantSubjects.subjectId],
       references: [subjects.id],
     }),
+    enrollment: one(enrollments, {
+      fields: [participantSubjects.enrollmentId],
+      references: [enrollments.id],
+    }),
   }),
 );
+
+export const enrollmentsRelations = relations(enrollments, ({ one, many }) => ({
+  participant: one(participants, {
+    fields: [enrollments.participantId],
+    references: [participants.id],
+  }),
+  round: one(rounds, {
+    fields: [enrollments.roundId],
+    references: [rounds.id],
+  }),
+  subject: one(subjects, {
+    fields: [enrollments.subjectId],
+    references: [subjects.id],
+  }),
+  payment: one(payments, {
+    fields: [enrollments.paymentId],
+    references: [payments.id],
+  }),
+  participantSubjects: many(participantSubjects),
+}));
 
 export const resultRelations = relations(results, ({ one }) => ({
   participant: one(participants, {
@@ -649,7 +721,7 @@ export const careerApplicationRelations = relations(
   }),
 );
 
-export const paymentRelations = relations(payments, ({ one }) => ({
+export const paymentRelations = relations(payments, ({ one, many }) => ({
   user: one(user, { fields: [payments.userId], references: [user.id] }),
   participant: one(participants, {
     fields: [payments.participantId],
@@ -657,6 +729,11 @@ export const paymentRelations = relations(payments, ({ one }) => ({
   }),
   cycle: one(cycles, { fields: [payments.cycleId], references: [cycles.id] }),
   round: one(rounds, { fields: [payments.roundId], references: [rounds.id] }),
+  enrollment: one(enrollments, {
+    fields: [payments.enrollmentId],
+    references: [enrollments.id],
+  }),
+  enrollments: many(enrollments),
 }));
 
 export const notificationRelations = relations(notifications, ({ one }) => ({
