@@ -119,7 +119,7 @@ export default async function ExamResultsPage({ params }: { params: Promise<{ id
             .filter((s) => s.status === "submitted")
             .map((s) =>
               openQuestions.map((q) => {
-                const ans = s.answers.find((a) => a.questionId === q.id);
+                const ans = s.answers.find((a: any) => a.questionId === q.id);
                 if (!ans?.answer) return null;
                 const needsGrading = ans.isCorrect === null;
                 return (
