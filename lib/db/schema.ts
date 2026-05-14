@@ -608,6 +608,7 @@ export const roundRelations = relations(rounds, ({ one, many }) => ({
   participants: many(participants),
   results: many(results),
   payments: many(payments),
+  enrollments: many(enrollments),
 }));
 
 export const cycleSubjectRelations = relations(cycleSubjects, ({ one }) => ({
@@ -625,6 +626,7 @@ export const subjectRelations = relations(subjects, ({ many }) => ({
   results: many(results),
   participants: many(participantSubjects),
   cycles: many(cycleSubjects),
+  enrollments: many(enrollments),
 }));
 
 export const participantRelations = relations(participants, ({ one, many }) => ({
@@ -641,6 +643,7 @@ export const participantRelations = relations(participants, ({ one, many }) => (
   results: many(results),
   payments: many(payments),
   documents: many(documents),
+  enrollments: many(enrollments),
 }));
 
 export const participantSubjectRelations = relations(
@@ -660,6 +663,26 @@ export const participantSubjectRelations = relations(
     }),
   }),
 );
+
+export const enrollmentsRelations = relations(enrollments, ({ one, many }) => ({
+  participant: one(participants, {
+    fields: [enrollments.participantId],
+    references: [participants.id],
+  }),
+  round: one(rounds, {
+    fields: [enrollments.roundId],
+    references: [rounds.id],
+  }),
+  subject: one(subjects, {
+    fields: [enrollments.subjectId],
+    references: [subjects.id],
+  }),
+  payment: one(payments, {
+    fields: [enrollments.paymentId],
+    references: [payments.id],
+  }),
+  participantSubjects: many(participantSubjects),
+}));
 
 export const resultRelations = relations(results, ({ one }) => ({
   participant: one(participants, {
@@ -696,7 +719,7 @@ export const careerApplicationRelations = relations(
   }),
 );
 
-export const paymentRelations = relations(payments, ({ one }) => ({
+export const paymentRelations = relations(payments, ({ one, many }) => ({
   user: one(user, { fields: [payments.userId], references: [user.id] }),
   participant: one(participants, {
     fields: [payments.participantId],
@@ -704,6 +727,7 @@ export const paymentRelations = relations(payments, ({ one }) => ({
   }),
   cycle: one(cycles, { fields: [payments.cycleId], references: [cycles.id] }),
   round: one(rounds, { fields: [payments.roundId], references: [rounds.id] }),
+  enrollments: many(enrollments),
 }));
 
 export const notificationRelations = relations(notifications, ({ one }) => ({
