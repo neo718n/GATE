@@ -66,7 +66,7 @@ export default async function CertificatesPage() {
               <div className="flex flex-col gap-1">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
                   {r.award
-                    ? r.award.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())
+                    ? r.award.replace("_", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())
                     : "Certificate of Participation"}
                 </p>
                 <p className="text-sm font-light text-foreground">
