@@ -536,8 +536,8 @@ export async function sendNotification(formData: FormData) {
       with: { user: true },
     });
     recipients = participantList
-      .filter((p) => p.user?.email)
-      .map((p) => ({ email: p.user!.email, name: p.user!.name }));
+      .filter((p) => (p.user as any)?.email)
+      .map((p) => ({ email: (p.user as any).email as string, name: (p.user as any).name as string }));
   }
 
   let sentCount = 0;

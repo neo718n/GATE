@@ -433,12 +433,13 @@ export async function submitExam(sessionId: number) {
   if (!session || session.status !== "active") return { error: "Session not active" };
 
   // Auto-score MCQ and numeric — only questions assigned to this session
+  const sessionExam = session.exam as any;
   const sessionQuestionIds = new Set<number>(
     Array.isArray(session.questionOrder)
       ? (session.questionOrder as number[])
-      : session.exam.questions.map((q) => q.id)
+      : sessionExam.questions.map((q: any) => q.id)
   );
-  const sessionQuestions = session.exam.questions.filter((q) => sessionQuestionIds.has(q.id));
+  const sessionQuestions = sessionExam.questions.filter((q: any) => sessionQuestionIds.has(q.id));
 
   // Accumulate points across all session questions for percentage calculation
   let totalPoints = 0;
@@ -562,13 +563,14 @@ export async function gradeOpenAnswer(formData: FormData) {
     where: eq(examAnswers.sessionId, answer.sessionId),
   });
 
+  const answerSession = answer.session as any;
   const sessionQIds = new Set<number>(
-    Array.isArray(answer.session.questionOrder)
-      ? (answer.session.questionOrder as number[])
-      : answer.session.exam.questions.map((q) => q.id)
+    Array.isArray(answerSession.questionOrder)
+      ? (answerSession.questionOrder as number[])
+      : answerSession.exam.questions.map((q: any) => q.id)
   );
-  const sessionQuestions = answer.session.exam.questions.filter((q) => sessionQIds.has(q.id));
-  const totalPts = sessionQuestions.reduce((sum, q) => sum + q.points, 0);
+  const sessionQuestions = answerSession.exam.questions.filter((q: any) => sessionQIds.has(q.id));
+  const totalPts = sessionQuestions.reduce((sum: number, q: any) => sum + q.points, 0);
   const earnedPts = allAnswers.reduce((sum, a) => sum + (parseFloat(a.pointsAwarded ?? "0") || 0), 0);
   const newScore = totalPts > 0 ? ((earnedPts / totalPts) * 100).toFixed(2) : null;
 
@@ -576,6 +578,6 @@ export async function gradeOpenAnswer(formData: FormData) {
     .set({ score: newScore })
     .where(eq(examSessions.id, answer.sessionId));
 
-  revalidatePath(`/admin/exams/${answer.session.examId}/results`);
-  revalidatePath(`/admin/exams/${answer.session.examId}/results/${answer.sessionId}`);
+  revalidatePath(`/admin/exams/${answerSession.examId}/results`);
+  revalidatePath(`/admin/exams/${answerSession.examId}/results/${answer.sessionId}`);
 }

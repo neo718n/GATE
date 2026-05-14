@@ -1,5 +1,6 @@
 ﻿import { relations, sql } from "drizzle-orm";
 import {
+  AnyPgColumn,
   boolean,
   date,
   index,
@@ -409,7 +410,7 @@ export const payments = pgTable("payments", {
   }),
   cycleId: integer("cycle_id").references(() => cycles.id),
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
-  enrollmentId: integer("enrollment_id").references(() => enrollments.id, { onDelete: "set null" }),
+  enrollmentId: integer("enrollment_id").references((): AnyPgColumn => enrollments.id, { onDelete: "set null" }),
   stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   stripeChargeId: text("stripe_charge_id"),
