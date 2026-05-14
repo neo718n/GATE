@@ -300,6 +300,33 @@ export const participantSubjects = pgTable(
   }),
 );
 
+export const enrollments = pgTable("enrollments", {
+  id: serial("id").primaryKey(),
+  participantId: integer("participant_id")
+    .notNull()
+    .references(() => participants.id, { onDelete: "cascade" }),
+  roundId: integer("round_id")
+    .notNull()
+    .references(() => rounds.id, { onDelete: "cascade" }),
+  subjectId: integer("subject_id").references(() => subjects.id, { onDelete: "set null" }),
+  enrollmentStatus: enrollmentStatusEnum("enrollment_status")
+    .notNull()
+    .default("draft"),
+  paymentStatus: enrollmentPaymentStatusEnum("payment_status")
+    .notNull()
+    .default("unpaid"),
+  paymentId: integer("payment_id").references(() => payments.id, { onDelete: "set null" }),
+  enrolledAt: timestamp("enrolled_at").notNull().defaultNow(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (t) => ({
+  uniqueEnrollment: unique().on(t.participantId, t.roundId, t.subjectId),
+  participantIdIdx: index("enrollments_participant_id_idx").on(t.participantId),
+  roundIdIdx: index("enrollments_round_id_idx").on(t.roundId),
+  participantStatusIdx: index("enrollments_participant_status_idx").on(t.participantId, t.enrollmentStatus),
+  roundStatusIdx: index("enrollments_round_status_idx").on(t.roundId, t.enrollmentStatus),
+}));
+
 export const results = pgTable("results", {
   id: serial("id").primaryKey(),
   participantId: integer("participant_id")
