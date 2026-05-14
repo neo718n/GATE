@@ -49,7 +49,7 @@ export default async function ExamResultPage({ params }: { params: Promise<{ id:
   const earnedPoints = examSession.answers
     .reduce((s, a) => s + (a.pointsAwarded ? parseFloat(a.pointsAwarded) : 0), 0);
   const scorePercent = examSession.score ? parseFloat(examSession.score) : null;
-  const pendingGrading = examSession.answers.some((a) => a.question.type === "open" && a.isCorrect === null && a.answer);
+  const pendingGrading = (examSession.answers as any[]).some((a) => a.question.type === "open" && a.isCorrect === null && a.answer);
 
   return (
     <div className="flex flex-col gap-8 max-w-2xl">

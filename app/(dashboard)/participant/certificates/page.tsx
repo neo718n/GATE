@@ -61,7 +61,7 @@ export default async function CertificatesPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4">
-          {certResults.map((r) => (
+          {(certResults as any[]).map((r) => (
             <div key={r.id} className="border border-border bg-card p-6 flex items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">

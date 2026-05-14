@@ -54,7 +54,7 @@ export default async function ExamPage() {
               <p className="text-sm font-light text-foreground">
                 Subject:{" "}
                 <span className="font-semibold">
-                  {participant?.subjects[0]?.subject?.name ?? "—"}
+                  {(participant?.subjects as any[])?.[0]?.subject?.name ?? "—"}
                 </span>
               </p>
               {activeCycle.rounds.length > 0 && (

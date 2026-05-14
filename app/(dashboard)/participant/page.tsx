@@ -76,7 +76,7 @@ export default async function ParticipantDashboard() {
     },
     {
       label: "Subject",
-      value: participant?.subjects[0]?.subject?.name ?? "Not Selected",
+      value: (participant?.subjects as any[])?.[0]?.subject?.name ?? "Not Selected",
       ok: hasSubject,
       pending: false,
     },

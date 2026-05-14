@@ -76,7 +76,7 @@ export default async function PreExamPage({ params }: { params: Promise<{ id: st
     <div className="flex flex-col gap-8 max-w-xl">
       <div className="flex flex-col gap-1.5">
         <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-          {exam.subject?.name ?? exam.type}
+          {(exam.subject as any)?.name ?? exam.type}
         </span>
         <h1 className="font-serif text-4xl font-light text-foreground">{exam.title}</h1>
       </div>

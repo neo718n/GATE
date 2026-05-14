@@ -39,7 +39,7 @@ export default async function CoordinatorParticipantsPage() {
               </span>
             ))}
           </div>
-          {allParticipants.map((p) => (
+          {(allParticipants as any[]).map((p) => (
             <div
               key={p.id}
               className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 px-5 py-4 items-center"
