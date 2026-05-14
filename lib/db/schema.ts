@@ -294,6 +294,9 @@ export const participantSubjects = pgTable(
     subjectId: integer("subject_id")
       .notNull()
       .references(() => subjects.id, { onDelete: "cascade" }),
+    enrollmentId: integer("enrollment_id")
+      .notNull()
+      .references(() => enrollments.id, { onDelete: "cascade" }),
   },
   (t) => ({
     pk: primaryKey({ columns: [t.participantId, t.subjectId] }),
@@ -650,6 +653,10 @@ export const participantSubjectRelations = relations(
     subject: one(subjects, {
       fields: [participantSubjects.subjectId],
       references: [subjects.id],
+    }),
+    enrollment: one(enrollments, {
+      fields: [participantSubjects.enrollmentId],
+      references: [enrollments.id],
     }),
   }),
 );
