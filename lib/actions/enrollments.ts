@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { enrollments, participantSubjects, participants, rounds, subjects, payments } from "@/lib/db/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, isNull } from "drizzle-orm";
 import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 
@@ -64,7 +64,7 @@ export async function createEnrollment(formData: FormData) {
     where: and(
       eq(enrollments.participantId, participantId),
       eq(enrollments.roundId, roundId),
-      subjectId ? eq(enrollments.subjectId, subjectId) : eq(enrollments.subjectId, null)
+      subjectId ? eq(enrollments.subjectId, subjectId) : isNull(enrollments.subjectId)
     ),
   });
 
