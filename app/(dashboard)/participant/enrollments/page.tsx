@@ -77,7 +77,7 @@ export default async function EnrollmentsPage() {
 
       {/* Enrollments grid */}
       {enrollments.length > 0 && (
-        <EnrollmentsGrid enrollments={enrollments} />
+        <EnrollmentsGrid enrollments={enrollments as any} />
       )}
 
       {/* Help text */}

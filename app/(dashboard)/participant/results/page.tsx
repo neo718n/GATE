@@ -36,7 +36,7 @@ export default async function ResultsPage() {
       </div>
 
       <ResultsWithEnrollmentFilter
-        enrollments={enrollments}
+        enrollments={enrollments as any}
         results={myResults}
         hasPaidEnrollment={hasPaidEnrollment}
       />

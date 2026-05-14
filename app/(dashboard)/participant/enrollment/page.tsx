@@ -186,7 +186,7 @@ export default async function EnrollmentPage({
             {existingEnrollments.map((enrollment) => (
               <EnrollmentCard
                 key={enrollment.id}
-                enrollment={enrollment}
+                enrollment={enrollment as any}
                 onPaymentClick={(enrollmentId) => {
                   // Payment will be handled by the EnrollmentCard component
                   // This could navigate to a payment page or open a modal
