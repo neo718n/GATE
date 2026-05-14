@@ -83,11 +83,11 @@ export default async function HomePage() {
 
       <LandingHero />
 
-      <ProgramCards rounds={rounds} />
+      <ProgramCards rounds={rounds as any} />
 
-      <OnlineProgramSection round={onlineRound} />
+      <OnlineProgramSection round={onlineRound as any} />
 
-      <ChinaCampSection round={campRound} />
+      <ChinaCampSection round={campRound as any} />
 
       <RecognitionSection />
 
