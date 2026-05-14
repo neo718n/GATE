@@ -166,7 +166,7 @@ export async function selectSubject(formData: FormData) {
 
 /**
  * Initiates Stripe payment checkout for participant enrollment fee.
- * Authorization: Requires participant role. Verifies participant.userId matches session user.
+ * Authorization: Requires participant role. Verifies enrollment.participant.userId matches session user.
  * Implements idempotency: redirects if already paid or re-uses existing open Stripe session.
  *
  * Stripe Fee Reverse-Calculation Formula:
@@ -178,61 +178,63 @@ export async function selectSubject(formData: FormData) {
  * we rearrange to: grossAmount = (netAmount + fixedFee) / (1 - percentFee/10000).
  * Math.ceil ensures we round up to avoid underpayment due to fractional cents.
  *
- * @param formData - Form data containing: cycleId, roundId, participantId
- * @throws {Error} "Invalid request" if any ID is NaN
- * @throws {Error} "Unauthorized" if participant doesn't belong to session user
- * @throws {Error} "Cycle or round not found" if referenced records don't exist
+ * @param formData - Form data containing: enrollmentId
+ * @throws {Error} “Invalid request” if enrollmentId is NaN
+ * @throws {Error} “Unauthorized” if enrollment doesn't belong to session user
+ * @throws {Error} “Enrollment not found” if enrollment doesn't exist
  */
 export async function initiatePayment(formData: FormData) {
-  const session = await requireRole(["participant"]);
-  const cycleId = parseInt(formData.get("cycleId") as string);
-  const roundId = parseInt(formData.get("roundId") as string);
-  const participantId = parseInt(formData.get("participantId") as string);
+  const session = await requireRole([“participant”]);
+  const enrollmentId = parseInt(formData.get(“enrollmentId”) as string);
 
-  if (isNaN(cycleId) || isNaN(roundId) || isNaN(participantId)) {
-    throw new Error("Invalid request");
+  if (isNaN(enrollmentId)) {
+    throw new Error(“Invalid request”);
   }
 
-  // Verify participant belongs to session user
-  const participant = await db.query.participants.findFirst({
-    where: eq(participants.id, participantId),
+  // Fetch enrollment with related data
+  const enrollment = await db.query.enrollments.findFirst({
+    where: eq(enrollments.id, enrollmentId),
+    with: {
+      participant: true,
+      round: {
+        with: {
+          cycle: true,
+        },
+      },
+    },
   });
-  if (!participant || participant.userId !== session.user.id) {
-    throw new Error("Unauthorized");
+
+  if (!enrollment) {
+    throw new Error(“Enrollment not found”);
+  }
+
+  // Verify enrollment belongs to session user
+  if (enrollment.participant.userId !== session.user.id) {
+    throw new Error(“Unauthorized”);
   }
 
   // Idempotency: already paid
-  if (participant.paymentStatus === "paid") {
-    redirect("/participant/enrollment?payment=success");
+  if (enrollment.paymentStatus === “paid”) {
+    redirect(“/participant/enrollment?payment=success”);
   }
 
-  const [cycle, round] = await Promise.all([
-    db.query.cycles.findFirst({ where: eq(cycles.id, cycleId) }),
-    db.query.rounds.findFirst({ where: eq(rounds.id, roundId) }),
-  ]);
-  if (!cycle || !round) throw new Error("Cycle or round not found");
-
-  // Update participant's roundId
-  await db
-    .update(participants)
-    .set({ roundId, updatedAt: new Date() })
-    .where(eq(participants.id, participantId));
+  const round = enrollment.round;
+  const cycle = enrollment.round.cycle;
 
   if (round.feeUsd === 0) {
     await db
-      .update(participants)
-      .set({ paymentStatus: "paid", updatedAt: new Date() })
-      .where(eq(participants.id, participantId));
-    revalidatePath("/participant");
-    redirect("/participant/enrollment?payment=success");
+      .update(enrollments)
+      .set({ paymentStatus: “paid”, enrollmentStatus: “confirmed”, updatedAt: new Date() })
+      .where(eq(enrollments.id, enrollmentId));
+    revalidatePath(“/participant”);
+    redirect(“/participant/enrollment?payment=success”);
   }
 
-  // Idempotency: re-use an existing open Stripe session for this participant+round
+  // Idempotency: re-use an existing open Stripe session for this enrollment
   const existingPayment = await db.query.payments.findFirst({
     where: and(
-      eq(payments.participantId, participantId),
-      eq(payments.roundId, roundId),
-      eq(payments.status, "pending")
+      eq(payments.enrollmentId, enrollmentId),
+      eq(payments.status, “pending”)
     ),
   });
   if (existingPayment?.stripeCheckoutSessionId) {
@@ -240,7 +242,7 @@ export async function initiatePayment(formData: FormData) {
       const existingSession = await stripe.checkout.sessions.retrieve(
         existingPayment.stripeCheckoutSessionId
       );
-      if (existingSession.url && existingSession.status === "open") {
+      if (existingSession.url && existingSession.status === “open”) {
         redirect(existingSession.url);
       }
     } catch {
@@ -260,16 +262,16 @@ export async function initiatePayment(formData: FormData) {
   // feeAmount is the total service fee charged to the participant (Stripe's cut)
   const feeAmount = grossAmount - round.feeUsd;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? “http://localhost:3000”;
   const checkoutSession = await stripe.checkout.sessions.create({
-    mode: "payment",
-    payment_method_types: ["card"],
+    mode: “payment”,
+    payment_method_types: [“card”],
     customer_email: session.user.email,
     line_items: [
       {
         quantity: 1,
         price_data: {
-          currency: "usd",
+          currency: “usd”,
           unit_amount: grossAmount,
           product_data: {
             name: `${round.name} вЂ” Registration Fee`,
@@ -280,9 +282,10 @@ export async function initiatePayment(formData: FormData) {
     ],
     metadata: {
       userId: session.user.id,
-      cycleId: String(cycleId),
-      roundId: String(roundId),
-      participantId: String(participantId),
+      enrollmentId: String(enrollmentId),
+      cycleId: String(cycle.id),
+      roundId: String(round.id),
+      participantId: String(enrollment.participantId),
     },
     success_url: `${appUrl}/participant/enrollment?payment=success&sid={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/participant/enrollment?payment=cancelled`,
@@ -290,13 +293,14 @@ export async function initiatePayment(formData: FormData) {
 
   await db.insert(payments).values({
     userId: session.user.id,
-    participantId,
-    cycleId,
-    roundId,
+    enrollmentId,
+    participantId: enrollment.participantId,
+    cycleId: cycle.id,
+    roundId: round.id,
     stripeCheckoutSessionId: checkoutSession.id,
     amountCents: grossAmount,
-    currency: "usd",
-    status: "pending",
+    currency: “usd”,
+    status: “pending”,
   });
 
   redirect(checkoutSession.url!);
