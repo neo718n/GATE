@@ -1,6 +1,6 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, cycles, payments } from "@/lib/db/schema";
+import { participants, cycles, payments, enrollments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import { LocalDate } from "@/components/ui/local-date";
@@ -27,10 +27,15 @@ export default async function EnrollmentPage({
   });
 
   // Verify Stripe payment when redirected back from checkout (webhook fallback)
-  if (sp.payment === "success" && sp.sid && participant?.paymentStatus !== "paid") {
+  if (sp.payment === "success" && sp.sid) {
     try {
       const sess = await stripe.checkout.sessions.retrieve(sp.sid);
       if (sess.payment_status === "paid") {
+        // Extract enrollmentId from session metadata
+        const enrollmentIdStr = sess.metadata?.enrollmentId;
+        const enrollmentId = enrollmentIdStr ? parseInt(enrollmentIdStr, 10) : null;
+
+        // Update payment record
         await db
           .update(payments)
           .set({
@@ -40,7 +45,19 @@ export default async function EnrollmentPage({
             updatedAt: new Date(),
           })
           .where(eq(payments.stripeCheckoutSessionId, sp.sid));
-        if (participant) {
+
+        if (enrollmentId) {
+          // New enrollment-based flow: Update enrollment status
+          await db
+            .update(enrollments)
+            .set({
+              paymentStatus: "paid",
+              enrollmentStatus: "confirmed",
+              updatedAt: new Date(),
+            })
+            .where(eq(enrollments.id, enrollmentId));
+        } else if (participant && participant.paymentStatus !== "paid") {
+          // Legacy flow: Update participant payment status for backward compatibility
           await db
             .update(participants)
             .set({ paymentStatus: "paid", updatedAt: new Date() })
