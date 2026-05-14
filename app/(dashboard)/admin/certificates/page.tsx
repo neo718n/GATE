@@ -32,7 +32,7 @@ export default async function CertificatesPage() {
           Certificates are generated and issued to participants once results are published.
           Each certificate includes a unique verification code, the participant&apos;s name, subject,
           cycle, award level, and official G.A.T.E. seal. Certificate generation pipeline is
-          managed by the operations team вЂ” upload the certificate URL to each result record to
+          managed by the operations team вЂ" upload the certificate URL to each result record to
           make it available for download.
         </p>
       </div>
@@ -57,11 +57,11 @@ export default async function CertificatesPage() {
               key={r.id}
               className="grid grid-cols-[2fr_1fr_1fr_1fr_100px] gap-4 px-5 py-4 items-center"
             >
-              <p className=”text-sm font-light text-foreground truncate”>
-                {(r.participant as any)?.fullName ?? “—“}
+              <p className="text-sm font-light text-foreground truncate">
+                {(r.participant as any)?.fullName ?? "—"}
               </p>
-              <p className=”text-xs font-light text-foreground/70”>{(r.subject as any)?.name ?? “—“}</p>
-              <p className=”text-xs font-light text-foreground/70”>{(r.cycle as any)?.name ?? “—“}</p>
+              <p className="text-xs font-light text-foreground/70">{(r.subject as any)?.name ?? "—"}</p>
+              <p className="text-xs font-light text-foreground/70">{(r.cycle as any)?.name ?? "—"}</p>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gate-gold">
                 {r.award ? r.award.replace("_", " ") : "Participation"}
               </p>
