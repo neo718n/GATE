@@ -70,7 +70,7 @@ export default async function NewExamPage() {
               className="h-12 rounded-xl border border-border bg-card px-4 text-sm font-light text-foreground focus:outline-none focus:border-gate-gold focus:ring-2 focus:ring-gate-gold/15 transition-all"
             >
               <option value="">— None —</option>
-              {allRounds.map((r) => (
+              {(allRounds as any[]).map((r) => (
                 <option key={r.id} value={r.id}>{r.cycle?.name} — {r.name}</option>
               ))}
             </select>

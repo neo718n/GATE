@@ -39,7 +39,7 @@ export default async function ResultsPage() {
         <ResultsForm
           allParticipants={allParticipants}
           allSubjects={allSubjects}
-          allCycles={allCycles}
+          allCycles={allCycles as any}
         />
       </details>
 
@@ -56,7 +56,7 @@ export default async function ResultsPage() {
               </span>
             ))}
           </div>
-          {allResults.map((r) => (
+          {(allResults as any[]).map((r) => (
             <div
               key={r.id}
               className="grid grid-cols-[2fr_1fr_1fr_1fr_80px_80px_100px] gap-3 px-5 py-3 items-center"

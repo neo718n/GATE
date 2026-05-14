@@ -53,7 +53,7 @@ export default async function SessionDetailPage({
           <Link href={`/admin/exams/${examId}/results`} className="hover:opacity-70">Results</Link>
         </span>
         <h1 className="font-serif text-4xl font-light text-foreground">
-          {session.participant?.fullName ?? "Session"} — Detail
+          {(session as any).participant?.fullName ?? "Session"} — Detail
         </h1>
         <div className="flex items-center gap-4 mt-1">
           <span className={`text-[10px] font-semibold uppercase tracking-[0.12em] ${STATUS_COLOR[session.status]}`}>

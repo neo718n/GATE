@@ -49,7 +49,7 @@ export default async function NotificationsPage() {
                 </span>
               ))}
             </div>
-            {allNotifications.map((n) => (
+            {(allNotifications as any[]).map((n) => (
               <div
                 key={n.id}
                 className="grid grid-cols-[3fr_1.5fr_1fr_1fr_120px] gap-4 px-5 py-4 items-center"

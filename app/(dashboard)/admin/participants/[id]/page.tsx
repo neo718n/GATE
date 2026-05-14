@@ -142,7 +142,7 @@ export default async function ParticipantDetailPage({
             ["Grade", participant.grade ?? "—"],
             ["Registration Status", participant.registrationStatus],
             ["Payment Status", participant.paymentStatus],
-            ["Cycle", participant.cycle?.name ?? "—"],
+            ["Cycle", (participant as any).cycle?.name ?? "—"],
           ].map(([label, value]) => (
             <div key={label}>
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50 mb-0.5">
@@ -190,7 +190,7 @@ export default async function ParticipantDetailPage({
             Results
           </h2>
           <div className="flex flex-col gap-0 divide-y divide-border">
-            {participant.results.map((r) => (
+            {(participant.results as any[]).map((r) => (
               <div key={r.id} className="grid grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 py-3 items-center">
                 <p className="text-sm font-light text-foreground">{r.subject.name}</p>
                 <p className="text-xs font-light text-foreground/60">{r.round?.name ?? "—"}</p>
@@ -226,7 +226,7 @@ export default async function ParticipantDetailPage({
                 </span>
               ))}
             </div>
-            {participant.payments.map((p) => (
+            {(participant.payments as any[]).map((p) => (
               <div key={p.id} className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_100px] gap-4 py-3 items-center">
                 <p className="text-sm font-light text-foreground">{p.cycle?.name ?? "—"}</p>
                 <p className="text-xs font-light text-foreground/60">{p.round?.name ?? "—"}</p>

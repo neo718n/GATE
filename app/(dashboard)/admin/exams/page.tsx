@@ -77,7 +77,7 @@ export default async function ExamsPage({
           </p>
         )}
 
-        {rows.map((e) => (
+        {(rows as any[]).map((e) => (
           <div key={e.id} className="grid grid-cols-[2fr_1fr_1.2fr_1fr_80px_80px_100px] gap-4 px-5 py-4 items-center">
             <div className="flex flex-col gap-0.5 min-w-0">
               <p className="text-sm font-light text-foreground truncate">{e.title}</p>

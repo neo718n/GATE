@@ -81,7 +81,7 @@ export default async function ExamResultsPage({ params }: { params: Promise<{ id
           <p className="px-5 py-10 text-sm font-light text-foreground/40 text-center">No sessions yet.</p>
         )}
 
-        {exam.sessions.map((s) => (
+        {(exam.sessions as any[]).map((s) => (
           <div key={s.id} className="grid grid-cols-[2fr_1.5fr_1fr_1fr_1fr_80px] gap-4 px-5 py-4 items-center">
             <div className="min-w-0">
               <p className="text-sm font-light text-foreground truncate">{s.participant?.fullName}</p>

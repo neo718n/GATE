@@ -357,7 +357,7 @@ export default async function CyclesPage() {
                       <p className="text-xs font-light text-foreground/40">No subjects selected.</p>
                     ) : (
                       <div className="flex flex-wrap gap-2">
-                        {cycle.subjects.map((cs) => (
+                        {(cycle.subjects as any[]).map((cs) => (
                           <form key={cs.subjectId} action={removeCycleSubject} className="flex items-center gap-1.5 border border-border pl-3 pr-2 py-1.5">
                             <input type="hidden" name="cycleId" value={cycle.id} />
                             <input type="hidden" name="subjectId" value={cs.subjectId} />

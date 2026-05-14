@@ -107,7 +107,7 @@ export default async function ParticipantsPage({
           </p>
         )}
 
-        {rows.map((p) => (
+        {(rows as any[]).map((p) => (
           <div key={p.id} className="grid grid-cols-[2fr_2fr_1.5fr_1.2fr_1fr_1fr_80px] gap-4 px-5 py-4 items-center">
             <p className="text-sm font-light text-foreground truncate">{p.fullName}</p>
             <p className="text-xs font-light text-foreground/55 truncate">{p.user?.email ?? "-"}</p>

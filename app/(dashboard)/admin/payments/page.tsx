@@ -98,7 +98,7 @@ export default async function PaymentsPage({
           </p>
         )}
 
-        {pagePayments.map((p) => (
+        {(pagePayments as any[]).map((p) => (
           <div
             key={p.id}
             className="grid grid-cols-[2fr_2fr_1.5fr_1fr_1fr_1fr_110px_100px] gap-3 px-5 py-4 items-center min-w-[900px]"
