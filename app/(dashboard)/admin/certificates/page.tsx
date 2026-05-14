@@ -57,11 +57,11 @@ export default async function CertificatesPage() {
               key={r.id}
               className="grid grid-cols-[2fr_1fr_1fr_1fr_100px] gap-4 px-5 py-4 items-center"
             >
-              <p className="text-sm font-light text-foreground truncate">
-                {r.participant?.fullName ?? "вЂ”"}
+              <p className=”text-sm font-light text-foreground truncate”>
+                {(r.participant as any)?.fullName ?? “—“}
               </p>
-              <p className="text-xs font-light text-foreground/70">{r.subject?.name ?? "вЂ”"}</p>
-              <p className="text-xs font-light text-foreground/70">{r.cycle?.name ?? "вЂ”"}</p>
+              <p className=”text-xs font-light text-foreground/70”>{(r.subject as any)?.name ?? “—“}</p>
+              <p className=”text-xs font-light text-foreground/70”>{(r.cycle as any)?.name ?? “—“}</p>
               <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-gate-gold">
                 {r.award ? r.award.replace("_", " ") : "Participation"}
               </p>
