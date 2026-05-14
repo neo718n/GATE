@@ -61,7 +61,7 @@ export default async function ParticipantDetailPage({
           <h1 className="font-serif text-4xl font-light text-foreground">
             {participant.fullName}
           </h1>
-          <p className="text-sm font-light text-foreground/60">{participant.user.email}</p>
+          <p className="text-sm font-light text-foreground/60">{(participant.user as any).email}</p>
         </div>
         <Link
           href="/admin/participants"
@@ -171,7 +171,7 @@ export default async function ParticipantDetailPage({
           <p className="text-sm font-light text-foreground/40">No subjects enrolled.</p>
         ) : (
           <div className="flex flex-wrap gap-2">
-            {participant.subjects.map((ps) => (
+            {(participant.subjects as any[]).map((ps) => (
               <span
                 key={ps.subjectId}
                 className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] border border-border text-foreground/70"
