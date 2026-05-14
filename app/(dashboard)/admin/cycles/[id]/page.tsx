@@ -65,7 +65,7 @@ export default async function CycleDetailPage({
       </div>
 
       <CycleParticipantsManager
-        participants={participantList as Array<{
+        participants={(participantList as unknown) as Array<{
           id: number;
           fullName: string;
           country: string;
@@ -86,7 +86,7 @@ export default async function CycleDetailPage({
             round: { id: number; name: string } | null;
           }>;
         }>}
-        rounds={cycle.rounds}
+        rounds={cycle.rounds as any}
         cycleId={cycleId}
         cycleSubjects={cycleSubjects}
       />
