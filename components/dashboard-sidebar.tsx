@@ -34,6 +34,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   "/participant": LayoutDashboard,
   "/participant/profile": User,
   "/participant/enrollment": BookOpen,
+  "/participant/enrollments": GraduationCap,
   "/participant/exams": FileText,
   "/participant/results": Award,
   "/participant/certificates": Trophy,
