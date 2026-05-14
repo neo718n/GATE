@@ -71,10 +71,10 @@ export default async function CareersPage() {
                   </span>
                 </div>
 
-                {a.position && !Array.isArray(a.position) && (
+                {a.position && typeof a.position === 'object' && 'title' in a.position && (
                   <p className="text-sm font-light text-foreground/70">
-                    Position: <span className="font-semibold">{(a.position as any).title}</span>
-                    {(a.position as any).location ? ` · ${(a.position as any).location}` : ""}
+                    Position: <span className="font-semibold">{a.position.title}</span>
+                    {a.position.location ? ` · ${a.position.location}` : ""}
                   </p>
                 )}
 
