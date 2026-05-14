@@ -4,38 +4,38 @@ import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "Awards & Certificates",
-  description: "G.A.T.E. Assessment medals, distinctions, and certificates — Gold, Silver, Bronze, Honorable Mention.",
+  description: "G.A.T.E. Assessment recognition — Certificates of Distinction, High Achievement, Merit, and Honorable Mention.",
 };
 
-const MEDALS = [
+const RECOGNITION_TIERS = [
   {
-    tier: "Gold Medal",
+    tier: "Certificate of Distinction",
     hex: "#C9993A",
-    eligibility: "Top performers at the Global Onsite Assessment",
-    desc: "Awarded to participants who achieve the highest scores at the onsite final. The Gold Medal represents the pinnacle of academic achievement in G.A.T.E.",
+    eligibility: "Exceptional academic performance at the Global Onsite Assessment",
+    desc: "Recognizes participants demonstrating mastery of advanced concepts and exceptional problem-solving abilities. The Certificate of Distinction represents the highest level of academic achievement in G.A.T.E.",
   },
   {
-    tier: "Silver Medal",
+    tier: "Certificate of High Achievement",
     hex: "#8A9BB0",
-    eligibility: "Distinguished performance at the onsite final",
-    desc: "Awarded to participants demonstrating exceptional theoretical command and problem-solving ability across the examination.",
+    eligibility: "Outstanding academic performance at the onsite final",
+    desc: "Recognizes participants demonstrating strong theoretical understanding and advanced problem-solving skills across the assessment.",
   },
   {
-    tier: "Bronze Medal",
+    tier: "Certificate of Merit",
     hex: "#A07040",
-    eligibility: "Commendable performance at the onsite final",
-    desc: "Awarded to participants whose performance reflects strong academic preparation and consistent achievement across subjects.",
+    eligibility: "Strong academic performance at the onsite final",
+    desc: "Recognizes participants whose performance reflects solid academic preparation and consistent understanding across subject areas.",
   },
   {
     tier: "Honorable Mention",
     hex: "#2B5591",
     eligibility: "Notable performance — onsite final participants",
-    desc: "Awarded to participants who demonstrate exceptional ability in specific problem areas or show outstanding effort relative to performance.",
+    desc: "Recognizes participants who demonstrate particular strength in specific areas or show commendable effort and academic growth.",
   },
 ];
 
 const CERTIFICATES = [
-  { title: "Certificate of Excellence", desc: "Issued to all medal and Honorable Mention recipients at the Global Final. Includes medal tier, subject, and academic year." },
+  { title: "Certificate of Excellence", desc: "Issued to all distinction and Honorable Mention recipients at the Global Final. Includes recognition tier, subject, and academic year." },
   { title: "Certificate of Participation", desc: "Issued to all participants who complete the Preliminary Round. Verifiable and suitable for academic portfolios and university applications." },
   { title: "Certificate of Qualification", desc: "Issued to participants who qualify for Round II. Confirms successful completion of the global qualification stage." },
 ];
@@ -47,30 +47,30 @@ export default function AwardsPage() {
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Recognition</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Awards &amp; Certificates</h1>
-          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Academic achievement formally recognized — medals, distinctions, and verifiable certificates for all participants.</p>
+          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Academic achievement formally recognized — certificates of distinction, merit recognition, and verifiable documentation for all participants.</p>
         </div>
       </section>
 
       <section className="py-24 px-6 bg-gate-white">
         <div className="mx-auto max-w-7xl flex flex-col gap-12">
           <div className="flex flex-col gap-4">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Onsite Assessment Awards</span>
-            <h2 className="font-serif text-4xl font-light text-gate-800">Medal Hierarchy</h2>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Onsite Assessment Recognition</span>
+            <h2 className="font-serif text-4xl font-light text-gate-800">Recognition Tiers</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {MEDALS.map((medal) => (
-              <div key={medal.tier} className="flex gap-6 border border-gate-fog p-8">
+            {RECOGNITION_TIERS.map((tier) => (
+              <div key={tier.tier} className="flex gap-6 border border-gate-fog p-8">
                 <div className="flex flex-col items-center gap-2 shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 flex items-center justify-center" style={{ borderColor: medal.hex }}>
-                    <div className="w-5 h-5 rounded-full" style={{ background: medal.hex, opacity: 0.75 }} />
+                  <div className="w-12 h-12 rounded-full border-2 flex items-center justify-center" style={{ borderColor: tier.hex }}>
+                    <div className="w-5 h-5 rounded-full" style={{ background: tier.hex, opacity: 0.75 }} />
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
                   <div>
-                    <h3 className="text-base font-semibold tracking-[0.05em] text-gate-800">{medal.tier}</h3>
-                    <p className="text-[10px] font-light text-gate-gold mt-1">{medal.eligibility}</p>
+                    <h3 className="text-base font-semibold tracking-[0.05em] text-gate-800">{tier.tier}</h3>
+                    <p className="text-[10px] font-light text-gate-gold mt-1">{tier.eligibility}</p>
                   </div>
-                  <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{medal.desc}</p>
+                  <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{tier.desc}</p>
                 </div>
               </div>
             ))}
@@ -122,7 +122,7 @@ export default function AwardsPage() {
       <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
         <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
           <h2 className="font-serif text-4xl font-light text-gate-800">Begin Your Path to Recognition</h2>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. The top performers earn medals at the invitation-only Global Final.</p>
+          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. Outstanding participants earn distinction-level recognition at the invitation-only Global Final.</p>
           <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
         </div>
       </section>

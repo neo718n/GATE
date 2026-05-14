@@ -50,7 +50,7 @@ export function OnlineProgramSection({ round }: { round: Round | undefined }) {
             strengths, growth areas, and percentile across an international cohort.
           </p>
           <p className="text-sm font-light text-foreground/60 leading-[1.9] max-w-md">
-            This is not a competition — it is a diagnostic. The goal is self-knowledge: where
+            This is diagnostic and educational — not competitive. The goal is self-knowledge: where
             you stand academically, and where to focus your growth.
           </p>
         </div>

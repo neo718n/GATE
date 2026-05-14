@@ -3,7 +3,7 @@ import { CareerForm } from "./career-form";
 
 export const metadata: Metadata = {
   title: "Careers",
-  description: "Open positions at G.A.T.E. Assessment — join the team building a global academic assessment program.",
+  description: "Open positions at G.A.T.E. Assessment — join the team building a global diagnostic academic assessment framework.",
 };
 
 const POSITIONS = [
@@ -12,7 +12,7 @@ const POSITIONS = [
     type: "Full-Time / Remote",
     location: "Global (Remote)",
     desc: "Coordinate academic content, examination design review, and liaise with subject-matter experts across disciplines. You will play a central role in maintaining examination quality and academic integrity.",
-    requirements: ["Background in mathematics, sciences, or competitive programming","Experience with academic program coordination or examinations","Strong written communication in English","Ability to work across time zones with international teams"],
+    requirements: ["Background in mathematics, sciences, or educational assessment","Experience with academic program coordination or examinations","Strong written communication in English","Ability to work across time zones with international teams"],
   },
   {
     title: "Country Representative",
@@ -37,7 +37,7 @@ export default function CareersPage() {
         <div className="mx-auto max-w-7xl flex flex-col gap-4">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Join the Team</span>
           <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Careers</h1>
-          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Work with a global team building the infrastructure for international academic excellence.</p>
+          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Work with a global team building the infrastructure for diagnostic academic assessment and educational excellence.</p>
         </div>
       </section>
 
@@ -47,14 +47,14 @@ export default function CareersPage() {
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">About Working at G.A.T.E.</span>
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Build Something That Matters</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
-              <p>G.A.T.E. is a small, focused team building a rigorous international academic platform. Every role here has direct impact on how thousands of students around the world access and experience academic excellence at the highest level.</p>
+              <p>G.A.T.E. is a small, focused team building a rigorous international diagnostic assessment framework. Every role here has direct impact on how thousands of students around the world access and participate in meaningful academic evaluation at the highest level.</p>
               <p>We work remotely across multiple time zones. We value clarity, reliability, and genuine care for academic integrity above all.</p>
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[
               { title: "Remote-First", body: "All positions are remote or hybrid. We are a global team and expect to work that way." },
-              { title: "Academic Mission", body: "Our work directly supports students competing for meaningful academic recognition." },
+              { title: "Academic Mission", body: "Our work directly supports students participating in meaningful academic evaluation and recognition." },
               { title: "Small Team", body: "No bureaucracy. You will have direct influence and see the results of your work." },
               { title: "International Scope", body: "You will work with participants, coordinators, and partners from across the world." },
             ].map((item) => (

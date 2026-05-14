@@ -1,6 +1,6 @@
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 
-const GOLD = "#c9993a";
+const ACCENT = "#c9993a";
 const DARK = "#111111";
 const MUTED = "#666666";
 const BORDER = "#cccccc";
@@ -8,14 +8,14 @@ const LIGHT = "#f5f5f5";
 
 const s = StyleSheet.create({
   page: { fontFamily: "Helvetica", fontSize: 10, color: DARK, backgroundColor: "#ffffff" },
-  topBar: { backgroundColor: GOLD, height: 5 },
+  topBar: { backgroundColor: ACCENT, height: 5 },
   body: { padding: "28 44 60 44" },
 
   // Header
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 },
   brandName: { fontSize: 20, fontFamily: "Helvetica-Bold", color: DARK, letterSpacing: 2 },
   brandSub: { fontSize: 7, color: MUTED, marginTop: 3 },
-  brandSite: { fontSize: 7, color: GOLD, marginTop: 1 },
+  brandSite: { fontSize: 7, color: ACCENT, marginTop: 1 },
   invoiceTitle: { fontSize: 26, fontFamily: "Helvetica-Bold", color: DARK, textAlign: "right" },
   invoiceSubtitle: { fontSize: 8, color: MUTED, textAlign: "right", marginTop: 2 },
 
@@ -108,7 +108,7 @@ const s = StyleSheet.create({
     justifyContent: "space-between",
   },
   footerText: { fontSize: 7.5, color: MUTED },
-  footerGold: { fontSize: 7.5, color: GOLD },
+  footerAccent: { fontSize: 7.5, color: ACCENT },
 });
 
 interface InvoiceProps {
@@ -237,7 +237,7 @@ export function InvoicePDF({ invoiceNumber, issuedAt, participant, cycle, round,
         {/* Footer */}
         <View style={s.footer}>
           <Text style={s.footerText}>G.A.T.E. Assessment {"·"} Assessment Management Platform</Text>
-          <Text style={s.footerGold}>support@gate-assessment.org</Text>
+          <Text style={s.footerAccent}>support@gate-assessment.org</Text>
         </View>
       </Page>
     </Document>

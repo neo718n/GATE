@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 const PROGRAM = [
   { day: "Day 1", title: "Arrival & Orientation", desc: "Participant registration, venue orientation, opening ceremony, and introduction to the international academic committee." },
   { day: "Day 2", title: "Academic Workshops", desc: "Subject-specific preparatory sessions led by academic supervisors. Introduction to examination format and conduct procedures." },
-  { day: "Day 3–4", title: "Main Examinations", desc: "Core competitive examinations conducted in university halls under full academic supervision and international jury oversight." },
+  { day: "Day 3–4", title: "Main Examinations", desc: "Core diagnostic examinations conducted in university halls under full academic supervision and international jury oversight." },
   { day: "Day 5", title: "Academic Activities", desc: "University campus tours, faculty lectures, and academic exchange with host institution researchers and graduate students." },
   { day: "Day 6", title: "Cultural Program", desc: "Guided cultural experience in the host city — an opportunity to explore the local academic and cultural landscape." },
-  { day: "Day 7", title: "Award Ceremony & Closing", desc: "Official awards ceremony, medal and certificate presentation, closing address, and participant departure." },
+  { day: "Day 7", title: "Award Ceremony & Closing", desc: "Official awards ceremony, certificate and distinction presentation, closing address, and participant departure." },
 ];
 
 export default function OnsiteAssessmentPage() {
@@ -33,7 +33,7 @@ export default function OnsiteAssessmentPage() {
             <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">The Global Academic Final</h2>
             <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
               <p>Participants who qualify through the Preliminary Round are invited to the Global Onsite Assessment — a 7-day academic program held at a leading international host institution, announced per edition.</p>
-              <p>The onsite program combines competitive examination with academic exposure, cultural exchange, and international scholarly interaction. It represents the pinnacle of the G.A.T.E. Assessment experience.</p>
+              <p>The onsite program combines diagnostic examination with academic exposure, cultural exchange, and international scholarly interaction. It represents the pinnacle of the G.A.T.E. Assessment experience.</p>
             </div>
           </div>
           <div className="flex flex-col gap-0">
@@ -85,7 +85,7 @@ export default function OnsiteAssessmentPage() {
               { title: "International Jury", body: "All examinations are overseen by an international academic jury composed of subject-matter experts from multiple countries." },
               { title: "Verified Conditions", body: "Examination conditions meet international academic standards, including identity verification and supervised conduct protocols." },
               { title: "Independent Scoring", body: "Results are scored independently with no affiliation to any participant institution or national committee." },
-              { title: "Official Certification", body: "All medals, distinctions, and certificates are formally issued by G.A.T.E. with verifiable authenticity." },
+              { title: "Official Certification", body: "All distinctions and certificates are formally issued by G.A.T.E. with verifiable authenticity." },
             ].map((item) => (
               <div key={item.title} className="flex flex-col gap-3 border border-gate-fog p-6">
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-800">{item.title}</h3>

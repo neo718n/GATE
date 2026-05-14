@@ -5,9 +5,9 @@ const EVERYONE = [
 ];
 
 const AWARDS = [
-  { tier: "Academic Distinction", percentile: "Top 5%", hex: "#C9993A", desc: "Highest level of academic recognition for exceptional performance." },
-  { tier: "Honors", percentile: "Top 15%", hex: "#8A9BB0", desc: "Distinguished academic achievement above peer cohort." },
-  { tier: "Merit", percentile: "Top 30%", hex: "#A07040", desc: "Notable performance demonstrating strong academic competence." },
+  { tier: "Certificate of Distinction", percentile: "Top 5%", hex: "#C9993A", desc: "Highest level of academic recognition for exceptional performance." },
+  { tier: "Certificate of High Achievement", percentile: "Top 15%", hex: "#8A9BB0", desc: "Distinguished academic achievement above peer cohort." },
+  { tier: "Certificate of Merit", percentile: "Top 30%", hex: "#A07040", desc: "Notable performance demonstrating strong academic competence." },
 ];
 
 export function RecognitionSection() {
@@ -77,7 +77,7 @@ export function RecognitionSection() {
             ))}
           </div>
           <p className="text-center text-[11px] font-light text-foreground/40 italic">
-            Awards are academic honors — not competition prizes. They recognize individual academic achievement.
+            Certificates are academic honors — not competitive prizes. They recognize individual academic achievement.
           </p>
         </div>
       </div>
