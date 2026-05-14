@@ -29,7 +29,7 @@ export default async function QpExamDetailPage({ params }: { params: Promise<{ i
           </span>
           <h1 className="font-serif text-4xl font-light text-foreground">{exam.title}</h1>
           <p className="text-sm font-light text-foreground/60 mt-1">
-            {exam.questions.length} question{exam.questions.length !== 1 ? "s" : ""} ·{" "}
+            {(exam.questions as any[]).length} question{(exam.questions as any[]).length !== 1 ? "s" : ""} ·{" "}
             {exam.type} · {exam.published ? "Published" : "Draft"}
           </p>
         </div>
@@ -46,7 +46,7 @@ export default async function QpExamDetailPage({ params }: { params: Promise<{ i
           ))}
         </div>
 
-        {exam.questions.length === 0 && (
+        {(exam.questions as any[]).length === 0 && (
           <p className="px-5 py-10 text-sm font-light text-foreground/40 text-center">
             No questions yet.{" "}
             <Link href={`/qp/exams/${examId}/questions/new`} className="text-gate-gold hover:underline">
@@ -55,7 +55,7 @@ export default async function QpExamDetailPage({ params }: { params: Promise<{ i
           </p>
         )}
 
-        {exam.questions.map((q, idx) => (
+        {(exam.questions as any[]).map((q, idx) => (
           <div key={q.id} className="grid grid-cols-[40px_3fr_1fr_60px_100px] gap-4 px-5 py-4 items-center">
             <span className="text-xs font-light text-foreground/40">{idx + 1}</span>
             <p

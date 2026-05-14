@@ -52,10 +52,10 @@ export default async function QpExamsPage() {
               {exam.type}
             </span>
             <p className="text-xs font-light text-foreground/70 truncate">
-              {exam.subject?.name ?? "-"}
+              {(exam.subject as any)?.name ?? "-"}
             </p>
             <p className="text-sm font-light text-foreground">
-              {exam.questions.length}
+              {(exam.questions as any[]).length}
             </p>
             <Link
               href={`/qp/exams/${exam.id}`}
