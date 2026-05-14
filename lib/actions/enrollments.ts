@@ -129,3 +129,69 @@ export async function getParticipantEnrollments(participantId: number) {
 
   return participantEnrollments;
 }
+
+/**
+ * Updates the enrollment status for a specific enrollment.
+ * Authorization: Requires participant, admin, or super_admin role. Verifies enrollment's participant.userId matches session user.
+ * Allows status transitions between: draft, pending_payment, confirmed, cancelled.
+ * Prevents updates to cancelled enrollments (terminal state).
+ * @param formData - Form data containing: enrollmentId, enrollmentStatus
+ * @throws {Error} "All fields are required" if enrollmentId or enrollmentStatus missing
+ * @throws {Error} "Invalid enrollment status" if status is not one of the valid enum values
+ * @throws {Error} "Enrollment not found" if enrollment doesn't exist
+ * @throws {Error} "Unauthorized" if enrollment's participant doesn't belong to session user
+ * @throws {Error} "Cannot update a cancelled enrollment" if current status is cancelled
+ */
+export async function updateEnrollmentStatus(formData: FormData) {
+  const session = await requireRole(["participant", "admin", "super_admin"]);
+
+  const enrollmentId = parseInt(formData.get("enrollmentId") as string);
+  const enrollmentStatusRaw = (formData.get("enrollmentStatus") as string)?.trim();
+
+  if (isNaN(enrollmentId) || !enrollmentId || !enrollmentStatusRaw) {
+    throw new Error("All fields are required");
+  }
+
+  // Validate enrollment status is one of the allowed values
+  const validStatuses = ["draft", "pending_payment", "confirmed", "cancelled"];
+  if (!validStatuses.includes(enrollmentStatusRaw)) {
+    throw new Error("Invalid enrollment status");
+  }
+
+  const enrollmentStatus = enrollmentStatusRaw as "draft" | "pending_payment" | "confirmed" | "cancelled";
+
+  // Fetch enrollment with participant data
+  const enrollment = await db.query.enrollments.findFirst({
+    where: eq(enrollments.id, enrollmentId),
+    with: {
+      participant: true,
+    },
+  });
+
+  if (!enrollment) {
+    throw new Error("Enrollment not found");
+  }
+
+  // Verify participant belongs to session user
+  if (enrollment.participant.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  // Prevent updates to cancelled enrollments (terminal state)
+  if (enrollment.enrollmentStatus === "cancelled") {
+    throw new Error("Cannot update a cancelled enrollment");
+  }
+
+  // Update enrollment status
+  await db
+    .update(enrollments)
+    .set({
+      enrollmentStatus,
+      updatedAt: new Date(),
+    })
+    .where(eq(enrollments.id, enrollmentId));
+
+  revalidatePath("/participant");
+  revalidatePath("/participant/enrollment");
+  revalidatePath("/participant/enrollments");
+}
