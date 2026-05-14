@@ -1,7 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
-import { payments, participants } from "@/lib/db/schema";
+import { payments, participants, enrollments } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import { sendPaymentConfirmationEmail } from "@/lib/send-payment-email";
@@ -28,10 +28,10 @@ export async function POST(req: NextRequest) {
 
   // Handle successful payment completion
   // Flow: (1) Extract card details from PaymentIntent, (2) Update payment record to "paid",
-  // (3) Update participant status, (4) Send confirmation email with invoice/receipt
+  // (3) Update enrollment status (or participant status for legacy), (4) Send confirmation email with invoice/receipt
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const { participantId } = session.metadata ?? {};
+    const { participantId, enrollmentId } = session.metadata ?? {};
 
     // Card details are optional extras for receipts and admin records
     // We fetch them from the PaymentIntent's latest charge
@@ -78,10 +78,26 @@ export async function POST(req: NextRequest) {
       })
       .where(eq(payments.stripeCheckoutSessionId, session.id));
 
-    // Update participant status to reflect successful payment
-    // This unlocks access to program features for the participant
+    // Update enrollment status to reflect successful payment
+    // For enrollment-based flow: update enrollment.paymentStatus and enrollment.enrollmentStatus
+    // For legacy flow (no enrollmentId): update participant.paymentStatus for backward compatibility
+    const enrollmentIdNum = enrollmentId ? parseInt(enrollmentId) : NaN;
     const participantIdNum = participantId ? parseInt(participantId) : NaN;
-    if (!isNaN(participantIdNum)) {
+
+    if (!isNaN(enrollmentIdNum)) {
+      // New enrollment-based flow: update enrollment status
+      // This unlocks access to program features for the specific enrollment
+      await db
+        .update(enrollments)
+        .set({
+          paymentStatus: "paid",
+          enrollmentStatus: "confirmed",
+          updatedAt: new Date()
+        })
+        .where(eq(enrollments.id, enrollmentIdNum));
+    } else if (!isNaN(participantIdNum)) {
+      // Legacy flow: update participant status for backward compatibility
+      // This maintains existing behavior for payments created before enrollment migration
       await db
         .update(participants)
         .set({ paymentStatus: "paid", updatedAt: new Date() })
