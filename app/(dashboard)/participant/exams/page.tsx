@@ -65,7 +65,7 @@ export default async function ParticipantExamsPage() {
             {e.subject && (
               <>
                 <span className="text-foreground/20">·</span>
-                <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">{e.subject.name}</span>
+                <span className="text-[9px] font-semibold uppercase tracking-[0.15em] text-foreground/40">{(e.subject as any).name}</span>
               </>
             )}
           </div>
