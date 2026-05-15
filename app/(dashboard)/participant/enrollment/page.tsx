@@ -108,7 +108,11 @@ async function EnrollmentPageInner({
 
   // Phase 3: if a program slug is provided in the URL, look up the target round
   // and decide if the user is already enrolled in it (banner) or needs onboarding.
-  const programSlug = sp.program?.trim().toLowerCase() ?? null;
+  // DIAGNOSTIC: short-circuit programSlug to null to isolate Phase 3 code path.
+  // If the page loads with this, the bug is in my new programSlug handling block below.
+  const _programSlugRaw = sp.program?.trim().toLowerCase() ?? null;
+  const programSlug: string | null = null;
+  void _programSlugRaw;
   let targetRound: typeof rounds.$inferSelect | null = null;
   let alreadyEnrolledInProgram = false;
   if (programSlug) {
@@ -295,10 +299,6 @@ async function EnrollmentPageInner({
               <EnrollmentCard
                 key={enrollment.id}
                 enrollment={enrollment as any}
-                onPaymentClick={(enrollmentId) => {
-                  // Payment will be handled by the EnrollmentCard component
-                  // This could navigate to a payment page or open a modal
-                }}
               />
             ))}
           </div>
