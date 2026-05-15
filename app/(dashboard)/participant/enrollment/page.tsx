@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { LocalDate } from "@/components/ui/local-date";
 import Link from "next/link";
-import { selectRound, selectSubject, initiatePayment } from "@/lib/actions/participant";
+import { selectRound, selectSubject, initiatePayment, enrollAndPay } from "@/lib/actions/participant";
 import { getParticipantEnrollments, createEnrollment } from "@/lib/actions/enrollments";
 import { stripe } from "@/lib/stripe";
 import { PaymentSubmitButton } from "@/components/payment-submit-button";
@@ -194,15 +194,59 @@ export default async function EnrollmentPage({
         </div>
       )}
 
-      {targetRound && !alreadyEnrolledInProgram && (
-        <div className="border border-blue-200 bg-blue-50 px-5 py-4 flex flex-col gap-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-blue-700">
-            Continue Enrollment
-          </p>
-          <p className="text-sm font-light text-blue-900/80">
-            Finish enrolling in <span className="font-medium">{targetRound.name}</span> by selecting a subject and completing payment below.
-          </p>
-        </div>
+      {targetRound && !alreadyEnrolledInProgram && activeCycle && (
+        <form
+          action={enrollAndPay}
+          className="border border-gate-gold/40 bg-card p-6 flex flex-col gap-6"
+        >
+          <input type="hidden" name="programSlug" value={(targetRound as any).slug} />
+
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
+              Enrolling in
+            </p>
+            <h2 className="font-serif text-2xl font-light text-foreground">{targetRound.name}</h2>
+            <p className="text-sm font-light text-foreground/60">
+              Total fee: ${(
+                Math.ceil(
+                  (targetRound.feeUsd + (activeCycle.stripeFeeFixedCents ?? 30)) /
+                    (1 - (activeCycle.stripeFeePercent ?? 290) / 10000)
+                ) / 100
+              ).toFixed(2)}
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50">
+              Choose subject *
+            </p>
+            {activeCycle.subjects.length === 0 ? (
+              <p className="text-sm font-light text-foreground/60">
+                No subjects available yet. Please contact support.
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {activeCycle.subjects.map(({ subject: s }) => (
+                  <label
+                    key={s.id}
+                    className="flex items-center gap-3 border border-border bg-background px-4 py-3 cursor-pointer hover:border-gate-gold transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="subjectId"
+                      value={s.id}
+                      required
+                      className="accent-gate-gold"
+                    />
+                    <span className="text-sm font-light text-foreground">{s.name}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <PaymentSubmitButton label="Continue to Payment" />
+        </form>
       )}
 
       {sp.payment === "cancelled" && (
@@ -276,8 +320,8 @@ export default async function EnrollmentPage({
         </div>
       )}
 
-      {/* New Enrollment Form */}
-      {activeCycle && (
+      {/* New Enrollment Form (hidden when a focused program flow is active and unpaid) */}
+      {activeCycle && (!targetRound || alreadyEnrolledInProgram) && (
         <div className="flex flex-col gap-6 border border-border p-6 bg-muted/10">
           <div className="flex flex-col gap-1.5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50">

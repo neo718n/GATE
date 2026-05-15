@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn, authClient } from "@/lib/auth-client";
+import { consumePendingProgramRedirect } from "@/lib/actions/pending-program";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -56,6 +57,12 @@ export function LoginForm() {
 
       if (from) {
         window.location.href = from;
+        return;
+      }
+
+      const pendingDest = await consumePendingProgramRedirect();
+      if (pendingDest) {
+        window.location.href = pendingDest;
         return;
       }
 

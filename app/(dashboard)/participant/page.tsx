@@ -180,6 +180,31 @@ export default async function ParticipantDashboard() {
       </div>
 
       {/* Quick actions grid */}
+      {profileComplete && !isPaid && (
+        <div className="rounded-2xl border-2 border-gate-gold bg-gate-gold/10 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
+              Next Step
+            </p>
+            <h2 className="font-serif text-xl font-light text-foreground">
+              {hasSubject ? "Complete your payment" : "Choose a program and pay"}
+            </h2>
+            <p className="text-sm font-light text-foreground/70 leading-relaxed">
+              {hasSubject
+                ? "Confirm your enrollment by completing the payment."
+                : "Pick a program and subject, then finish in one step."}
+            </p>
+          </div>
+          <Link
+            href="/participant/enrollment"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gate-gold px-5 py-3 text-sm font-semibold text-gate-800 transition-colors hover:bg-gate-gold-2 active:scale-95"
+          >
+            {hasSubject ? "Pay Now" : "Enroll Now"}
+            <ChevronRight className="h-4 w-4" />
+          </Link>
+        </div>
+      )}
+
       <div>
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           Quick Actions
@@ -227,27 +252,6 @@ export default async function ParticipantDashboard() {
         </div>
       )}
 
-      {profileComplete && !isPaid && (
-        <div className="flex items-center justify-between gap-4 rounded-2xl border border-gate-gold/25 bg-gate-gold/8 p-5">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
-              Next Step
-            </p>
-            <p className="mt-1 text-sm font-light text-foreground/70 leading-relaxed">
-              {hasSubject
-                ? "Complete payment to confirm your enrollment."
-                : "Select a subject and complete payment to enroll."}
-            </p>
-          </div>
-          <Link
-            href="/participant/enrollment"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-gate-gold px-4 py-2.5 text-xs font-semibold text-gate-800 transition-colors hover:bg-gate-gold-2 active:scale-95"
-          >
-            {hasSubject ? "Pay Now" : "Enroll"}{" "}
-            <ChevronRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-      )}
     </div>
   );
 }

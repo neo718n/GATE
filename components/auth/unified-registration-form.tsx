@@ -508,7 +508,7 @@ export function UnifiedRegistrationForm() {
 
       <p className="text-center text-xs font-light text-muted-foreground">
         Already have an account?{" "}
-        <Link href="/login" className="text-gate-gold hover:underline font-medium">
+        <Link href={pendingProgram ? `/login?program=${encodeURIComponent(pendingProgram)}` : "/login"} className="text-gate-gold hover:underline font-medium">
           Sign In
         </Link>
       </p>

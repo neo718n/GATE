@@ -262,7 +262,16 @@ export async function initiatePayment(formData: FormData) {
   // feeAmount is the total service fee charged to the participant (Stripe's cut)
   const feeAmount = grossAmount - round.feeUsd;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  if (!enrollment.subjectId) {
+    throw new Error("Please select a subject before continuing to payment.");
+  }
+  if (!session.user.email) {
+    throw new Error("Your account is missing an email address. Please contact support.");
+  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (!appUrl) {
+    throw new Error("Server misconfigured: NEXT_PUBLIC_APP_URL is not set. Payment cannot continue.");
+  }
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
@@ -274,7 +283,7 @@ export async function initiatePayment(formData: FormData) {
           currency: "usd",
           unit_amount: grossAmount,
           product_data: {
-            name: `${round.name} вЂ" Registration Fee`,
+            name: `${round.name} — Registration Fee`,
             description: `Includes $${(feeAmount / 100).toFixed(2)} service fee`,
           },
         },
@@ -304,5 +313,71 @@ export async function initiatePayment(formData: FormData) {
   });
 
   redirect(checkoutSession.url!);
+}
+
+/**
+ * One-shot atomic action: resolve program by slug, set the participant's subject for that program,
+ * and kick off the Stripe checkout. Replaces the three-step round → subject → pay wizard for the
+ * landing-page → enrollment path.
+ *
+ * @param formData - Form data containing: programSlug, subjectId
+ */
+export async function enrollAndPay(formData: FormData) {
+  const session = await requireRole(["participant", "admin", "super_admin"]);
+  const programSlug = ((formData.get("programSlug") as string) ?? "").trim().toLowerCase();
+  const subjectId = parseInt(formData.get("subjectId") as string);
+
+  if (!programSlug || isNaN(subjectId) || !subjectId) {
+    throw new Error("Please select a subject before continuing.");
+  }
+
+  const round = await db.query.rounds.findFirst({
+    where: eq(rounds.slug, programSlug),
+  });
+  if (!round) throw new Error("Program not found.");
+  if (round.registrationStatus !== "open") {
+    throw new Error("Registration for this program is currently closed.");
+  }
+
+  const participant = await db.query.participants.findFirst({
+    where: eq(participants.userId, session.user.id),
+  });
+  if (!participant) {
+    throw new Error("Please complete your profile before enrolling.");
+  }
+
+  let enrollment = await db.query.enrollments.findFirst({
+    where: and(
+      eq(enrollments.participantId, participant.id),
+      eq(enrollments.roundId, round.id)
+    ),
+  });
+
+  if (enrollment?.paymentStatus === "paid") {
+    redirect(`/participant/enrollment?program=${encodeURIComponent(programSlug)}`);
+  }
+
+  if (!enrollment) {
+    const [inserted] = await db
+      .insert(enrollments)
+      .values({
+        participantId: participant.id,
+        roundId: round.id,
+        subjectId,
+        enrollmentStatus: "draft",
+        paymentStatus: "unpaid",
+      })
+      .returning();
+    enrollment = inserted;
+  } else if (enrollment.subjectId !== subjectId) {
+    await db
+      .update(enrollments)
+      .set({ subjectId, updatedAt: new Date() })
+      .where(eq(enrollments.id, enrollment.id));
+  }
+
+  const payFormData = new FormData();
+  payFormData.set("enrollmentId", String(enrollment.id));
+  await initiatePayment(payFormData);
 }
 
