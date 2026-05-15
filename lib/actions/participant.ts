@@ -268,10 +268,9 @@ export async function initiatePayment(formData: FormData) {
   if (!session.user.email) {
     throw new Error("Your account is missing an email address. Please contact support.");
   }
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) {
-    throw new Error("Server misconfigured: NEXT_PUBLIC_APP_URL is not set. Payment cannot continue.");
-  }
+  const appUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
