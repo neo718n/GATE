@@ -112,10 +112,15 @@ export default async function EnrollmentPage({
   let targetRound: typeof rounds.$inferSelect | null = null;
   let alreadyEnrolledInProgram = false;
   if (programSlug) {
-    targetRound =
-      (await db.query.rounds.findFirst({
-        where: eq(rounds.slug, programSlug),
-      })) ?? null;
+    try {
+      targetRound =
+        (await db.query.rounds.findFirst({
+          where: eq(rounds.slug, programSlug),
+        })) ?? null;
+    } catch (err) {
+      console.error("[enrollment] rounds.findFirst failed for slug:", programSlug, err);
+      throw err;
+    }
     if (!targetRound) notFound();
     if (targetRound.registrationStatus !== "open") notFound();
 
@@ -125,14 +130,18 @@ export default async function EnrollmentPage({
     alreadyEnrolledInProgram = targetEnrollment?.paymentStatus === "paid";
 
     if (!targetEnrollment) {
-      // Create a draft so the user can resume directly at subject/payment.
-      await db.insert(enrollments).values({
-        participantId: participant.id,
-        roundId: targetRound.id,
-        subjectId: null,
-        enrollmentStatus: "draft",
-        paymentStatus: "unpaid",
-      });
+      try {
+        await db.insert(enrollments).values({
+          participantId: participant.id,
+          roundId: targetRound.id,
+          subjectId: null,
+          enrollmentStatus: "draft",
+          paymentStatus: "unpaid",
+        });
+      } catch (err) {
+        console.error("[enrollment] insert draft enrollment failed:", { participantId: participant.id, roundId: targetRound.id }, err);
+        throw err;
+      }
     }
   }
 

@@ -22,6 +22,14 @@ export default function DashboardError({
       <p className="text-sm font-light text-foreground/60">
         An unexpected error occurred while loading this page.
       </p>
+      {error.digest && (
+        <p className="text-[10px] font-mono text-foreground/40">digest: {error.digest}</p>
+      )}
+      {error.message && (
+        <pre className="text-xs font-mono text-red-700 bg-red-50 border border-red-200 p-3 rounded whitespace-pre-wrap break-words max-w-xl">
+          {error.message}
+        </pre>
+      )}
       <Button variant="outline" size="sm" onClick={reset} className="w-fit">
         Try again
       </Button>
