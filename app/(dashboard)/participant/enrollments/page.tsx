@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { participants, cycles } from "@/lib/db/schema";
+import { eq, or } from "drizzle-orm";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getParticipantEnrollments } from "@/lib/actions/enrollments";
@@ -43,10 +43,24 @@ export default async function EnrollmentsPage() {
   // Fetch all enrollments for this participant
   const enrollments = await getParticipantEnrollments(participant.id);
 
+  // Determine whether there are still open programs the participant hasn't enrolled in.
+  // We treat any existing enrollment (draft, paid, etc.) as "taken" — drafts are resumable
+  // from the card itself, no need to "enroll again" in the same round.
+  const activeCycle = await db.query.cycles.findFirst({
+    where: or(eq(cycles.status, "registration_open"), eq(cycles.status, "active")),
+    with: { rounds: true },
+  });
+  const enrolledRoundIds = new Set(enrollments.map((e) => e.roundId));
+  const availableRounds =
+    activeCycle?.rounds.filter(
+      (r) => r.registrationStatus === "open" && !enrolledRoundIds.has(r.id),
+    ) ?? [];
+  const hasMoreToEnroll = availableRounds.length > 0;
+
   return (
     <div className="flex flex-col gap-8 max-w-5xl">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex flex-col gap-1.5">
           <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
             My Enrollments
@@ -54,10 +68,27 @@ export default async function EnrollmentsPage() {
           <h1 className="font-serif text-4xl font-light text-foreground">
             Program Enrollments
           </h1>
+          {enrollments.length > 0 && (
+            <p className="text-sm font-light text-foreground/55 mt-1">
+              {enrollments.length === 1
+                ? "1 enrollment"
+                : `${enrollments.length} enrollments`}
+              {" · "}
+              {hasMoreToEnroll
+                ? `${availableRounds.length} more program${availableRounds.length > 1 ? "s" : ""} available`
+                : "All open programs added"}
+            </p>
+          )}
         </div>
-        <Button variant="gold" size="sm" asChild>
-          <Link href="/participant/enrollment">Enroll in Another Program</Link>
-        </Button>
+        {hasMoreToEnroll ? (
+          <Button variant="gold" size="sm" asChild>
+            <Link href="/participant/enrollment">Enroll in Another Program</Link>
+          </Button>
+        ) : enrollments.length > 0 ? (
+          <span className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/40 border border-border px-3 py-1.5">
+            All Programs Added
+          </span>
+        ) : null}
       </div>
 
       {/* No enrollments state */}
@@ -80,15 +111,11 @@ export default async function EnrollmentsPage() {
         <EnrollmentsGrid enrollments={enrollments as any} />
       )}
 
-      {/* Help text */}
-      {enrollments.length > 0 && (
-        <div className="border-t border-border pt-6 mt-4">
-          <p className="text-xs font-light text-foreground/50 leading-[1.8]">
-            You can enroll in multiple programs simultaneously. Each enrollment has independent payment
-            status and subject selection. To view details or manage an enrollment, click &quot;View Details&quot;
-            on the enrollment card.
-          </p>
-        </div>
+      {/* Help text — only when it's actually new info (single enrollment, no context yet) */}
+      {enrollments.length === 1 && hasMoreToEnroll && (
+        <p className="text-xs font-light text-foreground/45 border-t border-border pt-4">
+          Each enrollment has its own subject choice and payment. Drafts can be resumed from the card above.
+        </p>
       )}
     </div>
   );

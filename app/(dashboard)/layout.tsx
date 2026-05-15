@@ -56,7 +56,7 @@ export default async function DashboardLayout({
     participant: [
       { href: "/participant", label: "Overview" },
       { href: "/participant/profile", label: "My Profile" },
-      { href: "/participant/enrollment", label: "Subject Enrollment" },
+      { href: "/participant/enrollment", label: "Enroll" },
       { href: "/participant/enrollments", label: "My Enrollments" },
       { href: "/participant/exams", label: "Exams" },
       { href: "/participant/results", label: "Results" },
