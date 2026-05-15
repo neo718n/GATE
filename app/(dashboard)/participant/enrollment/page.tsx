@@ -226,21 +226,23 @@ export default async function EnrollmentPage({
               </p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {activeCycle.subjects.map(({ subject: s }) => (
-                  <label
-                    key={s.id}
-                    className="flex items-center gap-3 border border-border bg-background px-4 py-3 cursor-pointer hover:border-gate-gold transition-colors"
-                  >
-                    <input
-                      type="radio"
-                      name="subjectId"
-                      value={s.id}
-                      required
-                      className="accent-gate-gold"
-                    />
-                    <span className="text-sm font-light text-foreground">{s.name}</span>
-                  </label>
-                ))}
+                {activeCycle.subjects.map(({ subject: s }) =>
+                  s ? (
+                    <label
+                      key={s.id}
+                      className="flex items-center gap-3 border border-border bg-background px-4 py-3 cursor-pointer hover:border-gate-gold transition-colors"
+                    >
+                      <input
+                        type="radio"
+                        name="subjectId"
+                        value={s.id}
+                        required
+                        className="accent-gate-gold"
+                      />
+                      <span className="text-sm font-light text-foreground">{s.name}</span>
+                    </label>
+                  ) : null
+                )}
               </div>
             )}
           </div>
