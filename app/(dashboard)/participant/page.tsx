@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { participants, cycles, enrollments } from "@/lib/db/schema";
+import { eq, or } from "drizzle-orm";
 import Link from "next/link";
 import {
   User, BookOpen, FileText, Award, Trophy,
@@ -46,6 +46,25 @@ export default async function ParticipantDashboard() {
   const isPending = participant?.registrationStatus === "submitted";
 
   const currentStep = isPaid ? 3 : hasSubject ? 2 : profileComplete ? 1 : 0;
+
+  // Open programs the participant could still enroll in.
+  const activeCycle = await db.query.cycles.findFirst({
+    where: or(eq(cycles.status, "registration_open"), eq(cycles.status, "active")),
+    with: { rounds: { orderBy: (r, { asc }) => [asc(r.order)] } },
+  });
+  const userEnrollments = participant
+    ? await db.query.enrollments.findMany({
+        where: eq(enrollments.participantId, participant.id),
+      })
+    : [];
+  const paidRoundIds = new Set(
+    userEnrollments.filter((e) => e.paymentStatus === "paid").map((e) => e.roundId)
+  );
+  const availableRounds =
+    (activeCycle?.rounds ?? []).filter(
+      (r) => r.registrationStatus === "open" && !paidRoundIds.has(r.id)
+    ) ?? [];
+  const showProgramsPanel = profileComplete && availableRounds.length > 0;
 
   const firstName = session.user.name?.split(" ")[0] ?? "Welcome";
   const initial = session.user.name?.charAt(0).toUpperCase() ?? "U";
@@ -109,6 +128,44 @@ export default async function ParticipantDashboard() {
         <div className="pointer-events-none absolute -right-10 -top-10 h-52 w-52 rounded-full bg-gate-gold/8" />
         <div className="pointer-events-none absolute -bottom-6 -right-2 h-32 w-32 rounded-full bg-gate-gold/5" />
       </div>
+
+      {/* Prominent programs panel — shown right after the hero when user can enroll */}
+      {showProgramsPanel && (
+        <div className="rounded-2xl border-2 border-gate-gold bg-gate-gold/10 p-6 flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
+              Choose Your Program
+            </p>
+            <h2 className="font-serif text-xl font-light text-foreground">
+              {availableRounds.length === 1
+                ? "Ready to enroll? Pick a subject and pay in one step."
+                : "Choose a program — pick a subject and pay in one step."}
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {availableRounds.map((r) => (
+              <Link
+                key={r.id}
+                href={`/participant/enrollment?program=${encodeURIComponent((r as any).slug ?? "")}`}
+                className="group flex flex-col gap-2 rounded-xl border border-border bg-card p-4 transition-colors hover:border-gate-gold hover:bg-gate-gold/5"
+              >
+                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
+                  {r.format === "onsite" ? "Onsite" : r.format === "hybrid" ? "Hybrid" : "Online"}
+                </span>
+                <span className="font-serif text-lg font-light text-foreground">{r.name}</span>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-sm font-medium text-foreground">
+                    {r.feeUsd > 0 ? `$${(r.feeUsd / 100).toFixed(2)}` : "Free"}
+                  </span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.15em] text-gate-gold group-hover:underline">
+                    Enroll →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Status badges */}
       <div className="grid grid-cols-3 gap-3">
@@ -180,7 +237,7 @@ export default async function ParticipantDashboard() {
       </div>
 
       {/* Quick actions grid */}
-      {profileComplete && !isPaid && (
+      {profileComplete && !isPaid && !showProgramsPanel && (
         <div className="rounded-2xl border-2 border-gate-gold bg-gate-gold/10 p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
