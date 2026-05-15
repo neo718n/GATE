@@ -243,6 +243,7 @@ export default async function CyclesPage() {
                             <form action={updateRound} className="px-3 py-3 border-t border-border flex flex-col gap-3">
                               <input type="hidden" name="id" value={r.id} />
                               <Input name="name" required defaultValue={r.name} placeholder="Round name" />
+                              <Input name="slug" required defaultValue={(r as any).slug ?? ""} placeholder="URL slug (e.g. online-program)" pattern="[a-z0-9]+(-[a-z0-9]+)*" />
                               <div className="grid grid-cols-2 gap-2">
                                 <Input name="order" type="number" min="1" defaultValue={r.order} placeholder="Order" />
                                 <Select
@@ -306,6 +307,7 @@ export default async function CyclesPage() {
                       <form action={createRound} className="p-3 border-t border-border flex flex-col gap-3">
                         <input type="hidden" name="cycleId" value={cycle.id} />
                         <Input name="name" required placeholder="Round name (e.g. Preliminary)" />
+                        <Input name="slug" required placeholder="URL slug (e.g. online-program)" pattern="[a-z0-9]+(-[a-z0-9]+)*" />
                         <div className="grid grid-cols-2 gap-2">
                           <Input name="order" type="number" min="1" placeholder="Order" defaultValue="1" />
                           <Select name="format">

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef, Fragment } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signUp, authClient, signIn } from "@/lib/auth-client";
 import { registerUser } from "@/lib/actions/auth-actions";
+import { setPendingProgramCookie } from "@/lib/actions/pending-program";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -73,6 +74,8 @@ const GENDER_OPTIONS = [
 
 export function UnifiedRegistrationForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const pendingProgram = searchParams?.get("program") ?? null;
 
   const [form, setForm] = useState({
     firstName: "",
@@ -207,6 +210,10 @@ export function UnifiedRegistrationForm() {
         setError(result.error ?? "Registration failed. Please try again.");
         setPending(false);
         return;
+      }
+
+      if (pendingProgram) {
+        await setPendingProgramCookie(pendingProgram);
       }
 
       // Send OTP verification email

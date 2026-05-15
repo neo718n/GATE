@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PROGRAM_SLUGS, programCtaHref } from "@/lib/program-cta";
 
 type Round = {
   feeUsd: number;
@@ -27,7 +28,7 @@ const STEPS = [
   { n: "04", title: "Earn Your Certificate", desc: "Receive your Certificate of Completion and any awarded distinctions." },
 ];
 
-export function OnlineProgramSection({ round }: { round: Round | undefined }) {
+export function OnlineProgramSection({ round, isAuthenticated = false }: { round: Round | undefined; isAuthenticated?: boolean }) {
   return (
     <section id="online-program" className="bg-background border-b border-border">
       {/* INTRO */}
@@ -124,7 +125,7 @@ export function OnlineProgramSection({ round }: { round: Round | undefined }) {
 
         <div className="flex justify-center mt-12">
           <Button variant="gold" size="lg" asChild>
-            <Link href="/register">Register for Online Assessment</Link>
+            <Link href={programCtaHref(PROGRAM_SLUGS.ONLINE, isAuthenticated)}>{isAuthenticated ? "Enroll in Online Assessment" : "Register for Online Assessment"}</Link>
           </Button>
         </div>
       </div>

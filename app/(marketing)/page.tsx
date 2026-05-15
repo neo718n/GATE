@@ -10,6 +10,8 @@ import { FinalCta } from "@/components/site/landing/final-cta";
 import { db } from "@/lib/db";
 import { cycles } from "@/lib/db/schema";
 import { eq, or, desc } from "drizzle-orm";
+import { getCurrentSession } from "@/lib/authz";
+import { PROGRAM_SLUGS } from "@/lib/program-cta";
 
 const FAQS = [
   {
@@ -58,9 +60,11 @@ export default async function HomePage() {
   });
 
   const rounds = activeCycle?.rounds ?? [];
-  const onlineRound = rounds.find((r) => r.order === 1);
-  const campRound = rounds.find((r) => r.order === 2);
+  const onlineRound = rounds.find((r) => (r as any).slug === PROGRAM_SLUGS.ONLINE);
+  const campRound = rounds.find((r) => (r as any).slug === PROGRAM_SLUGS.CHINA_CAMP);
   const registrationOpen = activeCycle?.status === "registration_open";
+  const session = await getCurrentSession();
+  const isAuthenticated = !!session;
 
   return (
     <>
@@ -83,11 +87,11 @@ export default async function HomePage() {
 
       <LandingHero />
 
-      <ProgramCards rounds={rounds as any} />
+      <ProgramCards rounds={rounds as any} isAuthenticated={isAuthenticated} />
 
-      <OnlineProgramSection round={onlineRound as any} />
+      <OnlineProgramSection round={onlineRound as any} isAuthenticated={isAuthenticated} />
 
-      <ChinaCampSection round={campRound as any} />
+      <ChinaCampSection round={campRound as any} isAuthenticated={isAuthenticated} />
 
       <RecognitionSection />
 
@@ -108,7 +112,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <FinalCta />
+      <FinalCta isAuthenticated={isAuthenticated} />
     </>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CHINA_CAMP_PHOTOS } from "@/lib/marketing/china-camp-photos";
+import { PROGRAM_SLUGS, programCtaHref } from "@/lib/program-cta";
 
 type Round = {
   id: number;
@@ -31,7 +32,7 @@ function dollarsFromCents(cents: number) {
   return `$${Math.floor(cents / 100).toLocaleString()}`;
 }
 
-export function ProgramCards({ rounds }: { rounds: Round[] }) {
+export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Round[]; isAuthenticated?: boolean }) {
   const online = rounds.find((r) => r.order === 1);
   const camp = rounds.find((r) => r.order === 2);
 
@@ -119,7 +120,7 @@ export function ProgramCards({ rounds }: { rounds: Round[] }) {
                   </span>
                 </div>
                 <Button variant="gold" size="md" asChild>
-                  <Link href="/register">Register</Link>
+                  <Link href={programCtaHref(PROGRAM_SLUGS.ONLINE, isAuthenticated)}>{isAuthenticated ? "Enroll" : "Register"}</Link>
                 </Button>
               </div>
             </div>
@@ -192,7 +193,7 @@ export function ProgramCards({ rounds }: { rounds: Round[] }) {
                   </span>
                 </div>
                 <Button variant="gold" size="md" asChild>
-                  <Link href="/register?program=camp">Apply</Link>
+                  <Link href={programCtaHref(PROGRAM_SLUGS.CHINA_CAMP, isAuthenticated)}>Apply</Link>
                 </Button>
               </div>
             </div>

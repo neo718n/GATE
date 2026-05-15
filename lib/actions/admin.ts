@@ -123,11 +123,14 @@ export async function updateCycleStatus(id: number, status: string) {
  * @throws {Error} If format is not a valid round format
  * @throws {Error} If registrationStatus is not a valid registration status
  */
+const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
 export async function createRound(formData: FormData) {
   await requireRole(["super_admin"]);
 
   const cycleId = parseInt(formData.get("cycleId") as string);
   const name = (formData.get("name") as string)?.trim();
+  const slug = (formData.get("slug") as string)?.trim().toLowerCase();
   const order = parseInt(formData.get("order") as string) || 1;
   const rawFormat = (formData.get("format") as string) || "online";
   const startDate = (formData.get("startDate") as string) || null;
@@ -136,12 +139,14 @@ export async function createRound(formData: FormData) {
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
   const rawRegStatus = (formData.get("registrationStatus") as string) || "closed";
 
-  if (isNaN(cycleId) || !cycleId || !name) throw new Error("Cycle and round name are required");
+  if (isNaN(cycleId) || !cycleId || !name || !slug) throw new Error("Cycle, round name and slug are required");
+  if (!SLUG_PATTERN.test(slug)) throw new Error("Slug must be lowercase kebab-case (e.g. online-program)");
   const format = assertEnum(rawFormat, ROUND_FORMATS, "format");
   const registrationStatus = assertEnum(rawRegStatus, ROUND_REG_STATUSES, "registration status");
 
   await db.insert(rounds).values({
     cycleId,
+    slug,
     name,
     order,
     format,
@@ -672,6 +677,7 @@ export async function updateRound(formData: FormData) {
   await requireRole(["super_admin"]);
   const id = parseInt(formData.get("id") as string);
   const name = (formData.get("name") as string)?.trim();
+  const slug = (formData.get("slug") as string)?.trim().toLowerCase();
   const order = parseInt(formData.get("order") as string) || 1;
   const rawFormat = formData.get("format") as string;
   const startDate = (formData.get("startDate") as string) || null;
@@ -680,13 +686,14 @@ export async function updateRound(formData: FormData) {
   const feeUsd = parseInt(formData.get("feeUsd") as string) || 0;
   const rawRegStatus = (formData.get("registrationStatus") as string) || "closed";
 
-  if (isNaN(id) || !id || !name) throw new Error("Round id and name required");
+  if (isNaN(id) || !id || !name || !slug) throw new Error("Round id, name and slug required");
+  if (!SLUG_PATTERN.test(slug)) throw new Error("Slug must be lowercase kebab-case (e.g. online-program)");
   const format = assertEnum(rawFormat, ROUND_FORMATS, "format");
   const registrationStatus = assertEnum(rawRegStatus, ROUND_REG_STATUSES, "registration status");
 
   await db
     .update(rounds)
-    .set({ name, order, format, startDate: startDate ? new Date(startDate) : null, endDate: endDate ? new Date(endDate) : null, venue, feeUsd, registrationStatus })
+    .set({ slug, name, order, format, startDate: startDate ? new Date(startDate) : null, endDate: endDate ? new Date(endDate) : null, venue, feeUsd, registrationStatus })
     .where(eq(rounds.id, id));
 
   revalidatePath("/admin/cycles");

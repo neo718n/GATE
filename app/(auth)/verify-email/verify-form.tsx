@@ -2,6 +2,7 @@
 
 import { useState, useRef, Fragment } from "react";
 import { authClient, signIn } from "@/lib/auth-client";
+import { consumePendingProgramRedirect } from "@/lib/actions/pending-program";
 import { Button } from "@/components/ui/button";
 
 export function VerifyEmailForm({ email }: { email: string }) {
@@ -37,7 +38,9 @@ export function VerifyEmailForm({ email }: { email: string }) {
         coordinator: "/coordinator",
         partner_contact: "/partner",
       };
-      setTimeout(() => { window.location.href = ROLE_HOME[role] ?? "/participant"; }, 1400);
+      const pendingDest = await consumePendingProgramRedirect();
+      const dest = pendingDest ?? ROLE_HOME[role] ?? "/participant";
+      setTimeout(() => { window.location.href = dest; }, 1400);
     } else {
       setTimeout(() => { window.location.href = "/login?verified=1"; }, 1400);
     }

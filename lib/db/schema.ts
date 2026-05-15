@@ -217,6 +217,7 @@ export const rounds = pgTable("rounds", {
   cycleId: integer("cycle_id")
     .notNull()
     .references(() => cycles.id, { onDelete: "cascade" }),
+  slug: text("slug").notNull().unique(),
   name: text("name").notNull(),
   order: integer("order").notNull().default(1),
   format: roundFormatEnum("format").notNull().default("online"),

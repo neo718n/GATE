@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CHINA_CAMP_PHOTOS, PHOTO_GALLERY } from "@/lib/marketing/china-camp-photos";
+import { PROGRAM_SLUGS, programCtaHref } from "@/lib/program-cta";
 
 type Round = {
   feeUsd: number;
@@ -80,7 +81,7 @@ const NOT_INCLUDED = [
   "Personal expenses",
 ];
 
-export function ChinaCampSection({ round }: { round: Round | undefined }) {
+export function ChinaCampSection({ round, isAuthenticated = false }: { round: Round | undefined; isAuthenticated?: boolean }) {
   return (
     <section id="hangzhou-camp" className="bg-card border-b border-border">
       {/* HERO BANNER */}
@@ -355,7 +356,7 @@ export function ChinaCampSection({ round }: { round: Round | undefined }) {
             </p>
             <div className="flex flex-wrap gap-3 mt-3 lg:justify-end">
               <Button variant="gold" size="lg" asChild>
-                <Link href="/register?program=camp">Apply for Camp</Link>
+                <Link href={programCtaHref(PROGRAM_SLUGS.CHINA_CAMP, isAuthenticated)}>{isAuthenticated ? "Enroll in Camp" : "Apply for Camp"}</Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <Link href="/contact">Contact for Details</Link>

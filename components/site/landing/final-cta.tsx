@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { PROGRAM_SLUGS, programCtaHref } from "@/lib/program-cta";
 
-export function FinalCta() {
+export function FinalCta({ isAuthenticated = false }: { isAuthenticated?: boolean }) {
   return (
     <section className="py-36 px-6 bg-gate-800 relative overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_45%_at_50%_50%,rgba(201,153,58,0.13),transparent)]" />
@@ -21,7 +22,7 @@ export function FinalCta() {
 
         <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
           <Button variant="gold" size="lg" asChild>
-            <Link href="/register">Register for Online Assessment</Link>
+            <Link href={programCtaHref(PROGRAM_SLUGS.ONLINE, isAuthenticated)}>{isAuthenticated ? "Enroll in Online Assessment" : "Register for Online Assessment"}</Link>
           </Button>
           <Button
             variant="outline"
@@ -29,7 +30,7 @@ export function FinalCta() {
             asChild
             className="border-gate-white/20 text-gate-white/70 bg-transparent hover:bg-gate-white/5 hover:border-gate-white/35 hover:text-gate-white"
           >
-            <Link href="/register?program=camp">Apply for Hangzhou Camp</Link>
+            <Link href={programCtaHref(PROGRAM_SLUGS.CHINA_CAMP, isAuthenticated)}>{isAuthenticated ? "Enroll in Hangzhou Camp" : "Apply for Hangzhou Camp"}</Link>
           </Button>
         </div>
 

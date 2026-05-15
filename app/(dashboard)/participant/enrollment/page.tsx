@@ -1,7 +1,8 @@
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { participants, cycles, payments, enrollments } from "@/lib/db/schema";
+import { participants, cycles, payments, enrollments, rounds } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { LocalDate } from "@/components/ui/local-date";
 import Link from "next/link";
@@ -14,7 +15,7 @@ import { EnrollmentCard } from "@/components/participant/enrollment-card";
 export default async function EnrollmentPage({
   searchParams,
 }: {
-  searchParams: Promise<{ payment?: string; sid?: string }>;
+  searchParams: Promise<{ payment?: string; sid?: string; program?: string }>;
 }) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
   const sp = await searchParams;
@@ -105,6 +106,36 @@ export default async function EnrollmentPage({
     existingEnrollments.map((enrollment) => enrollment.roundId)
   );
 
+  // Phase 3: if a program slug is provided in the URL, look up the target round
+  // and decide if the user is already enrolled in it (banner) or needs onboarding.
+  const programSlug = sp.program?.trim().toLowerCase() ?? null;
+  let targetRound: typeof rounds.$inferSelect | null = null;
+  let alreadyEnrolledInProgram = false;
+  if (programSlug) {
+    targetRound =
+      (await db.query.rounds.findFirst({
+        where: eq(rounds.slug, programSlug),
+      })) ?? null;
+    if (!targetRound) notFound();
+    if (targetRound.registrationStatus !== "open") notFound();
+
+    const targetEnrollment = existingEnrollments.find(
+      (e) => e.roundId === targetRound!.id
+    );
+    alreadyEnrolledInProgram = targetEnrollment?.paymentStatus === "paid";
+
+    if (!targetEnrollment) {
+      // Create a draft so the user can resume directly at subject/payment.
+      await db.insert(enrollments).values({
+        participantId: participant.id,
+        roundId: targetRound.id,
+        subjectId: null,
+        enrollmentStatus: "draft",
+        paymentStatus: "unpaid",
+      });
+    }
+  }
+
   const activeCycle = await db.query.cycles.findFirst({
     where: eq(cycles.status, "registration_open"),
     with: {
@@ -148,6 +179,28 @@ export default async function EnrollmentPage({
           </p>
           <p className="text-sm font-light text-green-800/70 mt-1">
             Your registration fee has been received. Your enrollment is confirmed.
+          </p>
+        </div>
+      )}
+
+      {targetRound && alreadyEnrolledInProgram && (
+        <div className="border border-gate-gold/30 bg-gate-gold/5 px-5 py-4 flex flex-col gap-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
+            Already Enrolled
+          </p>
+          <p className="text-sm font-light text-foreground/80">
+            You're already enrolled in <span className="font-medium">{targetRound.name}</span>. Choose another open program below to enroll in additional opportunities.
+          </p>
+        </div>
+      )}
+
+      {targetRound && !alreadyEnrolledInProgram && (
+        <div className="border border-blue-200 bg-blue-50 px-5 py-4 flex flex-col gap-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-blue-700">
+            Continue Enrollment
+          </p>
+          <p className="text-sm font-light text-blue-900/80">
+            Finish enrolling in <span className="font-medium">{targetRound.name}</span> by selecting a subject and completing payment below.
           </p>
         </div>
       )}
