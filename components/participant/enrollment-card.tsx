@@ -154,7 +154,7 @@ export function EnrollmentCard({
           asChild
           className={cn(!showPaymentButton && "flex-1")}
         >
-          <Link href={`/participant/enrollments/${enrollment.id}`}>
+          <Link href={`/participant/enrollment?enrollmentId=${enrollment.id}`}>
             View Details
           </Link>
         </Button>
