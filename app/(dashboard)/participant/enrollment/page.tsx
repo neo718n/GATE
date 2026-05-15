@@ -12,7 +12,7 @@ import { stripe } from "@/lib/stripe";
 import { PaymentSubmitButton } from "@/components/payment-submit-button";
 import { EnrollmentCard } from "@/components/participant/enrollment-card";
 
-export default async function EnrollmentPage({
+async function EnrollmentPageInner({
   searchParams,
 }: {
   searchParams: Promise<{ payment?: string; sid?: string; program?: string }>;
@@ -515,4 +515,38 @@ export default async function EnrollmentPage({
       )}
     </div>
   );
+}
+
+// Temporary diagnostic wrapper: surface the real exception inline so we
+// don't need access to Vercel function logs to diagnose the failure on
+// /participant/enrollment?program=<slug>. Revert this once the root cause
+// is fixed.
+export default async function EnrollmentPage(props: {
+  searchParams: Promise<{ payment?: string; sid?: string; program?: string }>;
+}) {
+  try {
+    return await EnrollmentPageInner(props);
+  } catch (err: unknown) {
+    const e = err as { message?: string; stack?: string; name?: string; cause?: unknown; digest?: string };
+    // Re-throw framework signals (notFound, redirect) so Next.js can handle them.
+    const digest = typeof e?.digest === "string" ? e.digest : "";
+    if (digest.startsWith("NEXT_REDIRECT") || digest === "NEXT_NOT_FOUND") {
+      throw err;
+    }
+    return (
+      <div className="flex flex-col gap-4 max-w-3xl py-8">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-red-600">
+          Enrollment page diagnostic
+        </p>
+        <p className="text-sm font-light text-foreground/60">
+          The page threw the following error during server render. This panel is temporary; share its contents with support.
+        </p>
+        <pre className="text-xs font-mono text-red-700 bg-red-50 border border-red-200 p-3 rounded whitespace-pre-wrap break-words">
+          {`name: ${e?.name ?? "<unknown>"}\nmessage: ${e?.message ?? "<no message>"}\ncause: ${
+            e?.cause ? JSON.stringify(e.cause, null, 2) : "<none>"
+          }\nstack:\n${e?.stack ?? "<no stack>"}`}
+        </pre>
+      </div>
+    );
+  }
 }
