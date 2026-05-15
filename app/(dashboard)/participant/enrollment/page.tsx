@@ -296,10 +296,19 @@ async function EnrollmentPageInner({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {existingEnrollments.map((enrollment) => (
-              <EnrollmentCard
+              <div
                 key={enrollment.id}
-                enrollment={enrollment as any}
-              />
+                className="border border-border bg-background p-4 flex flex-col gap-2"
+              >
+                <p className="text-sm font-semibold text-foreground">
+                  Enrollment #{enrollment.id} (diagnostic mode)
+                </p>
+                <p className="text-xs font-light text-foreground/60">
+                  round_id: {String((enrollment as any).roundId ?? "?")}, subject_id:{" "}
+                  {String((enrollment as any).subjectId ?? "null")}, status:{" "}
+                  {String((enrollment as any).enrollmentStatus ?? "?")} / {String((enrollment as any).paymentStatus ?? "?")}
+                </p>
+              </div>
             ))}
           </div>
           <div className="border-t border-border pt-2">
