@@ -15,7 +15,7 @@ import { EnrollmentCard } from "@/components/participant/enrollment-card";
 async function EnrollmentPageInner({
   searchParams,
 }: {
-  searchParams: Promise<{ payment?: string; sid?: string; program?: string }>;
+  searchParams: Promise<{ payment?: string; sid?: string; program?: string; enrollmentId?: string }>;
 }) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
   const sp = await searchParams;
@@ -101,52 +101,43 @@ async function EnrollmentPageInner({
   // Fetch existing enrollments for this participant
   const existingEnrollments = await getParticipantEnrollments(participant.id);
 
-  // Get the set of round IDs user is already enrolled in
-  const enrolledRoundIds = new Set(
-    existingEnrollments.map((enrollment) => enrollment.roundId)
+  // "Already enrolled" should mean PAID, not just any existing row.
+  // Drafts are resumable, so the user should still be able to pick that round.
+  const paidRoundIds = new Set(
+    existingEnrollments
+      .filter((e) => e.paymentStatus === "paid")
+      .map((enrollment) => enrollment.roundId)
   );
 
-  // Phase 3: if a program slug is provided in the URL, look up the target round
-  // and decide if the user is already enrolled in it (banner) or needs onboarding.
-  // DIAGNOSTIC: short-circuit programSlug to null to isolate Phase 3 code path.
-  // If the page loads with this, the bug is in my new programSlug handling block below.
-  const _programSlugRaw = sp.program?.trim().toLowerCase() ?? null;
-  const programSlug: string | null = null;
-  void _programSlugRaw;
+  const programSlug = sp.program?.trim().toLowerCase() ?? null;
+  const enrollmentIdParam = sp.enrollmentId ? parseInt(sp.enrollmentId, 10) : NaN;
   let targetRound: typeof rounds.$inferSelect | null = null;
+  let targetEnrollment: typeof existingEnrollments[number] | null = null;
   let alreadyEnrolledInProgram = false;
-  if (programSlug) {
-    try {
-      targetRound =
-        (await db.query.rounds.findFirst({
-          where: eq(rounds.slug, programSlug),
-        })) ?? null;
-    } catch (err) {
-      console.error("[enrollment] rounds.findFirst failed for slug:", programSlug, err);
-      throw err;
-    }
+  if (!isNaN(enrollmentIdParam)) {
+    // Resume an existing enrollment (Pay Now flow from /participant/enrollments).
+    targetEnrollment =
+      existingEnrollments.find((e) => e.id === enrollmentIdParam) ?? null;
+    if (!targetEnrollment) notFound();
+    targetRound =
+      (await db.query.rounds.findFirst({
+        where: eq(rounds.id, targetEnrollment.roundId),
+      })) ?? null;
+    if (!targetRound) notFound();
+    alreadyEnrolledInProgram = targetEnrollment.paymentStatus === "paid";
+  } else if (programSlug) {
+    targetRound =
+      (await db.query.rounds.findFirst({
+        where: eq(rounds.slug, programSlug),
+      })) ?? null;
     if (!targetRound) notFound();
     if (targetRound.registrationStatus !== "open") notFound();
 
-    const targetEnrollment = existingEnrollments.find(
-      (e) => e.roundId === targetRound!.id
-    );
+    targetEnrollment =
+      existingEnrollments.find((e) => e.roundId === targetRound!.id) ?? null;
     alreadyEnrolledInProgram = targetEnrollment?.paymentStatus === "paid";
-
-    if (!targetEnrollment) {
-      try {
-        await db.insert(enrollments).values({
-          participantId: participant.id,
-          roundId: targetRound.id,
-          subjectId: null,
-          enrollmentStatus: "draft",
-          paymentStatus: "unpaid",
-        });
-      } catch (err) {
-        console.error("[enrollment] insert draft enrollment failed:", { participantId: participant.id, roundId: targetRound.id }, err);
-        throw err;
-      }
-    }
+    // We do NOT auto-create a draft here. Drafts are created by enrollAndPay
+    // when the user explicitly submits the focused form below.
   }
 
   const activeCycle = await db.query.cycles.findFirst({
@@ -212,7 +203,16 @@ async function EnrollmentPageInner({
           action={enrollAndPay}
           className="border border-gate-gold/40 bg-card p-6 flex flex-col gap-6"
         >
-          <input type="hidden" name="programSlug" value={(targetRound as any).slug} />
+          <input type="hidden" name="programSlug" value={(targetRound as any).slug ?? ""} />
+          {targetEnrollment && (
+            <input type="hidden" name="enrollmentId" value={targetEnrollment.id} />
+          )}
+          {targetEnrollment && (
+            <input type="hidden" name="enrollmentId" value={targetEnrollment.id} />
+          )}
+          {targetEnrollment?.subjectId && (
+            <input type="hidden" name="subjectId" value={targetEnrollment.subjectId} />
+          )}
 
           <div className="flex flex-col gap-1.5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-gate-gold">
@@ -229,6 +229,7 @@ async function EnrollmentPageInner({
             </p>
           </div>
 
+          {!targetEnrollment?.subjectId && (
           <div className="flex flex-col gap-3">
             <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50">
               Choose subject *
@@ -259,8 +260,20 @@ async function EnrollmentPageInner({
               </div>
             )}
           </div>
+          )}
 
-          <PaymentSubmitButton label="Continue to Payment" />
+          {targetEnrollment?.subjectId && targetEnrollment.subject && (
+            <div className="flex flex-col gap-1 border border-border bg-muted/30 px-4 py-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50">
+                Subject
+              </p>
+              <p className="text-sm font-medium text-foreground">{targetEnrollment.subject.name}</p>
+            </div>
+          )}
+
+          <PaymentSubmitButton
+            label={targetEnrollment?.subjectId ? "Pay Now" : "Continue to Payment"}
+          />
         </form>
       )}
 
@@ -296,19 +309,10 @@ async function EnrollmentPageInner({
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {existingEnrollments.map((enrollment) => (
-              <div
+              <EnrollmentCard
                 key={enrollment.id}
-                className="border border-border bg-background p-4 flex flex-col gap-2"
-              >
-                <p className="text-sm font-semibold text-foreground">
-                  Enrollment #{enrollment.id} (diagnostic mode)
-                </p>
-                <p className="text-xs font-light text-foreground/60">
-                  round_id: {String((enrollment as any).roundId ?? "?")}, subject_id:{" "}
-                  {String((enrollment as any).subjectId ?? "null")}, status:{" "}
-                  {String((enrollment as any).enrollmentStatus ?? "?")} / {String((enrollment as any).paymentStatus ?? "?")}
-                </p>
-              </div>
+                enrollment={enrollment as any}
+              />
             ))}
           </div>
           <div className="border-t border-border pt-2">
@@ -370,7 +374,7 @@ async function EnrollmentPageInner({
                 <input type="hidden" name="participantId" value={participant.id} />
                 <div className="flex flex-col gap-2">
                   {openRounds.map((r) => {
-                    const isEnrolled = enrolledRoundIds.has(r.id);
+                    const isEnrolled = paidRoundIds.has(r.id);
                     return (
                       <label
                         key={r.id}
@@ -526,36 +530,8 @@ async function EnrollmentPageInner({
   );
 }
 
-// Temporary diagnostic wrapper: surface the real exception inline so we
-// don't need access to Vercel function logs to diagnose the failure on
-// /participant/enrollment?program=<slug>. Revert this once the root cause
-// is fixed.
 export default async function EnrollmentPage(props: {
-  searchParams: Promise<{ payment?: string; sid?: string; program?: string }>;
+  searchParams: Promise<{ payment?: string; sid?: string; program?: string; enrollmentId?: string }>;
 }) {
-  try {
-    return await EnrollmentPageInner(props);
-  } catch (err: unknown) {
-    const e = err as { message?: string; stack?: string; name?: string; cause?: unknown; digest?: string };
-    // Re-throw framework signals (notFound, redirect) so Next.js can handle them.
-    const digest = typeof e?.digest === "string" ? e.digest : "";
-    if (digest.startsWith("NEXT_REDIRECT") || digest === "NEXT_NOT_FOUND") {
-      throw err;
-    }
-    return (
-      <div className="flex flex-col gap-4 max-w-3xl py-8">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-red-600">
-          Enrollment page diagnostic
-        </p>
-        <p className="text-sm font-light text-foreground/60">
-          The page threw the following error during server render. This panel is temporary; share its contents with support.
-        </p>
-        <pre className="text-xs font-mono text-red-700 bg-red-50 border border-red-200 p-3 rounded whitespace-pre-wrap break-words">
-          {`name: ${e?.name ?? "<unknown>"}\nmessage: ${e?.message ?? "<no message>"}\ncause: ${
-            e?.cause ? JSON.stringify(e.cause, null, 2) : "<none>"
-          }\nstack:\n${e?.stack ?? "<no stack>"}`}
-        </pre>
-      </div>
-    );
-  }
+  return await EnrollmentPageInner(props);
 }

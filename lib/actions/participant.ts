@@ -323,20 +323,11 @@ export async function initiatePayment(formData: FormData) {
  */
 export async function enrollAndPay(formData: FormData) {
   const session = await requireRole(["participant", "admin", "super_admin"]);
+  const enrollmentIdRaw = (formData.get("enrollmentId") as string) ?? "";
+  const enrollmentIdParam = enrollmentIdRaw ? parseInt(enrollmentIdRaw, 10) : NaN;
   const programSlug = ((formData.get("programSlug") as string) ?? "").trim().toLowerCase();
-  const subjectId = parseInt(formData.get("subjectId") as string);
-
-  if (!programSlug || isNaN(subjectId) || !subjectId) {
-    throw new Error("Please select a subject before continuing.");
-  }
-
-  const round = await db.query.rounds.findFirst({
-    where: eq(rounds.slug, programSlug),
-  });
-  if (!round) throw new Error("Program not found.");
-  if (round.registrationStatus !== "open") {
-    throw new Error("Registration for this program is currently closed.");
-  }
+  const subjectIdRaw = (formData.get("subjectId") as string) ?? "";
+  const subjectId = subjectIdRaw ? parseInt(subjectIdRaw, 10) : NaN;
 
   const participant = await db.query.participants.findFirst({
     where: eq(participants.userId, session.user.id),
@@ -345,15 +336,51 @@ export async function enrollAndPay(formData: FormData) {
     throw new Error("Please complete your profile before enrolling.");
   }
 
-  let enrollment = await db.query.enrollments.findFirst({
-    where: and(
-      eq(enrollments.participantId, participant.id),
-      eq(enrollments.roundId, round.id)
-    ),
-  });
+  // Resolve the target enrollment via two paths:
+  //   1. enrollmentId in the form (Pay Now / resume flow)
+  //   2. programSlug (landing-page → first-time enrollment)
+  let enrollment: typeof enrollments.$inferSelect | null = null;
+  let roundId: number;
+
+  if (!isNaN(enrollmentIdParam)) {
+    const found = await db.query.enrollments.findFirst({
+      where: eq(enrollments.id, enrollmentIdParam),
+    });
+    if (!found || found.participantId !== participant.id) {
+      throw new Error("Enrollment not found.");
+    }
+    enrollment = found;
+    roundId = found.roundId;
+  } else {
+    if (!programSlug) throw new Error("Program is required.");
+    const round = await db.query.rounds.findFirst({
+      where: eq(rounds.slug, programSlug),
+    });
+    if (!round) throw new Error("Program not found.");
+    if (round.registrationStatus !== "open") {
+      throw new Error("Registration for this program is currently closed.");
+    }
+    roundId = round.id;
+
+    enrollment =
+      (await db.query.enrollments.findFirst({
+        where: and(
+          eq(enrollments.participantId, participant.id),
+          eq(enrollments.roundId, roundId)
+        ),
+      })) ?? null;
+  }
 
   if (enrollment?.paymentStatus === "paid") {
-    redirect(`/participant/enrollment?program=${encodeURIComponent(programSlug)}`);
+    redirect(`/participant/enrollments`);
+  }
+
+  // Subject is required. If not present in form, the enrollment must already have one.
+  const finalSubjectId = !isNaN(subjectId)
+    ? subjectId
+    : enrollment?.subjectId ?? null;
+  if (!finalSubjectId) {
+    throw new Error("Please select a subject before continuing to payment.");
   }
 
   if (!enrollment) {
@@ -361,17 +388,17 @@ export async function enrollAndPay(formData: FormData) {
       .insert(enrollments)
       .values({
         participantId: participant.id,
-        roundId: round.id,
-        subjectId,
+        roundId,
+        subjectId: finalSubjectId,
         enrollmentStatus: "draft",
         paymentStatus: "unpaid",
       })
       .returning();
     enrollment = inserted;
-  } else if (enrollment.subjectId !== subjectId) {
+  } else if (enrollment.subjectId !== finalSubjectId) {
     await db
       .update(enrollments)
-      .set({ subjectId, updatedAt: new Date() })
+      .set({ subjectId: finalSubjectId, updatedAt: new Date() })
       .where(eq(enrollments.id, enrollment.id));
   }
 
