@@ -40,16 +40,16 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
     <section id="programs" className="py-24 px-6 bg-background border-b border-border">
       <div className="mx-auto max-w-7xl flex flex-col gap-14">
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
             Two Programs · Now Open
           </span>
           <h2
-            className="font-serif text-4xl md:text-5xl font-light text-foreground leading-[1.15]"
+            className="font-serif text-4xl md:text-5xl font-medium text-foreground leading-[1.15]"
             style={{ textWrap: "balance" } as React.CSSProperties}
           >
             Choose Your Path<br />of Academic Growth
           </h2>
-          <p className="text-sm font-light text-foreground/55 max-w-lg mt-2 leading-relaxed">
+          <p className="text-base font-normal text-foreground/80 max-w-lg mt-2 leading-[1.65]">
             Both programs are independent — register for one, the other, or both.
             Each delivers a personalized assessment and a recognized certificate.
           </p>
@@ -71,7 +71,7 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="flex flex-col items-center gap-3">
                   <span className="font-serif text-7xl font-light text-gate-gold">01</span>
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-white/55">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-white/85">
                     Online · Hybrid
                   </span>
                 </div>
@@ -80,15 +80,15 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
 
             <div className="flex flex-col gap-5 p-8">
               <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
                   Online Diagnostic Assessment
                 </span>
-                <h3 className="font-serif text-2xl md:text-3xl font-light text-foreground leading-tight">
+                <h3 className="font-serif text-2xl md:text-3xl font-medium text-foreground leading-tight">
                   Discover Your Academic Profile
                 </h3>
               </div>
 
-              <p className="text-sm font-light text-foreground/60 leading-[1.8]">
+              <p className="text-[15px] font-normal text-foreground/80 leading-[1.7]">
                 A structured academic evaluation across six disciplines. Every participant
                 receives a detailed performance report identifying strengths and growth areas.
               </p>
@@ -100,8 +100,8 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
                   "Detailed personalized report",
                   "Certificate of Completion",
                 ].map((pt) => (
-                  <li key={pt} className="flex items-start gap-3 text-[13px] font-light text-foreground/65">
-                    <span className="mt-[8px] h-px w-3 shrink-0 bg-gate-gold/50" />
+                  <li key={pt} className="flex items-start gap-3 text-sm font-normal text-foreground/85">
+                    <span className="mt-[8px] h-px w-3 shrink-0 bg-gate-gold/60" />
                     {pt}
                   </li>
                 ))}
@@ -109,10 +109,10 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
 
               <div className="flex items-end justify-between gap-4 pt-3 border-t border-border">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-foreground/40">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/65">
                     Dates · Fee
                   </span>
-                  <span className="text-sm font-light text-foreground/75">
+                  <span className="text-sm font-normal text-foreground/85">
                     {online ? fmtDateRange(online.startDate, online.endDate) : "TBA"}
                     {online && (
                       <span className="text-gate-gold"> · {dollarsFromCents(online.feeUsd)}</span>
@@ -140,10 +140,10 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
               <div className="absolute inset-0 bg-gradient-to-t from-gate-900/80 via-gate-900/15 to-transparent" />
               <div className="absolute bottom-5 left-6 right-6 flex items-end justify-between">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-gold-2">
                     Hangzhou · Onsite
                   </span>
-                  <span className="text-xs font-light text-gate-white/80">
+                  <span className="text-[13px] font-normal text-gate-white/90">
                     Xidian University · Hangzhou Institute of Technology
                   </span>
                 </div>
@@ -153,15 +153,15 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
 
             <div className="flex flex-col gap-5 p-8">
               <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
                   Hangzhou Academic Training Camp
                 </span>
-                <h3 className="font-serif text-2xl md:text-3xl font-light text-foreground leading-tight">
+                <h3 className="font-serif text-2xl md:text-3xl font-medium text-foreground leading-tight">
                   Seven Days at Xidian University
                 </h3>
               </div>
 
-              <p className="text-sm font-light text-foreground/60 leading-[1.8]">
+              <p className="text-[15px] font-normal text-foreground/80 leading-[1.7]">
                 An onsite academic immersion at a leading Chinese university. Lectures with
                 faculty, diagnostic evaluation, cultural program, and a completion certificate.
               </p>
@@ -173,8 +173,8 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
                   "Dormitory + meals included",
                   "Hangzhou cultural program",
                 ].map((pt) => (
-                  <li key={pt} className="flex items-start gap-3 text-[13px] font-light text-foreground/65">
-                    <span className="mt-[8px] h-px w-3 shrink-0 bg-gate-gold/50" />
+                  <li key={pt} className="flex items-start gap-3 text-sm font-normal text-foreground/85">
+                    <span className="mt-[8px] h-px w-3 shrink-0 bg-gate-gold/60" />
                     {pt}
                   </li>
                 ))}
@@ -182,10 +182,10 @@ export function ProgramCards({ rounds, isAuthenticated = false }: { rounds: Roun
 
               <div className="flex items-end justify-between gap-4 pt-3 border-t border-border">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-semibold uppercase tracking-[0.28em] text-foreground/40">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/65">
                     Dates · Tuition
                   </span>
-                  <span className="text-sm font-light text-foreground/75">
+                  <span className="text-sm font-normal text-foreground/85">
                     {camp ? fmtDateRange(camp.startDate, camp.endDate) : "TBA"}
                     {camp && (
                       <span className="text-gate-gold"> · {dollarsFromCents(camp.feeUsd)}</span>

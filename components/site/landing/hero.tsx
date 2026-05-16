@@ -19,7 +19,7 @@ export function LandingHero() {
       <div className="relative z-10 flex flex-col items-center gap-8 max-w-4xl w-full">
         <div className="flex items-center gap-3">
           <div className="h-px w-10 bg-gate-gold/40" />
-          <p className="text-[9px] font-semibold uppercase tracking-[0.4em] text-gate-gold/70">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-gold/85">
             International Academic Programs
           </p>
           <div className="h-px w-10 bg-gate-gold/40" />
@@ -27,7 +27,7 @@ export function LandingHero() {
 
         <ThemeAwareLogo size="xl" showTagline />
 
-        <p className="text-base md:text-lg font-light text-foreground/55 leading-relaxed max-w-2xl mt-2">
+        <p className="text-lg md:text-xl font-normal text-foreground/80 leading-[1.65] max-w-2xl mt-2">
           Diagnostic assessments and educational programs that help ambitious students
           discover their academic strengths and grow at internationally renowned institutions.
         </p>
@@ -42,10 +42,10 @@ export function LandingHero() {
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-4">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.3em] text-foreground/35">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/55">
             In partnership with
           </span>
-          <span className="text-[11px] font-light text-foreground/55">
+          <span className="text-sm font-normal text-foreground/80">
             Xidian University · Hangzhou Institute of Technology
           </span>
         </div>

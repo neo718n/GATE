@@ -29,7 +29,7 @@
   --secondary: var(--gate-700);
   --secondary-foreground: var(--gate-white);
   --muted: var(--gate-fog);
-  --muted-foreground: var(--gate-gray);
+  --muted-foreground: #5b6b80;
   --accent: var(--gate-gold);
   --accent-foreground: var(--gate-800);
   --destructive: #b03030;

@@ -15,13 +15,13 @@ export function RecognitionSection() {
     <section className="py-28 px-6 bg-background border-b border-border">
       <div className="mx-auto max-w-7xl flex flex-col gap-14">
         <div className="flex flex-col items-center gap-4 text-center">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
             Recognition & Certificates
           </span>
-          <h2 className="font-serif text-4xl md:text-5xl font-light text-foreground leading-[1.15]">
+          <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground leading-[1.15]">
             Every Participant<br />Is Recognized
           </h2>
-          <p className="text-sm font-light text-foreground/50 max-w-lg mt-1">
+          <p className="text-base font-normal text-foreground/80 max-w-lg mt-1 leading-[1.65]">
             Outcomes are guaranteed for everyone. Outstanding performance receives additional academic recognition.
           </p>
         </div>
@@ -29,7 +29,7 @@ export function RecognitionSection() {
         {/* EVERYONE RECEIVES */}
         <div className="flex flex-col gap-8">
           <div className="flex items-baseline gap-4">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
               Everyone Receives
             </span>
             <div className="h-px flex-1 bg-border" />
@@ -40,8 +40,8 @@ export function RecognitionSection() {
                 <div className="flex h-9 w-9 items-center justify-center border border-gate-gold/35">
                   <div className="h-3 w-3 bg-gate-gold/60" />
                 </div>
-                <h3 className="font-serif text-lg font-light text-foreground">{e.title}</h3>
-                <p className="text-[12px] font-light text-foreground/55 leading-relaxed">{e.desc}</p>
+                <h3 className="font-serif text-lg font-medium text-foreground">{e.title}</h3>
+                <p className="text-[13px] font-normal text-foreground/80 leading-[1.7]">{e.desc}</p>
               </div>
             ))}
           </div>
@@ -50,7 +50,7 @@ export function RecognitionSection() {
         {/* AWARDS FOR TOP PERFORMERS */}
         <div className="flex flex-col gap-8 mt-6">
           <div className="flex items-baseline gap-4">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
               Outstanding Performance · Additional Recognition
             </span>
             <div className="h-px flex-1 bg-border" />
@@ -65,18 +65,18 @@ export function RecognitionSection() {
                   <div className="w-5 h-5 rounded-full" style={{ background: a.hex, opacity: 0.9 }} />
                 </div>
                 <div className="flex flex-col items-center gap-1.5">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
                     {a.percentile}
                   </span>
-                  <span className="font-serif text-xl font-light text-foreground">{a.tier}</span>
-                  <span className="text-[11px] font-light text-foreground/50 leading-relaxed max-w-[220px]">
+                  <span className="font-serif text-xl font-medium text-foreground">{a.tier}</span>
+                  <span className="text-[13px] font-normal text-foreground/80 leading-[1.65] max-w-[220px]">
                     {a.desc}
                   </span>
                 </div>
               </div>
             ))}
           </div>
-          <p className="text-center text-[11px] font-light text-foreground/40 italic">
+          <p className="text-center text-[13px] font-normal text-foreground/70 italic">
             Certificates are academic honors — not competitive prizes. They recognize individual academic achievement.
           </p>
         </div>

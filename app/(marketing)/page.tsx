@@ -72,12 +72,12 @@ export default async function HomePage() {
       {registrationOpen && activeCycle && (
         <div className="bg-gate-gold text-gate-800">
           <div className="mx-auto max-w-7xl px-6 py-2.5 flex items-center justify-center gap-6">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em]">
               GATE 2026 — Registration is now open
             </span>
             <Link
               href="/register"
-              className="text-[10px] font-semibold uppercase tracking-[0.2em] underline underline-offset-2 hover:no-underline"
+              className="text-[11px] font-semibold uppercase tracking-[0.15em] underline underline-offset-2 hover:no-underline"
             >
               Register →
             </Link>
@@ -101,10 +101,10 @@ export default async function HomePage() {
       <section className="py-28 px-6 bg-card border-b border-border">
         <div className="mx-auto max-w-4xl flex flex-col gap-12">
           <div className="flex flex-col items-center gap-4 text-center">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
               Frequently Asked
             </span>
-            <h2 className="font-serif text-4xl font-light text-foreground">
+            <h2 className="font-serif text-4xl md:text-5xl font-medium text-foreground">
               Common Questions
             </h2>
           </div>

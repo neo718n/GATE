@@ -9,13 +9,13 @@ export function FinalCta({ isAuthenticated = false }: { isAuthenticated?: boolea
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gate-gold/20 to-transparent" />
 
       <div className="relative mx-auto max-w-4xl flex flex-col items-center gap-8 text-center">
-        <span className="text-[9px] font-semibold uppercase tracking-[0.45em] text-gate-gold/70">
+        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold/90">
           Begin Your Academic Journey
         </span>
-        <h2 className="font-serif text-4xl md:text-6xl font-light text-gate-white leading-[1.1]">
+        <h2 className="font-serif text-4xl md:text-6xl font-medium text-gate-white leading-[1.1]">
           Two Programs.<br />One Platform.
         </h2>
-        <p className="text-sm font-light text-gate-white/50 leading-[1.9] max-w-lg">
+        <p className="text-base md:text-lg font-normal text-gate-white/85 leading-[1.7] max-w-lg">
           Register for the online diagnostic, apply for the Hangzhou camp, or pursue both —
           each program is independent and delivers personalized academic recognition.
         </p>
@@ -34,11 +34,11 @@ export function FinalCta({ isAuthenticated = false }: { isAuthenticated?: boolea
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-6 text-[10px] font-light text-gate-white/35 uppercase tracking-[0.25em]">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 pt-6 text-[12px] font-semibold text-gate-white/75 uppercase tracking-[0.18em]">
           <span>Open to Grades 1–12</span>
-          <span className="h-3 w-px bg-gate-gold/30" />
+          <span className="h-3 w-px bg-gate-gold/50" />
           <span>Worldwide Participation</span>
-          <span className="h-3 w-px bg-gate-gold/30" />
+          <span className="h-3 w-px bg-gate-gold/50" />
           <span>Issued Certificates</span>
         </div>
       </div>
