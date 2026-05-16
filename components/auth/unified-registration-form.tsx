@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { COUNTRIES } from "@/lib/data/countries";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 
 const PHONE_CODES = [
   { country: "Uzbekistan", dial: "+998", flag: "🇺🇿", iso: "UZ" },
@@ -98,6 +99,8 @@ export function UnifiedRegistrationForm() {
   const [countdown, setCountdown] = useState(0);
   const [resendDone, setResendDone] = useState(false);
   const [verified, setVerified] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRequired = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const refs = useRef<(HTMLInputElement | null)[]>([]);
 
   function set(field: keyof typeof form) {
@@ -202,6 +205,17 @@ export function UnifiedRegistrationForm() {
       formData.append("grade", form.grade);
       formData.append("dateOfBirth", form.dateOfBirth);
       formData.append("gender", form.gender);
+
+      if (turnstileRequired && !turnstileToken) {
+        setPending(false);
+        setError(
+          "Please complete the human verification challenge below before continuing.",
+        );
+        return;
+      }
+      if (turnstileToken) {
+        formData.append("cf-turnstile-response", turnstileToken);
+      }
 
       // ✓ FIX: Call server action instead of signUp.email directly
       const result = await registerUser(formData);
@@ -502,7 +516,20 @@ export function UnifiedRegistrationForm() {
         </div>
       </div>
 
-      <Button type="submit" variant="gold" size="md" disabled={pending} className="mt-1">
+      {turnstileRequired && (
+        <TurnstileWidget
+          onVerify={setTurnstileToken}
+          className="mt-1"
+        />
+      )}
+
+      <Button
+        type="submit"
+        variant="gold"
+        size="md"
+        disabled={pending || (turnstileRequired && !turnstileToken)}
+        className="mt-1"
+      >
         {pending ? "Creating account..." : "Create Account"}
       </Button>
 

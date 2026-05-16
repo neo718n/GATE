@@ -40,6 +40,7 @@ export default async function DashboardLayout({
       { href: "/admin/payments", label: "Payments" },
       { href: "/admin/notifications", label: "Notifications" },
       { href: "/admin/certificates", label: "Certificates" },
+      { href: "/admin/certificates/verifications", label: "Verifications" },
       { href: "/admin/inquiries", label: "Academic Inquiries" },
       { href: "/admin/content", label: "Content" },
     ],

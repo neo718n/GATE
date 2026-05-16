@@ -810,6 +810,98 @@ export const auditLog = pgTable("audit_log", {
 
 export type AuditLog = typeof auditLog.$inferSelect;
 
+// ────────────────────────────────────────────────────────────────────────────
+// Certificate Verification Portal
+// ────────────────────────────────────────────────────────────────────────────
+
+export const certificateVerificationStatusEnum = pgEnum(
+  "certificate_verification_status",
+  ["verified", "not_found", "revoked", "rate_limited"],
+);
+
+export const certificates = pgTable(
+  "certificates",
+  {
+    id: serial("id").primaryKey(),
+    resultId: integer("result_id")
+      .notNull()
+      .unique()
+      .references(() => results.id, { onDelete: "cascade" }),
+    verificationCode: text("verification_code").notNull().unique(),
+    codeHash: text("code_hash").notNull(),
+    participantName: text("participant_name").notNull(),
+    subjectName: text("subject_name").notNull(),
+    subjectCode: text("subject_code").notNull(),
+    award: awardEnum("award").notNull(),
+    scorePercentile: integer("score_percentile"),
+    cycleId: integer("cycle_id")
+      .notNull()
+      .references(() => cycles.id),
+    cycleYear: integer("cycle_year").notNull(),
+    pdfKey: text("pdf_key"),
+    issuedAt: timestamp("issued_at").notNull().defaultNow(),
+    revokedAt: timestamp("revoked_at"),
+    revokedReason: text("revoked_reason"),
+  },
+  (t) => ({
+    codeHashIdx: index("certificates_code_hash_idx").on(t.codeHash),
+    cycleAwardIdx: index("certificates_cycle_award_idx").on(t.cycleId, t.award),
+  }),
+);
+
+export const certificateVerifications = pgTable(
+  "certificate_verifications",
+  {
+    id: serial("id").primaryKey(),
+    certificateId: integer("certificate_id").references(() => certificates.id, {
+      onDelete: "set null",
+    }),
+    attemptedCode: text("attempted_code").notNull(),
+    verifiedAt: timestamp("verified_at").notNull().defaultNow(),
+    ipHash: text("ip_hash").notNull(),
+    countryCode: text("country_code"),
+    userAgentClass: text("user_agent_class").notNull(),
+    resultStatus: certificateVerificationStatusEnum("result_status").notNull(),
+  },
+  (t) => ({
+    certificateIdIdx: index("cert_verifications_certificate_id_idx").on(
+      t.certificateId,
+      t.verifiedAt,
+    ),
+    verifiedAtIdx: index("cert_verifications_verified_at_idx").on(t.verifiedAt),
+  }),
+);
+
+export const certificateRelations = relations(certificates, ({ one, many }) => ({
+  result: one(results, {
+    fields: [certificates.resultId],
+    references: [results.id],
+  }),
+  cycle: one(cycles, {
+    fields: [certificates.cycleId],
+    references: [cycles.id],
+  }),
+  verifications: many(certificateVerifications),
+}));
+
+export const certificateVerificationRelations = relations(
+  certificateVerifications,
+  ({ one }) => ({
+    certificate: one(certificates, {
+      fields: [certificateVerifications.certificateId],
+      references: [certificates.id],
+    }),
+  }),
+);
+
+export type Certificate = typeof certificates.$inferSelect;
+export type NewCertificate = typeof certificates.$inferInsert;
+export type CertificateVerification =
+  typeof certificateVerifications.$inferSelect;
+export type NewCertificateVerification =
+  typeof certificateVerifications.$inferInsert;
+export type Award = (typeof awardEnum.enumValues)[number];
+
 export type Role = (typeof roleEnum.enumValues)[number];
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;

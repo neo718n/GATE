@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import { careerApplications } from "@/lib/db/schema";
 
 const schema = z.object({
@@ -23,6 +24,18 @@ export async function submitCareerApplication(
   _prev: CareerFormState,
   formData: FormData,
 ): Promise<CareerFormState> {
+  const turnstileToken = formData.get("cf-turnstile-response");
+  const tokenOk = await verifyTurnstileToken(
+    typeof turnstileToken === "string" ? turnstileToken : null,
+  );
+  if (!tokenOk) {
+    return {
+      success: false,
+      error: "Human verification failed. Please refresh and try again.",
+      fieldErrors: {},
+    };
+  }
+
   const raw = Object.fromEntries(formData);
   const parsed = schema.safeParse(raw);
 

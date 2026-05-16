@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { resend, DEFAULT_FROM } from "@/lib/email";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const schema = z.object({
   name: z.string().min(2).max(100),
@@ -20,6 +21,17 @@ export async function submitContact(
   _prev: ContactFormState,
   formData: FormData,
 ): Promise<ContactFormState> {
+  const turnstileToken = formData.get("cf-turnstile-response");
+  const tokenOk = await verifyTurnstileToken(
+    typeof turnstileToken === "string" ? turnstileToken : null,
+  );
+  if (!tokenOk) {
+    return {
+      success: false,
+      error: "Human verification failed. Please refresh and try again.",
+    };
+  }
+
   const raw = {
     name: formData.get("name"),
     email: formData.get("email"),

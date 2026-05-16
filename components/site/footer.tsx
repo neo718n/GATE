@@ -12,6 +12,7 @@ const ASSESSMENT_LINKS = [
 const PARTICIPATE_LINKS = [
   { href: "/register", label: "Apply Now" },
   { href: "/academic-info", label: "Academic Information" },
+  { href: "/verify", label: "Verify Certificate" },
   { href: "/partnerships", label: "Partnerships" },
   { href: "/careers", label: "Careers" },
   { href: "/contact", label: "Contact" },

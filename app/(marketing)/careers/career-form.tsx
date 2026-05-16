@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitCareerApplication, type CareerFormState } from "@/app/actions/career";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -61,6 +62,8 @@ export function CareerForm({ positionTitle }: { positionTitle: string }) {
         <Textarea id="motivationText" name="motivationText" placeholder="Tell us about your background, why you want to work with G.A.T.E., and what you would bring to this role..." rows={6} required />
         {state.fieldErrors.motivationText && <p className="text-xs text-red-400">{state.fieldErrors.motivationText}</p>}
       </div>
+
+      <TurnstileWidget className="mt-1" />
 
       <Button type="submit" variant="gold" size="md" disabled={pending} className="mt-1">
         {pending ? "Submitting..." : "Submit Application"}

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { submitContact, type ContactFormState } from "@/app/actions/contact";
+import { TurnstileWidget } from "@/components/turnstile-widget";
 
 const INITIAL: ContactFormState = { success: false };
 
@@ -90,6 +91,8 @@ export function ContactForm() {
           <p className="text-xs text-red-400">{state.fieldErrors.message}</p>
         )}
       </div>
+
+      <TurnstileWidget />
 
       <Button type="submit" variant="gold" size="md" disabled={pending}>
         {pending ? "Sending…" : "Send Message"}

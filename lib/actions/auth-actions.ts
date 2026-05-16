@@ -6,6 +6,7 @@ import { participants } from "@/lib/db/schema";
 import { registrationSchema } from "@/lib/validation/registration-schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 /**
  * Server action result type for registration operations
@@ -76,6 +77,17 @@ export type RegistrationResult = {
  */
 export async function registerUser(formData: FormData): Promise<RegistrationResult> {
   try {
+    const turnstileToken = formData.get("cf-turnstile-response");
+    const tokenOk = await verifyTurnstileToken(
+      typeof turnstileToken === "string" ? turnstileToken : null,
+    );
+    if (!tokenOk) {
+      return {
+        success: false,
+        error: "Human verification failed. Please refresh and try again.",
+      };
+    }
+
     // Extract all fields from FormData
     const rawData = {
       email: formData.get("email") as string,

@@ -64,6 +64,13 @@
       "when": 1778809271587,
       "tag": "0008_wealthy_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1778934386395,
+      "tag": "0009_wise_gwen_stacy",
+      "breakpoints": true
     }
   ]
 }
