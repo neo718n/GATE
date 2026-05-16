@@ -18,6 +18,7 @@ export function QuestionEditor({ name, defaultValue = "", placeholder }: Questio
   const [uploading, setUploading] = useState(false);
   const [mathOpen, setMathOpen] = useState(false);
   const [mathInput, setMathInput] = useState("");
+  const [html, setHtml] = useState(defaultValue);
   const mathRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const mlRef = useRef<HTMLElement | null>(null);
@@ -29,6 +30,9 @@ export function QuestionEditor({ name, defaultValue = "", placeholder }: Questio
       Mathematics,
     ],
     content: defaultValue || `<p>${placeholder ?? ""}</p>`,
+    onUpdate: ({ editor }) => {
+      setHtml(editor.getHTML());
+    },
     editorProps: {
       attributes: {
         class: "min-h-[140px] px-4 py-3 text-sm font-light text-foreground focus:outline-none prose prose-sm max-w-none",
@@ -105,8 +109,6 @@ export function QuestionEditor({ name, defaultValue = "", placeholder }: Questio
       setUploading(false);
     }
   }, [editor]);
-
-  const html = editor?.getHTML() ?? defaultValue;
 
   return (
     <div className="flex flex-col gap-0">
