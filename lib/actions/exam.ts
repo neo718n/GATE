@@ -286,9 +286,10 @@ export async function startExamSession(examId: number): Promise<{ sessionId: num
   });
   if (!participant) return { error: "Participant profile not found" };
 
-  // Admins bypass enrollment checks; participants must be enrolled in the exam's round and subject
+  // Admins bypass enrollment checks; participants must be enrolled in the exam's round and subject.
+  // Practice exams are open to any participant — no enrollment required.
   const userRole = (session.user as { role?: string }).role ?? "participant";
-  if (userRole === "participant") {
+  if (userRole === "participant" && exam.type !== "practice") {
     if (exam.roundId && participant.roundId !== exam.roundId) {
       return { error: "You are not enrolled in the round for this exam" };
     }
