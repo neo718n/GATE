@@ -53,3 +53,6 @@ next-env.d.ts
 .worktrees/
 .security-key
 logs/security/
+
+# Local scratch / temp output (brochure previews, etc.)
+/tmp/
