@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, GraduationCap, Calendar, BookOpen,
   CreditCard, Bell, Handshake, Briefcase, FileText, BarChart3,
-  Settings2, User, Award, Trophy, FolderOpen, Shield, ShieldCheck,
+  Settings2, User, Award, Trophy, FolderOpen, Shield, ShieldCheck, Plug,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   "/admin/content": FileText,
   "/admin/analytics": BarChart3,
   "/admin/settings": Settings2,
+  "/admin/integrations": Plug,
   "/admin/results": Award,
   "/admin/certificates": Trophy,
   "/admin/certificates/verifications": ShieldCheck,

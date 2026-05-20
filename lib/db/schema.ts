@@ -28,6 +28,7 @@ export const roleEnum = pgEnum("role", [
   "partner_contact",
   "career_applicant",
   "question_provider",
+  "exam_partner",
 ]);
 
 export const cycleStatusEnum = pgEnum("cycle_status", [
@@ -477,6 +478,8 @@ export const examSessionStatusEnum = pgEnum("exam_session_status", [
 export const exams = pgTable("exams", {
   id: serial("id").primaryKey(),
   createdByUserId: text("created_by_user_id").references(() => user.id, { onDelete: "set null" }),
+  // Partner-owned exams (ArcMC). null = GATE-owned. See integration_partners.
+  createdByPartnerId: integer("created_by_partner_id").references(() => integrationPartners.id, { onDelete: "set null" }),
   roundId: integer("round_id").references(() => rounds.id, { onDelete: "set null" }),
   subjectId: integer("subject_id").references(() => subjects.id, { onDelete: "set null" }),
   title: text("title").notNull(),
@@ -495,6 +498,7 @@ export const exams = pgTable("exams", {
   roundIdIdx: index("exams_round_id_idx").on(t.roundId),
   subjectIdIdx: index("exams_subject_id_idx").on(t.subjectId),
   publishedIdx: index("exams_published_idx").on(t.published),
+  createdByPartnerIdIdx: index("exams_created_by_partner_id_idx").on(t.createdByPartnerId),
 }));
 
 export const questions = pgTable("questions", {
@@ -511,6 +515,9 @@ export const questions = pgTable("questions", {
   grades: text("grades").array().notNull().default(sql`ARRAY[]::text[]`),
   points: integer("points").notNull().default(1),
   explanation: text("explanation"),
+  // Pool metadata for browse/filter/sort (subject still derived via exam join).
+  tags: text("tags").array().notNull().default(sql`ARRAY[]::text[]`),
+  difficulty: text("difficulty"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 }, (t) => ({
@@ -535,12 +542,23 @@ export const examSessions = pgTable("exam_sessions", {
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   archivedAt: timestamp("archived_at"),
+  // Partner (ArcMC) launch context + proctoring counters.
+  partnerId: integer("partner_id").references(() => integrationPartners.id, { onDelete: "set null" }),
+  externalAssignmentId: text("external_assignment_id"),
+  partnerReturnUrl: text("partner_return_url"),
+  copyAttempts: integer("copy_attempts").notNull().default(0),
+  fullscreenExits: integer("fullscreen_exits").notNull().default(0),
+  focusLossCount: integer("focus_loss_count").notNull().default(0),
+  devToolsAttempts: integer("dev_tools_attempts").notNull().default(0),
+  offlineResumeCount: integer("offline_resume_count").notNull().default(0),
+  lastActivityAt: timestamp("last_activity_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 }, (t) => ({
   examIdIdx: index("exam_sessions_exam_id_idx").on(t.examId),
   participantIdIdx: index("exam_sessions_participant_id_idx").on(t.participantId),
   examParticipantIdx: index("exam_sessions_exam_participant_idx").on(t.examId, t.participantId),
   statusIdx: index("exam_sessions_status_idx").on(t.status),
+  partnerIdIdx: index("exam_sessions_partner_id_idx").on(t.partnerId),
 }));
 
 export const examAnswers = pgTable(
@@ -921,3 +939,196 @@ export type Exam = typeof exams.$inferSelect;
 export type Question = typeof questions.$inferSelect;
 export type ExamSession = typeof examSessions.$inferSelect;
 export type ExamAnswer = typeof examAnswers.$inferSelect;
+
+// ────────────────────────────────────────────────────────────────────────────
+// Partner integration (ArcMC) — multi-tenant exam authoring + SSO delivery
+// ────────────────────────────────────────────────────────────────────────────
+
+export const integrationPartnerStatusEnum = pgEnum("integration_partner_status", [
+  "active",
+  "disabled",
+  "sandbox",
+]);
+
+export const integrationPartnerSigningAlgEnum = pgEnum(
+  "integration_partner_signing_alg",
+  ["HS256", "RS256"],
+);
+
+export const partnerWebhookStatusEnum = pgEnum("partner_webhook_status", [
+  "pending",
+  "delivered",
+  "failed",
+]);
+
+/** A partner tenant (e.g. ArcMC). Secrets are stored encrypted-at-rest. */
+export const integrationPartners = pgTable(
+  "integration_partners",
+  {
+    id: serial("id").primaryKey(),
+    name: text("name").notNull(),
+    clientId: text("client_id").notNull().unique(), // = JWT `iss`
+    signingAlg: integrationPartnerSigningAlgEnum("signing_alg")
+      .notNull()
+      .default("HS256"),
+    sharedSecretEnc: text("shared_secret_enc"), // AES-GCM (HS256 verify)
+    jwtPublicKey: text("jwt_public_key"), // PEM (future RS256)
+    apiKeyHash: text("api_key_hash"), // sha256 only (compare-only)
+    webhookUrl: text("webhook_url"),
+    webhookSecretEnc: text("webhook_secret_enc"), // AES-GCM (outbound HMAC)
+    allowedReturnOrigins: text("allowed_return_origins")
+      .array()
+      .notNull()
+      .default(sql`ARRAY[]::text[]`),
+    status: integrationPartnerStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    clientIdIdx: index("integration_partners_client_id_idx").on(t.clientId),
+    apiKeyHashIdx: index("integration_partners_api_key_hash_idx").on(t.apiKeyHash),
+  }),
+);
+
+/** Portal login (exam_partner user) ↔ tenant. */
+export const partnerStaff = pgTable(
+  "partner_staff",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: "cascade" }),
+    partnerId: integer("partner_id")
+      .notNull()
+      .references(() => integrationPartners.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    partnerIdIdx: index("partner_staff_partner_id_idx").on(t.partnerId),
+  }),
+);
+
+/** SSO map: ArcMC external user → GATE participant/user (idempotent). */
+export const partnerParticipants = pgTable(
+  "partner_participants",
+  {
+    id: serial("id").primaryKey(),
+    partnerId: integer("partner_id")
+      .notNull()
+      .references(() => integrationPartners.id, { onDelete: "cascade" }),
+    externalUserId: text("external_user_id").notNull(),
+    participantId: integer("participant_id")
+      .notNull()
+      .references(() => participants.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    partnerManaged: boolean("partner_managed").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    uniqueExternal: unique().on(t.partnerId, t.externalUserId),
+    participantIdIdx: index("partner_participants_participant_id_idx").on(
+      t.participantId,
+    ),
+  }),
+);
+
+/** Single-use launch-token nonces (replay guard). */
+export const partnerLaunchNonces = pgTable(
+  "partner_launch_nonces",
+  {
+    jti: text("jti").primaryKey(),
+    partnerId: integer("partner_id")
+      .notNull()
+      .references(() => integrationPartners.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    expiresAtIdx: index("partner_launch_nonces_expires_at_idx").on(t.expiresAt),
+  }),
+);
+
+/** Outbound webhook delivery queue (push + retry). */
+export const partnerWebhookDeliveries = pgTable(
+  "partner_webhook_deliveries",
+  {
+    id: serial("id").primaryKey(),
+    partnerId: integer("partner_id")
+      .notNull()
+      .references(() => integrationPartners.id, { onDelete: "cascade" }),
+    event: text("event").notNull(),
+    payload: jsonb("payload").notNull(),
+    deliveryId: text("delivery_id").notNull().unique(),
+    status: partnerWebhookStatusEnum("status").notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: timestamp("next_attempt_at"),
+    lastError: text("last_error"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    partnerIdIdx: index("partner_webhook_deliveries_partner_id_idx").on(
+      t.partnerId,
+    ),
+    statusIdx: index("partner_webhook_deliveries_status_idx").on(t.status),
+  }),
+);
+
+export const integrationPartnerRelations = relations(
+  integrationPartners,
+  ({ many }) => ({
+    staff: many(partnerStaff),
+    participants: many(partnerParticipants),
+    webhookDeliveries: many(partnerWebhookDeliveries),
+  }),
+);
+
+export const partnerStaffRelations = relations(partnerStaff, ({ one }) => ({
+  user: one(user, { fields: [partnerStaff.userId], references: [user.id] }),
+  partner: one(integrationPartners, {
+    fields: [partnerStaff.partnerId],
+    references: [integrationPartners.id],
+  }),
+}));
+
+export const partnerParticipantRelations = relations(
+  partnerParticipants,
+  ({ one }) => ({
+    partner: one(integrationPartners, {
+      fields: [partnerParticipants.partnerId],
+      references: [integrationPartners.id],
+    }),
+    participant: one(participants, {
+      fields: [partnerParticipants.participantId],
+      references: [participants.id],
+    }),
+    user: one(user, {
+      fields: [partnerParticipants.userId],
+      references: [user.id],
+    }),
+  }),
+);
+
+export const partnerWebhookDeliveryRelations = relations(
+  partnerWebhookDeliveries,
+  ({ one }) => ({
+    partner: one(integrationPartners, {
+      fields: [partnerWebhookDeliveries.partnerId],
+      references: [integrationPartners.id],
+    }),
+  }),
+);
+
+export type IntegrationPartner = typeof integrationPartners.$inferSelect;
+export type NewIntegrationPartner = typeof integrationPartners.$inferInsert;
+export type PartnerStaff = typeof partnerStaff.$inferSelect;
+export type PartnerParticipant = typeof partnerParticipants.$inferSelect;
+export type PartnerWebhookDelivery =
+  typeof partnerWebhookDeliveries.$inferSelect;
+export type IntegrationPartnerStatus =
+  (typeof integrationPartnerStatusEnum.enumValues)[number];
+export type PartnerSigningAlg =
+  (typeof integrationPartnerSigningAlgEnum.enumValues)[number];

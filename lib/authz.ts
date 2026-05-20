@@ -571,4 +571,28 @@ export const ROLE_HOME: Record<Role, string> = {
   partner_contact: "/partner",
   career_applicant: "/",
   question_provider: "/qp",
+  exam_partner: "/examPartner",
 };
+
+/**
+ * Require an authenticated `exam_partner` (ArcMC portal staff) and resolve the
+ * tenant they belong to. Redirects to the neutral partner login on failure.
+ *
+ * @returns the validated session plus the partner tenant id from `partner_staff`.
+ */
+export async function requirePartnerStaff() {
+  const session = await getCurrentSession();
+  if (!session) redirect("/examPartner-login");
+  const role = (session.user as { role?: Role }).role ?? "participant";
+  if (role !== "exam_partner") redirect("/");
+  const { db } = await import("./db");
+  const { partnerStaff } = await import("./db/schema");
+  const { eq } = await import("drizzle-orm");
+  const [link] = await db
+    .select({ partnerId: partnerStaff.partnerId })
+    .from(partnerStaff)
+    .where(eq(partnerStaff.userId, session.user.id))
+    .limit(1);
+  if (!link) redirect("/examPartner-login");
+  return { session, partnerId: link.partnerId };
+}

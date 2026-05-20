@@ -31,6 +31,7 @@ export default async function DashboardLayout({
       { href: "/admin/content", label: "Content" },
       { href: "/admin/analytics", label: "Analytics" },
       { href: "/admin/settings", label: "System Settings" },
+      { href: "/admin/integrations", label: "Integrations" },
     ],
     admin: [
       { href: "/admin", label: "Overview" },
