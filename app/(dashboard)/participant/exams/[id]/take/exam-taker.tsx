@@ -72,6 +72,8 @@ export function ExamTaker({
   const [lastSaved, setLastSaved] = useState<string>("");
   const [tabSwitchCount, setTabSwitchCount] = useState(0);
   const [showTabWarning, setShowTabWarning] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
+  const storageKey = `exam-answers-${sessionId}`;
   const router = useRouter();
   const remaining = useCountdown(deadlineAt);
   const autoSaveRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -126,6 +128,30 @@ export function ExamTaker({
     return () => window.removeEventListener("online", onOnline);
   }, [questions, answers, sessionId]);
 
+  // Restore locally-cached answers on mount (survives reload while offline).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as AnswerMap;
+        setAnswers((prev) => ({ ...prev, ...saved }));
+      }
+    } catch {
+      /* ignore */
+    }
+    setHydrated(true);
+  }, [storageKey]);
+
+  // Persist answers locally as a safety net against connection loss.
+  useEffect(() => {
+    if (!hydrated) return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(answers));
+    } catch {
+      /* quota / unavailable */
+    }
+  }, [answers, hydrated, storageKey]);
+
   const setAnswer = (qId: number, answer: string | null) => {
     setAnswers((prev) => ({ ...prev, [qId]: { answer, flagged: prev[qId]?.flagged ?? false } }));
   };
@@ -159,8 +185,13 @@ export function ExamTaker({
       })
     );
     await submitExam(sessionId);
+    try {
+      localStorage.removeItem(storageKey);
+    } catch {
+      /* ignore */
+    }
     router.push(resultHref ?? `/participant/exams/${examId}/result`);
-  }, [submitConfirm, questions, answers, sessionId, examId, router, resultHref]);
+  }, [submitConfirm, questions, answers, sessionId, examId, router, resultHref, storageKey]);
 
   // Keep ref in sync so the auto-submit useEffect always calls the latest version
   useEffect(() => {
