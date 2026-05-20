@@ -1,0 +1,176 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GATE Partner API",
+    "version": "1.0.0",
+    "description": "Integrate GATE exams into a partner platform (e.g. ArcMC).\n\n## Launch (SSO)\nMint a short-lived HS256 JWT signed with your shared secret and redirect the student (top-level navigation) to `/api/v1/partner/launch?token=...`.\n\n**JWT header:** `{ \"alg\": \"HS256\" }`\n\n**JWT claims:**\n- `iss` (string, required) — your Client ID\n- `aud` (string, required) — must be `gate`\n- `sub` (string, required) — your stable external user id\n- `exam_ref` (number, required) — the GATE exam ID (from your Exams page)\n- `jti` (string, required) — unique id; single-use (replay-protected)\n- `exp` (number, required) — expiry, must be ≤ 5 minutes out\n- `iat` (number, required)\n- `name` (string, optional), `email` (string, optional), `grade` (string, optional)\n- `assignment_id` (string, optional) — echoed back in webhooks/results\n- `return_url` (string, optional) — where the student returns after submitting\n\n## Read API\nAuthenticate with the `X-API-Key` header. Rate limited to 60 req/min per partner.\n\n## Webhooks\nWe POST `exam.submitted` and `result.finalized` events to your configured URL.\nVerify the `X-GATE-Signature: t=<unix>,v1=<hmac>` header: `hmac = HMAC-SHA256(webhook_secret, \"<t>.<rawBody>\")`."
+  },
+  "servers": [
+    {
+      "url": "{baseUrl}",
+      "variables": { "baseUrl": { "default": "https://your-gate-instance" } }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "X-API-Key" }
+    },
+    "schemas": {
+      "Exam": {
+        "type": "object",
+        "properties": {
+          "exam_ref": { "type": "integer" },
+          "title": { "type": "string" },
+          "type": { "type": "string", "enum": ["exam", "practice"] },
+          "duration_minutes": { "type": ["integer", "null"] },
+          "questions_per_session": { "type": ["integer", "null"] },
+          "window_start": { "type": ["string", "null"], "format": "date-time" },
+          "window_end": { "type": ["string", "null"], "format": "date-time" },
+          "target_grades": { "type": "array", "items": { "type": "string" } },
+          "published": { "type": "boolean" }
+        }
+      },
+      "Result": {
+        "type": "object",
+        "properties": {
+          "session_id": { "type": "integer" },
+          "exam_ref": { "type": "integer" },
+          "external_user_id": { "type": ["string", "null"] },
+          "external_assignment_id": { "type": ["string", "null"] },
+          "status": { "type": "string", "enum": ["active", "submitted", "timed_out"] },
+          "score": { "type": ["number", "null"] },
+          "max_score": { "type": "integer" },
+          "submitted_at": { "type": ["string", "null"], "format": "date-time" }
+        }
+      },
+      "WebhookEvent": {
+        "type": "object",
+        "properties": {
+          "event": { "type": "string", "enum": ["exam.submitted", "result.finalized"] },
+          "delivery_id": { "type": "string" },
+          "occurred_at": { "type": "string", "format": "date-time" },
+          "partner_client_id": { "type": "string" },
+          "external_user_id": { "type": ["string", "null"] },
+          "external_assignment_id": { "type": ["string", "null"] },
+          "exam_ref": { "type": "integer" },
+          "status": { "type": "string" },
+          "score": { "type": ["number", "null"] },
+          "max_score": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/partner/launch": {
+      "get": {
+        "summary": "Launch an exam (SSO redirect)",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "HS256 launch JWT"
+          }
+        ],
+        "responses": {
+          "302": { "description": "Redirect to the locked-down exam runner" },
+          "401": { "description": "Invalid/expired/replayed token or disabled partner" },
+          "400": { "description": "Missing token or invalid exam_ref" }
+        }
+      },
+      "post": {
+        "summary": "Launch an exam (token in body)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "token": { "type": "string" } },
+                "required": ["token"]
+              }
+            }
+          }
+        },
+        "responses": { "302": { "description": "Redirect to the exam runner" } }
+      }
+    },
+    "/api/v1/partner/exams": {
+      "get": {
+        "summary": "List your exams",
+        "security": [{ "ApiKeyAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Exam list (never includes questions or answers)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "exams": { "type": "array", "items": { "$ref": "#/components/schemas/Exam" } }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid or missing X-API-Key" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+    "/api/v1/partner/sessions/{id}": {
+      "get": {
+        "summary": "Get one session",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Session detail",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Result" } }
+            }
+          },
+          "404": { "description": "Not found / not yours" }
+        }
+      }
+    },
+    "/api/v1/partner/results": {
+      "get": {
+        "summary": "List results",
+        "security": [{ "ApiKeyAuth": [] }],
+        "parameters": [
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" },
+            "description": "Only sessions submitted after this time"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 50, "maximum": 200 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Results page",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": { "type": "array", "items": { "$ref": "#/components/schemas/Result" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -211,6 +211,38 @@ export async function regenerateSharedSecret(
   return { sharedSecret };
 }
 
+/** Replace the partner's allowed return origins (open-redirect guard). */
+export async function updatePartnerReturnOrigins(
+  partnerId: number,
+  origins: string[],
+): Promise<void> {
+  const admin = await requireRole(["super_admin"]);
+  const clean: string[] = [];
+  for (const raw of origins) {
+    const t = raw.trim();
+    if (!t) continue;
+    let origin: string;
+    try {
+      origin = new URL(t).origin;
+    } catch {
+      throw new Error(`Invalid origin: ${t}`);
+    }
+    if (!clean.includes(origin)) clean.push(origin);
+  }
+  await db
+    .update(integrationPartners)
+    .set({ allowedReturnOrigins: clean, updatedAt: new Date() })
+    .where(eq(integrationPartners.id, partnerId));
+  await writeAuditLog(
+    admin.user.id,
+    "update_partner_return_origins",
+    "integration_partner",
+    partnerId,
+    { count: clean.length },
+  );
+  revalidatePath(`/admin/integrations/${partnerId}`);
+}
+
 /** Send a test webhook to the partner's configured URL. */
 export async function sendTestWebhook(
   partnerId: number,

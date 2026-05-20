@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { integrationPartners, partnerWebhookDeliveries } from "@/lib/db/schema";
 import { SecretField } from "@/components/partner/secret-field";
 import { PartnerSettingsForm } from "@/components/admin/integrations/partner-settings-form";
+import { ReturnOriginsEditor } from "@/components/admin/integrations/return-origins-editor";
 import { WebhookDeliveries } from "@/components/admin/integrations/webhook-deliveries";
 
 export const metadata = { title: "Manage partner" };
@@ -102,6 +103,11 @@ export default async function PartnerDetailPage({
         name={partner.name}
         status={partner.status}
         webhookUrl={partner.webhookUrl}
+      />
+
+      <ReturnOriginsEditor
+        partnerId={partner.id}
+        initial={partner.allowedReturnOrigins ?? []}
       />
 
       <WebhookDeliveries

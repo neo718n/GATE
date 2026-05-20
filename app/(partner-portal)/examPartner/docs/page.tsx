@@ -121,6 +121,14 @@ function verify(rawBody, header, WEBHOOK_SECRET) {
         </p>
         <SecretField label="Read API (X-API-Key)" value={resultsUrl} defaultHidden={false} />
         <CodeBlock>{webhookSample}</CodeBlock>
+        <a
+          href="/partner-openapi.json"
+          target="_blank"
+          rel="noreferrer"
+          className="self-start text-xs font-semibold uppercase tracking-[0.15em] text-gate-gold hover:underline"
+        >
+          Full API reference (OpenAPI) →
+        </a>
       </section>
 
       <section className="flex flex-col gap-3">
