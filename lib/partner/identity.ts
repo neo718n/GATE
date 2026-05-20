@@ -116,7 +116,17 @@ export async function resolvePartnerParticipant(
     throw e instanceof Error ? e : new Error("Failed to provision student account");
   }
 
-  // The user.create.after hook auto-created the participant row.
+  // Ensure a participant row exists. The user.create.after hook usually creates
+  // one, but internalAdapter.createUser may bypass it — so upsert defensively.
+  await db
+    .insert(participants)
+    .values({
+      userId,
+      fullName: name,
+      country: "Not specified",
+      grade: claims.grade ?? null,
+    })
+    .onConflictDoNothing();
   const [participant] = await db
     .select({ id: participants.id })
     .from(participants)
@@ -153,11 +163,17 @@ export async function mintPartnerSession(
   email: string,
 ): Promise<void> {
   const ctx = await auth.$context;
+
+  // Partner students are pre-verified — force it so email/password sign-in
+  // (requireEmailVerification: true) doesn't reject the synthetic account.
+  await ctx.internalAdapter.updateUser(userId, { emailVerified: true });
+
   const password = generateSecret(24);
+  // updatePassword stores the value as-is — it must already be hashed.
+  const hash = await ctx.password.hash(password);
   try {
-    await ctx.internalAdapter.updatePassword(userId, password);
+    await ctx.internalAdapter.updatePassword(userId, hash);
   } catch {
-    const hash = await ctx.password.hash(password);
     await ctx.internalAdapter.linkAccount({
       userId,
       accountId: userId,
