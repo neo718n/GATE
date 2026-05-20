@@ -539,6 +539,48 @@ export async function logTabSwitch(sessionId: number) {
     );
 }
 
+/**
+ * Lockdown runner proctoring: increments a counter for blocked/forbidden actions
+ * (copy/paste, fullscreen exit, focus loss, devtools). Same ownership rules as
+ * logTabSwitch — participants can only log for their own active sessions.
+ */
+export async function logProctorEvent(
+  sessionId: number,
+  kind: "copy" | "fullscreen_exit" | "focus_loss" | "devtools",
+) {
+  const auth = await requireRole(["participant", "admin", "super_admin"]);
+  const role = (auth.user as { role?: string }).role ?? "participant";
+
+  let participantIdFilter: ReturnType<typeof eq> | undefined;
+  if (role === "participant") {
+    const participant = await db.query.participants.findFirst({
+      where: (p, { eq: peq }) => peq(p.userId, auth.user.id),
+    });
+    if (!participant) return;
+    participantIdFilter = eq(examSessions.participantId, participant.id);
+  }
+
+  const set =
+    kind === "copy"
+      ? { copyAttempts: sql`${examSessions.copyAttempts} + 1` }
+      : kind === "fullscreen_exit"
+        ? { fullscreenExits: sql`${examSessions.fullscreenExits} + 1` }
+        : kind === "focus_loss"
+          ? { focusLossCount: sql`${examSessions.focusLossCount} + 1` }
+          : { devToolsAttempts: sql`${examSessions.devToolsAttempts} + 1` };
+
+  await db
+    .update(examSessions)
+    .set({ ...set, lastActivityAt: new Date() })
+    .where(
+      and(
+        eq(examSessions.id, sessionId),
+        eq(examSessions.status, "active"),
+        participantIdFilter,
+      ),
+    );
+}
+
 // ─── Admin: Grading ───────────────────────────────────────────────────────────
 
 /**

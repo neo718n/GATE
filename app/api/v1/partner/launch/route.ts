@@ -104,7 +104,7 @@ async function handle(req: Request, token: string | null) {
   );
 
   return NextResponse.redirect(
-    new URL(`/participant/exams/${examId}/take`, req.url),
+    new URL(`/exam/${started.sessionId}`, req.url),
   );
 }
 
