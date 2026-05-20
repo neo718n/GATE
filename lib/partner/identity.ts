@@ -109,11 +109,11 @@ export async function resolvePartnerParticipant(
       providerId: "credential",
       password: hash,
     });
-  } catch {
+  } catch (e) {
     // Concurrent launch may have created the mapping — re-check.
     const again = await findMapping(partner.id, externalUserId);
     if (again) return again;
-    throw new Error("Failed to provision student account");
+    throw e instanceof Error ? e : new Error("Failed to provision student account");
   }
 
   // The user.create.after hook auto-created the participant row.

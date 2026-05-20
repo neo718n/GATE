@@ -80,9 +80,21 @@ async function handle(req: Request, token: string | null) {
   let resolved;
   try {
     resolved = await resolvePartnerParticipant(partner, claims);
+  } catch (e) {
+    console.error("partner launch: resolvePartnerParticipant failed", e);
+    return errorPage(
+      `resolve: ${e instanceof Error ? e.message : "unknown error"}`,
+      500,
+    );
+  }
+  try {
     await mintPartnerSession(resolved.userId, resolved.email);
-  } catch {
-    return errorPage("Could not start your session. Please try again.", 500);
+  } catch (e) {
+    console.error("partner launch: mintPartnerSession failed", e);
+    return errorPage(
+      `mint: ${e instanceof Error ? e.message : "unknown error"}`,
+      500,
+    );
   }
 
   const started = await startPartnerExamSession({
