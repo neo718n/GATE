@@ -24,12 +24,27 @@ export function LockdownShell({
   const [fsLost, setFsLost] = useState(false);
   const startedRef = useRef(false);
 
+  const [online, setOnline] = useState(true);
+
   const log = useCallback(
     (kind: "copy" | "fullscreen_exit" | "focus_loss" | "devtools") => {
       logProctorEvent(sessionId, kind).catch(() => {});
     },
     [sessionId],
   );
+
+  // Online/offline indicator (answers are kept in memory and re-saved on reconnect).
+  useEffect(() => {
+    setOnline(navigator.onLine);
+    const on = () => setOnline(true);
+    const off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => {
+      window.removeEventListener("online", on);
+      window.removeEventListener("offline", off);
+    };
+  }, []);
 
   async function enterFullscreen() {
     try {
@@ -134,6 +149,11 @@ export function LockdownShell({
 
   return (
     <div className="select-none">
+      {!online && (
+        <div className="fixed inset-x-0 top-0 z-[70] bg-amber-500 px-4 py-1.5 text-center text-[11px] font-semibold uppercase tracking-[0.15em] text-amber-950">
+          ⚠ Offline — your answers are saved and will sync when you reconnect
+        </div>
+      )}
       {children}
       {fsLost && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-background/90 p-4 backdrop-blur">

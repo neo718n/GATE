@@ -114,6 +114,18 @@ export function ExamTaker({
     if (remaining === 0) handleSubmitRef.current(true);
   }, [remaining]);
 
+  // On reconnect, re-save all answers (covers transient offline mid-exam).
+  useEffect(() => {
+    const onOnline = () => {
+      questions.forEach((qq) => {
+        const a = answers[qq.id];
+        if (a) saveAnswer(sessionId, qq.id, a.answer ?? null, a.flagged);
+      });
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [questions, answers, sessionId]);
+
   const setAnswer = (qId: number, answer: string | null) => {
     setAnswers((prev) => ({ ...prev, [qId]: { answer, flagged: prev[qId]?.flagged ?? false } }));
   };
