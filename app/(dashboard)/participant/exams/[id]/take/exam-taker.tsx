@@ -25,6 +25,8 @@ interface ExamTakerProps {
   questions: Question[];
   initialAnswers: AnswerMap;
   isExam: boolean;
+  /** Where to navigate after submit. Defaults to the dashboard result page. */
+  resultHref?: string;
 }
 
 function useCountdown(deadlineAt: string | null) {
@@ -61,6 +63,7 @@ export function ExamTaker({
   questions,
   initialAnswers,
   isExam,
+  resultHref,
 }: ExamTakerProps) {
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>(initialAnswers);
@@ -144,8 +147,8 @@ export function ExamTaker({
       })
     );
     await submitExam(sessionId);
-    router.push(`/participant/exams/${examId}/result`);
-  }, [submitConfirm, questions, answers, sessionId, examId, router]);
+    router.push(resultHref ?? `/participant/exams/${examId}/result`);
+  }, [submitConfirm, questions, answers, sessionId, examId, router, resultHref]);
 
   // Keep ref in sync so the auto-submit useEffect always calls the latest version
   useEffect(() => {

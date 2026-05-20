@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { requirePartnerStaff } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { integrationPartners } from "@/lib/db/schema";
+import { exams, integrationPartners } from "@/lib/db/schema";
 import { SecretField } from "@/components/partner/secret-field";
+import { SampleLaunchTester } from "@/components/partner/sample-launch-tester";
 
 export const metadata = { title: "Docs" };
 
@@ -21,6 +22,12 @@ export default async function PartnerDocsPage() {
     .from(integrationPartners)
     .where(eq(integrationPartners.id, partnerId))
     .limit(1);
+
+  const partnerExams = await db
+    .select({ id: exams.id, title: exams.title })
+    .from(exams)
+    .where(eq(exams.createdByPartnerId, partnerId))
+    .orderBy(desc(exams.createdAt));
 
   const clientId = partner?.clientId ?? "your_client_id";
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -114,6 +121,17 @@ function verify(rawBody, header, WEBHOOK_SECRET) {
         </p>
         <SecretField label="Read API (X-API-Key)" value={resultsUrl} defaultHidden={false} />
         <CodeBlock>{webhookSample}</CodeBlock>
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/60">
+          Sandbox · test a launch
+        </h2>
+        <p className="text-xs font-light text-muted-foreground">
+          Generate a signed launch token with your shared secret and open it to
+          run the full flow end-to-end.
+        </p>
+        <SampleLaunchTester exams={partnerExams} />
       </section>
     </div>
   );

@@ -31,7 +31,7 @@ export default async function ExamRunnerPage({
   }
 
   if (examSession.status === "submitted" || examSession.status === "timed_out") {
-    redirect(`/participant/exams/${examSession.examId}/result`);
+    redirect(`/exam/${examSession.id}/result`);
   }
 
   const exam = await db.query.exams.findFirst({
@@ -63,7 +63,7 @@ export default async function ExamRunnerPage({
       .update(examSessions)
       .set({ status: "timed_out" })
       .where(and(eq(examSessions.id, examSession.id)));
-    redirect(`/participant/exams/${examSession.examId}/result`);
+    redirect(`/exam/${examSession.id}/result`);
   }
 
   return (
@@ -83,6 +83,7 @@ export default async function ExamRunnerPage({
           }))}
           initialAnswers={answerMap}
           isExam={exam.type === "exam"}
+          resultHref={`/exam/${examSession.id}/result`}
         />
       </div>
     </LockdownShell>
