@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { ArrowLeft } from "lucide-react";
 import { requireRole } from "@/lib/authz";
 import { db } from "@/lib/db";
-import { integrationPartners } from "@/lib/db/schema";
+import { integrationPartners, partnerWebhookDeliveries } from "@/lib/db/schema";
 import { SecretField } from "@/components/partner/secret-field";
 import { PartnerSettingsForm } from "@/components/admin/integrations/partner-settings-form";
+import { WebhookDeliveries } from "@/components/admin/integrations/webhook-deliveries";
 
 export const metadata = { title: "Manage partner" };
 
@@ -26,6 +27,20 @@ export default async function PartnerDetailPage({
     .where(eq(integrationPartners.id, partnerId))
     .limit(1);
   if (!partner) notFound();
+
+  const deliveries = await db
+    .select({
+      id: partnerWebhookDeliveries.id,
+      event: partnerWebhookDeliveries.event,
+      status: partnerWebhookDeliveries.status,
+      attempts: partnerWebhookDeliveries.attempts,
+      lastError: partnerWebhookDeliveries.lastError,
+      createdAt: partnerWebhookDeliveries.createdAt,
+    })
+    .from(partnerWebhookDeliveries)
+    .where(eq(partnerWebhookDeliveries.partnerId, partner.id))
+    .orderBy(desc(partnerWebhookDeliveries.createdAt))
+    .limit(15);
 
   const configured = (v: string | null) =>
     v ? "Configured" : "Not set";
@@ -87,6 +102,18 @@ export default async function PartnerDetailPage({
         name={partner.name}
         status={partner.status}
         webhookUrl={partner.webhookUrl}
+      />
+
+      <WebhookDeliveries
+        partnerId={partner.id}
+        deliveries={deliveries.map((d) => ({
+          id: d.id,
+          event: d.event,
+          status: d.status,
+          attempts: d.attempts,
+          lastError: d.lastError,
+          createdAt: d.createdAt.toISOString(),
+        }))}
       />
     </div>
   );

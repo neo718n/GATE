@@ -7,6 +7,7 @@ import { requireRole } from "@/lib/authz";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { writeAuditLog } from "@/lib/audit";
+import { enqueuePartnerWebhook } from "@/lib/partner/webhook";
 
 // ─── Admin: Exam CRUD ─────────────────────────────────────────────────────────
 
@@ -495,6 +496,15 @@ export async function submitExam(sessionId: number) {
     score,
   }).where(eq(examSessions.id, sessionId));
 
+  // Notify partner (ArcMC) of submission + auto-score.
+  if (session.partnerId) {
+    try {
+      await enqueuePartnerWebhook(sessionId, "exam.submitted");
+    } catch (e) {
+      console.error("partner webhook (exam.submitted) failed", e);
+    }
+  }
+
   return { ok: true, score };
 }
 
@@ -578,6 +588,25 @@ export async function gradeOpenAnswer(formData: FormData) {
   await db.update(examSessions)
     .set({ score: newScore })
     .where(eq(examSessions.id, answer.sessionId));
+
+  // Notify partner once all open answers in this session are graded.
+  if (answerSession.partnerId) {
+    const openQIds = new Set<number>(
+      (sessionQuestions as Array<{ id: number; type: string }>)
+        .filter((q) => q.type === "open")
+        .map((q) => q.id),
+    );
+    const ungraded = allAnswers.some(
+      (a) => openQIds.has(a.questionId) && a.gradedAt == null,
+    );
+    if (!ungraded) {
+      try {
+        await enqueuePartnerWebhook(answer.sessionId, "result.finalized");
+      } catch (e) {
+        console.error("partner webhook (result.finalized) failed", e);
+      }
+    }
+  }
 
   revalidatePath(`/admin/exams/${answerSession.examId}/results`);
   revalidatePath(`/admin/exams/${answerSession.examId}/results/${answer.sessionId}`);

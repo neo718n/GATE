@@ -26,6 +26,7 @@ import {
   generateSecret,
   hashApiKey,
 } from "@/lib/partner/crypto";
+import { enqueueTestWebhook, redeliverWebhook } from "@/lib/partner/webhook";
 
 const STATUSES: readonly IntegrationPartnerStatus[] = [
   "active",
@@ -208,6 +209,39 @@ export async function regenerateSharedSecret(
   );
   revalidatePath("/admin/integrations");
   return { sharedSecret };
+}
+
+/** Send a test webhook to the partner's configured URL. */
+export async function sendTestWebhook(
+  partnerId: number,
+): Promise<{ ok: boolean; error?: string }> {
+  const admin = await requireRole(["super_admin"]);
+  const result = await enqueueTestWebhook(partnerId);
+  await writeAuditLog(
+    admin.user.id,
+    "send_test_webhook",
+    "integration_partner",
+    partnerId,
+    { ok: result.ok },
+  );
+  revalidatePath(`/admin/integrations/${partnerId}`);
+  return result;
+}
+
+/** Re-send a specific webhook delivery. */
+export async function resendWebhook(
+  deliveryId: number,
+  partnerId: number,
+): Promise<void> {
+  const admin = await requireRole(["super_admin"]);
+  await redeliverWebhook(deliveryId);
+  await writeAuditLog(
+    admin.user.id,
+    "resend_webhook",
+    "partner_webhook_delivery",
+    deliveryId,
+  );
+  revalidatePath(`/admin/integrations/${partnerId}`);
 }
 
 /** Rotate the webhook signing secret. Returns the new plaintext once. */
