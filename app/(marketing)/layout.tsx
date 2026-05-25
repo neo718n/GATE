@@ -1,5 +1,6 @@
 import { SiteNav } from "@/components/site/nav";
 import { SiteFooter } from "@/components/site/footer";
+import { TelegramSupportButton } from "@/components/site/telegram-support-button";
 import { getCurrentSession } from "@/lib/authz";
 
 export default async function MarketingLayout({
@@ -20,6 +21,7 @@ export default async function MarketingLayout({
       <SiteNav session={session} />
       <main id="main-content" className="flex-1 pt-16">{children}</main>
       <SiteFooter />
+      <TelegramSupportButton />
     </div>
   );
 }

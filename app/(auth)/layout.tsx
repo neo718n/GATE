@@ -1,5 +1,6 @@
 ﻿import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
+import { TelegramSupportButton } from "@/components/site/telegram-support-button";
 
 export default function AuthLayout({
   children,
@@ -36,6 +37,7 @@ export default function AuthLayout({
           {children}
         </div>
       </main>
+      <TelegramSupportButton />
     </div>
   );
 }
