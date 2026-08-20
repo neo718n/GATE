@@ -20,12 +20,6 @@ export default function VerifyLayout({
               · Verification Portal
             </span>
           </Link>
-          <Link
-            href="/verify/bulk"
-            className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60 hover:text-gate-gold transition-colors"
-          >
-            Bulk Verify
-          </Link>
         </div>
       </header>
       <main className="flex-1">{children}</main>

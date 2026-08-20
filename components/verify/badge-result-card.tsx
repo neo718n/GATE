@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ShieldCheck, ShieldX, ArrowLeft, Hash, MapPin } from "lucide-react";
+import {
+  ShieldCheck,
+  ShieldX,
+  ArrowLeft,
+  Hash,
+  MapPin,
+  CalendarDays,
+  Building2,
+} from "lucide-react";
 import type {
   BadgeVerifyStatus,
   PublicEventBadge,
@@ -15,14 +23,21 @@ const ROLE_LABELS: Record<PublicEventBadge["roleBadge"], string> = {
   STAFF: "Staff",
 };
 
-const COUNTRY_FLAGS: Record<string, string> = {
-  Uzbekistan: "🇺🇿",
-  Tajikistan: "🇹🇯",
-  Russia: "🇷🇺",
-  China: "🇨🇳",
+// Regional-indicator flag emoji (🇺🇿) don't render on every platform — Windows
+// in particular shows the raw two-letter fallback ("uz") instead of a flag.
+// flagcdn.com + a plain <img> is the same pattern already used for country
+// flags elsewhere in this app (see phone-code-select.tsx) — reused here for
+// consistent cross-device rendering instead of relying on emoji font support.
+const COUNTRY_ISO: Record<string, string> = {
+  Uzbekistan: "uz",
+  Tajikistan: "tj",
+  Russia: "ru",
+  China: "cn",
 };
 
-const EVENT_LINE = "GATE China Camp 2026 · Hangzhou";
+const EVENT_LINE = "GATE China 2026 · Hangzhou";
+const EVENT_DATES = "18–24 August 2026";
+const VENUE_LINE = "Hangzhou Institute of Technology · Building B1";
 
 interface Props {
   status: BadgeVerifyStatus;
@@ -37,7 +52,7 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
         <header className="flex items-start gap-4">
           <div
             aria-hidden
-            className="flex h-12 w-12 items-center justify-center rounded-xl bg-destructive/10 text-destructive"
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-destructive"
           >
             <ShieldX className="h-6 w-6" />
           </div>
@@ -52,7 +67,7 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
         </header>
         <p className="mt-5 text-sm text-foreground/70 leading-relaxed">
           The code{" "}
-          <span className="font-mono text-foreground bg-foreground/5 px-1.5 py-0.5 rounded">
+          <span className="font-mono text-foreground bg-foreground/5 px-1.5 py-0.5 rounded break-all">
             {attemptedCode}
           </span>{" "}
           does not match any registered {EVENT_LINE} badge. It may have been
@@ -71,57 +86,75 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
 
   if (!badge) return null;
 
-  const flag = COUNTRY_FLAGS[badge.country] ?? "🌐";
+  const iso = COUNTRY_ISO[badge.country];
 
   return (
     <article className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden print:border-none print:shadow-none">
-      <header className="px-6 sm:px-8 py-5 border-b bg-emerald-500/5 border-emerald-500/20">
-        <div className="flex items-start gap-4">
-          <div
-            aria-hidden
-            className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-500"
-          >
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p
-              className="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-700 dark:text-emerald-500"
-              role="status"
-            >
-              Verified Badge
-            </p>
-            <p className="mt-1 text-xs text-foreground/60">
-              Confirmed against the official G.A.T.E. event registry
-            </p>
-          </div>
+      {/* Role-color accent bar — echoes the strip on the physical badge */}
+      <div
+        aria-hidden
+        className="h-1.5 w-full"
+        style={{ backgroundColor: badge.badgeColorHex }}
+      />
+
+      {/* Hero: verification status is the primary focus of the page */}
+      <header className="px-6 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8 text-center bg-emerald-500/[0.04]">
+        <div className="flex justify-end print:hidden">
           <PrintButton />
         </div>
+        <div
+          aria-hidden
+          className="mx-auto -mt-2 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-500"
+        >
+          <ShieldCheck className="h-8 w-8 sm:h-10 sm:w-10" strokeWidth={2} />
+        </div>
+        <h1
+          className="mt-4 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-emerald-700 dark:text-emerald-500"
+          role="status"
+        >
+          Verified
+        </h1>
+        <p className="mt-2 text-xs sm:text-sm text-foreground/60">
+          Confirmed against the official G.A.T.E. event registry
+        </p>
       </header>
 
-      <div className="px-6 sm:px-8 py-8">
+      <div className="px-6 sm:px-10 py-8 sm:py-10 border-t border-border text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
           {EVENT_LINE}
         </p>
-        <h1 className="mt-2 font-serif text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
+        <p className="mt-1 inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/60">
+          <CalendarDays className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          {EVENT_DATES}
+        </p>
+
+        <h2 className="mt-5 font-serif text-2xl sm:text-4xl font-semibold tracking-tight text-foreground break-words">
           {badge.fullName}
-        </h1>
+        </h2>
 
         <span
-          className="mt-4 inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.1em] text-white"
+          className="mt-4 inline-flex items-center rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-[0.1em] text-white"
           style={{ backgroundColor: badge.badgeColorHex }}
         >
           {ROLE_LABELS[badge.roleBadge]}
         </span>
 
-        <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+        <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm text-left max-w-md mx-auto">
           <Field
             icon={<MapPin className="h-3.5 w-3.5" />}
             label="Country"
             value={
-              <span>
-                <span aria-hidden className="mr-1.5">
-                  {flag}
-                </span>
+              <span className="inline-flex items-center gap-1.5">
+                {iso && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`https://flagcdn.com/w20/${iso}.png`}
+                    alt=""
+                    width={20}
+                    height={15}
+                    className="shrink-0 rounded-[2px]"
+                  />
+                )}
                 {badge.country}
               </span>
             }
@@ -138,7 +171,14 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
         </dl>
       </div>
 
-      <footer className="px-6 sm:px-8 py-5 border-t border-border bg-background/40 text-xs text-foreground/55">
+      <footer className="px-6 sm:px-10 py-5 border-t border-border bg-background/40 text-xs text-foreground/55 space-y-2.5">
+        <p className="flex items-start gap-1.5">
+          <Building2 className="h-3.5 w-3.5 shrink-0 mt-0.5 text-foreground/40" aria-hidden />
+          <span>
+            <span className="font-semibold text-foreground/70">Lost this badge?</span>{" "}
+            Report it at {VENUE_LINE}.
+          </span>
+        </p>
         <p>
           Issued by the G.A.T.E. Assessment Authority. This page was generated
           by the registry, not by the badge holder.
@@ -165,7 +205,7 @@ function Field({
         </span>
         {label}
       </dt>
-      <dd className="mt-1 text-base text-foreground">{value}</dd>
+      <dd className="mt-1 text-base text-foreground break-words">{value}</dd>
     </div>
   );
 }
