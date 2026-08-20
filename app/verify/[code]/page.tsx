@@ -57,11 +57,11 @@ export default async function VerifyResultPage({
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-16">
         <Link
-          href="/verify"
+          href="/"
           className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50 hover:text-gate-gold transition-colors mb-6 print:hidden"
         >
           <ArrowLeft className="h-3 w-3" aria-hidden />
-          Back to verify
+          Main Page
         </Link>
         <BadgeResultCard
           status={status}

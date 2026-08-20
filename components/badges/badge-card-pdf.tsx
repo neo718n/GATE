@@ -122,7 +122,9 @@ function nameFontSize(name: string): number {
 // PDF instead of ~300KB). A base64 data: URI sidesteps this resolver
 // entirely (same code path already used for the QR images) and still caches
 // correctly, since the cache key is the literal string.
-const ASSETS_DIR = path.join(process.cwd(), "event_badge", "assets");
+// Also used directly (as /partners/*) by badge-result-card.tsx on the web
+// verify page — one canonical copy instead of duplicating the files.
+const ASSETS_DIR = path.join(process.cwd(), "public", "partners");
 function assetDataUri(filename: string, mime: string): string {
   const bytes = fs.readFileSync(path.join(ASSETS_DIR, filename));
   return `data:${mime};base64,${bytes.toString("base64")}`;

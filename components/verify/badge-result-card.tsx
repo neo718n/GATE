@@ -12,6 +12,7 @@ import type {
   BadgeVerifyStatus,
   PublicEventBadge,
 } from "@/lib/badges/lookup";
+import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { PrintButton } from "./print-button";
 
 const ROLE_LABELS: Record<PublicEventBadge["roleBadge"], string> = {
@@ -66,12 +67,11 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
           </div>
         </header>
         <p className="mt-5 text-sm text-foreground/70 leading-relaxed">
-          The code{" "}
           <span className="font-mono text-foreground bg-foreground/5 px-1.5 py-0.5 rounded break-all">
             {attemptedCode}
           </span>{" "}
-          does not match any registered {EVENT_LINE} badge. It may have been
-          mistyped, or the badge may not be genuine.
+          isn&apos;t in the {EVENT_LINE} registry. Double-check the code — or
+          treat the badge as unverified.
         </p>
         <Link
           href="/verify"
@@ -96,6 +96,26 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
         className="h-1.5 w-full"
         style={{ backgroundColor: badge.badgeColorHex }}
       />
+
+      {/* Partnership lockup — same institutions as the logo band on the
+          physical badge, so the digital and printed credential visibly match */}
+      <div className="px-6 sm:px-10 py-5 flex items-center justify-center gap-5 sm:gap-7 border-b border-border/60 bg-foreground/[0.015]">
+        <ThemeAwareLogo size="xs" showTagline={false} />
+        <span aria-hidden className="h-6 w-px bg-border" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/partners/xidian-university.png"
+          alt="Xidian University"
+          className="h-8 sm:h-9 w-auto object-contain"
+        />
+        <span aria-hidden className="h-6 w-px bg-border" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/partners/edsquare.jpg"
+          alt="EdSquare"
+          className="h-4 sm:h-[18px] w-auto object-contain"
+        />
+      </div>
 
       {/* Hero: verification status is the primary focus of the page */}
       <header className="px-6 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8 text-center bg-emerald-500/[0.04]">
@@ -171,17 +191,13 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
         </dl>
       </div>
 
-      <footer className="px-6 sm:px-10 py-5 border-t border-border bg-background/40 text-xs text-foreground/55 space-y-2.5">
+      <footer className="px-6 sm:px-10 py-5 border-t border-border bg-background/40 text-xs text-foreground/55">
         <p className="flex items-start gap-1.5">
           <Building2 className="h-3.5 w-3.5 shrink-0 mt-0.5 text-foreground/40" aria-hidden />
           <span>
             <span className="font-semibold text-foreground/70">Lost this badge?</span>{" "}
             Report it at {VENUE_LINE}.
           </span>
-        </p>
-        <p>
-          Issued by the G.A.T.E. Assessment Authority. This page was generated
-          by the registry, not by the badge holder.
         </p>
       </footer>
     </article>

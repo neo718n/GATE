@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 
 export default function VerifyLayout({
   children,
@@ -10,16 +10,12 @@ export default function VerifyLayout({
     <div className="min-h-dvh flex flex-col bg-background text-foreground">
       <header className="border-b border-border/60 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 py-4 flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center gap-2.5 text-sm font-semibold tracking-tight text-foreground hover:text-gate-gold transition-colors"
-          >
-            <ShieldCheck className="h-5 w-5 text-gate-gold" aria-hidden />
-            <span className="font-serif text-base">G.A.T.E.</span>
-            <span className="text-foreground/40 font-sans font-light hidden sm:inline">
-              · Verification Portal
-            </span>
+          <Link href="/">
+            <ThemeAwareLogo size="xs" showTagline={false} />
           </Link>
+          <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/40 hidden sm:inline">
+            Verification Portal
+          </span>
         </div>
       </header>
       <main className="flex-1">{children}</main>
