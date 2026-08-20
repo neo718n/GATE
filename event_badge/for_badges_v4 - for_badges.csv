@@ -1,0 +1,56 @@
+Card No,Category,Role Badge,Full Name,Country,Gender,Date of Birth,Source Note,QR / Verify Link,Badge Color (HEX),Assumption / Flag
+RUS-C-001,PARTICIPANT,CONTESTANT,Sulaimonov Okilkhudzha,Russia,Male,23.03.2010,Grade 9,gate-assessment.org/verify/RUS-C-001,#0066FF,
+TJK-C-002,PARTICIPANT,CONTESTANT,Abdusaidov Azam,Tajikistan,Male,02.10.2009,Grade 11,gate-assessment.org/verify/TJK-C-002,#0066FF,
+TJK-C-005,PARTICIPANT,CONTESTANT,Azamzoda Abbos,Tajikistan,Male,03.09.2014,Grade 6,gate-assessment.org/verify/TJK-C-005,#0066FF,
+TJK-C-003,PARTICIPANT,CONTESTANT,Barotov Muhammad,Tajikistan,Male,29.09.2009,Grade 10,gate-assessment.org/verify/TJK-C-003,#0066FF,
+TJK-C-006,PARTICIPANT,CONTESTANT,Faizullozoda Abdulbori,Tajikistan,Male,08.02.2011,Grade 9,gate-assessment.org/verify/TJK-C-006,#0066FF,
+TJK-C-004,PARTICIPANT,CONTESTANT,Gurminji Norinj,Tajikistan,Male,03.04.2009,Grade 10,gate-assessment.org/verify/TJK-C-004,#0066FF,
+TJK-C-007,PARTICIPANT,CONTESTANT,Mirzoaliev Muhsin,Tajikistan,Male,18.10.2012,Grade 7,gate-assessment.org/verify/TJK-C-007,#0066FF,
+TJK-C-001,PARTICIPANT,CONTESTANT,Ulmasov Umedjon,Tajikistan,Male,30.08.2011,Grade 8,gate-assessment.org/verify/TJK-C-001,#0066FF,
+UZB-C-023,PARTICIPANT,CONTESTANT,ABDISAMATOV AFRUZBEK,Uzbekistan,Male,28/06/2015,4,gate-assessment.org/verify/UZB-C-023,#0066FF,
+UZB-C-026,PARTICIPANT,CONTESTANT,ABDUKHAMIDOV TEMUR,Uzbekistan,Male,12/10/2016,3,gate-assessment.org/verify/UZB-C-026,#0066FF,
+UZB-C-020,PARTICIPANT,CONTESTANT,ABDUPATTOEV BARKAMOL,Uzbekistan,Male,23/04/2014,5,gate-assessment.org/verify/UZB-C-020,#0066FF,
+UZB-C-019,PARTICIPANT,CONTESTANT,ABDURASHIDOV MUHAMMADRIZO,Uzbekistan,Male,20/09/2015,4,gate-assessment.org/verify/UZB-C-019,#0066FF,
+UZB-C-028,PARTICIPANT,CONTESTANT,AZADOVA DILNURA,Uzbekistan,Female,2011-04-04 00:00:00,9,gate-assessment.org/verify/UZB-C-028,#0066FF,
+UZB-C-010,PARTICIPANT,CONTESTANT,Azadov Ogabek,Uzbekistan,Male,09/07/2014,Grade 5,gate-assessment.org/verify/UZB-C-010,#0066FF,
+UZB-C-007,PARTICIPANT,CONTESTANT,BAKHTIYAROV SHAHRUZ,Uzbekistan,Male,16/08/2014,Grade 5,gate-assessment.org/verify/UZB-C-007,#0066FF,
+UZB-C-016,PARTICIPANT,CONTESTANT,BOTIROV MIRZIYO,Uzbekistan,Male,20/09/2010,9,gate-assessment.org/verify/UZB-C-016,#0066FF,
+UZB-C-027,PARTICIPANT,CONTESTANT,DAVLATBAEVA RAYKHON,Uzbekistan,Female,2017-06-12 00:00:00,2,gate-assessment.org/verify/UZB-C-027,#0066FF,
+UZB-C-021,PARTICIPANT,CONTESTANT,DILMURODJONOV MUHAMMADSODIK,Uzbekistan,Male,07/07/2017,2,gate-assessment.org/verify/UZB-C-021,#0066FF,
+UZB-C-013,PARTICIPANT,CONTESTANT,FARKHODOV YUSUFJON,Uzbekistan,Male,2017-03-24 00:00:00,2,gate-assessment.org/verify/UZB-C-013,#0066FF,
+UZB-C-022,PARTICIPANT,CONTESTANT,FURKATOV FARRUKHJON,Uzbekistan,Male,05/12/2017,2,gate-assessment.org/verify/UZB-C-022,#0066FF,
+UZB-C-015,PARTICIPANT,CONTESTANT,GAFUROV KOMRON,Uzbekistan,Male,19/05/2015,4,gate-assessment.org/verify/UZB-C-015,#0066FF,
+UZB-C-009,PARTICIPANT,CONTESTANT,Ilkhomjonov Saidkamol,Uzbekistan,Male,06/02/2014,Grade 5,gate-assessment.org/verify/UZB-C-009,#0066FF,
+UZB-C-004,PARTICIPANT,CONTESTANT,KAKHKHAROV BILOLBEK,Uzbekistan,Male,19/06/2015,Grade 4,gate-assessment.org/verify/UZB-C-004,#0066FF,
+UZB-C-002,PARTICIPANT,CONTESTANT,KHABIBULLAEV KOZIMBEK,Uzbekistan,Male,17/11/2014,Grade 5,gate-assessment.org/verify/UZB-C-002,#0066FF,
+UZB-C-005,PARTICIPANT,CONTESTANT,KHUSANOV BEKTOSH,Uzbekistan,Male,22/12/2014,Grade 5,gate-assessment.org/verify/UZB-C-005,#0066FF,
+UZB-C-011,PARTICIPANT,CONTESTANT,KOBILJONOV ISLOMBEK,Uzbekistan,Male,18/09/2016,3,gate-assessment.org/verify/UZB-C-011,#0066FF,
+UZB-C-012,PARTICIPANT,CONTESTANT,KOBILJONOVA DILNURAKHON,Uzbekistan,Female,22/05/2015,4,gate-assessment.org/verify/UZB-C-012,#0066FF,
+UZB-C-017,PARTICIPANT,CONTESTANT,MAMASIDIKOV MUHAMMADZIYO,Uzbekistan,Male,24/10/2017,2,gate-assessment.org/verify/UZB-C-017,#0066FF,
+UZB-C-029,PARTICIPANT,CONTESTANT,MUKHIDDINOV UMARSHOH,Uzbekistan,Male,21/05/2018,1,gate-assessment.org/verify/UZB-C-029,#0066FF,
+UZB-C-003,PARTICIPANT,CONTESTANT,MUSURMONOV BEHRUZ,Uzbekistan,Male,05/02/2015,Grade 4,gate-assessment.org/verify/UZB-C-003,#0066FF,
+UZB-C-018,PARTICIPANT,CONTESTANT,NEMATULLAEV MUKHAMMADKHON,Uzbekistan,Male,16/06/2014,5,gate-assessment.org/verify/UZB-C-018,#0066FF,
+UZB-C-024,PARTICIPANT,CONTESTANT,ORIFJONOV MUHAMMADALI,Uzbekistan,Male,09/08/2015,4,gate-assessment.org/verify/UZB-C-024,#0066FF,
+UZB-C-014,PARTICIPANT,CONTESTANT,SAMARUDDINOV NURUDDIN,Uzbekistan,Male,19/01/2015,4,gate-assessment.org/verify/UZB-C-014,#0066FF,
+UZB-C-001,PARTICIPANT,CONTESTANT,SHODIYOROV KOMRON,Uzbekistan,Male,13/05/2015,Grade 4,gate-assessment.org/verify/UZB-C-001,#0066FF,
+UZB-C-025,PARTICIPANT,CONTESTANT,SOFARBAEV SAIDMUROD,Uzbekistan,Male,2014-07-16 00:00:00,5,gate-assessment.org/verify/UZB-C-025,#0066FF,
+UZB-C-006,PARTICIPANT,CONTESTANT,TOVMURATOV DIYORBEK,Uzbekistan,Male,28/06/2015,Grade 4,gate-assessment.org/verify/UZB-C-006,#0066FF,
+UZB-C-008,PARTICIPANT,CONTESTANT,Yangiboev Asilbek,Uzbekistan,Male,01/05/2013,Grade 6,gate-assessment.org/verify/UZB-C-008,#0066FF,
+UZB-T-002,DELEGATION,TEAM LEADER,AMIROV ABDULHAY,Uzbekistan,Male,2002-09-18 00:00:00,Teacher,gate-assessment.org/verify/UZB-T-002,#5B21B6,User-provided: teacher/team leader
+UZB-T-003,DELEGATION,TEAM LEADER,JURAKULOV SHAVKATJON,Uzbekistan,Male,1995-03-13 00:00:00,Teacher,gate-assessment.org/verify/UZB-T-003,#5B21B6,User-provided: teacher/team leader
+UZB-T-001,DELEGATION,TEAM LEADER,SAYDILLAEV DOSTON,Uzbekistan,Male,1998-12-21 00:00:00,Teacher,gate-assessment.org/verify/UZB-T-001,#5B21B6,User-provided: teacher/team leader
+UZB-T-004,DELEGATION,TEAM LEADER,SHAYDULOV ASOMIDDIN,Uzbekistan,Male,1996-12-20 00:00:00,KHISO,gate-assessment.org/verify/UZB-T-004,#5B21B6,User-provided: teacher/team leader
+TJK-P-001,GUEST,PARENT,Ulmasova Nigora,Tajikistan,Female,27.09.1980,Umedjon's mother,gate-assessment.org/verify/TJK-P-001,#FFB800,User-provided: parent/grandparent
+UZB-P-005,GUEST,PARENT,ABDURASULOV BAKHTIYOR,Uzbekistan,Male,1993-06-01 00:00:00,Father,gate-assessment.org/verify/UZB-P-005,#FFB800,User-provided: parent/grandparent
+UZB-P-001,GUEST,PARENT,Bagibekov Yangiboy,Uzbekistan,Male,1956-03-01 00:00:00,grandfather of Asilbek,gate-assessment.org/verify/UZB-P-001,#FFB800,User-provided: parent/grandparent
+UZB-P-004,GUEST,PARENT,JURAEV QOBILJON,Uzbekistan,Male,1961-04-04 00:00:00,GrandFather,gate-assessment.org/verify/UZB-P-004,#FFB800,User-provided: parent/grandparent
+UZB-P-002,GUEST,PARENT,Mirzakarimova Yokutkhon,Uzbekistan,Female,1959-03-29 00:00:00,grandmother of Saidkamol,gate-assessment.org/verify/UZB-P-002,#FFB800,User-provided: parent/grandparent
+UZB-P-003,GUEST,PARENT,Tadjimuratov Davron,Uzbekistan,Male,1986-07-01 00:00:00,father of Dilnura and Ogabek,gate-assessment.org/verify/UZB-P-003,#FFB800,User-provided: parent/grandparent
+TJK-R-001,OFFICIAL,COUNTRY REP.,Yoqubjonov Ilhomjon,Tajikistan,Male,2000-03-04 00:00:00,,gate-assessment.org/verify/TJK-R-001,#1E1E24,User-provided: Country Representative
+UZB-R-002,OFFICIAL,COUNTRY REP.,ISHCHANOV ZAFARBEK,Uzbekistan,Male,2002-12-28 00:00:00,KHISO,gate-assessment.org/verify/UZB-R-002,#1E1E24,User-provided: Country Representative
+UZB-R-001,OFFICIAL,COUNTRY REP.,SOBIROV DILMUROD,Uzbekistan,Male,29.05.1997,,gate-assessment.org/verify/UZB-R-001,#1E1E24,User-provided: Country Representative
+UZB-M-001,GUEST,MEDIA,ABDUJABBOROVA DIYORAKHON,Uzbekistan,Female,1993-08-02 00:00:00,媒体,gate-assessment.org/verify/UZB-M-001,#DC2626,"FLAG: note says media (媒体) — role/category not specified by user, please confirm"
+UZB-M-002,GUEST,MEDIA,KADIROV AKMAL,Uzbekistan,Male,1987-05-10 00:00:00,媒体,gate-assessment.org/verify/UZB-M-002,#DC2626,"FLAG: note says media (媒体) — role/category not specified by user, please confirm"
+UNK-S-001,OFFICIAL,STAFF,Farrukh Karimzoda,工作人员,Male,1997-06-01 00:00:00,,gate-assessment.org/verify/UNK-S-001,#6B7280,"FLAG: staff-room person, no role note — please confirm (country rep aide? official?)"
+UNK-S-002,OFFICIAL,STAFF,Shahzod IBROHIMOV,工作人员,Male,,,gate-assessment.org/verify/UNK-S-002,#6B7280,"FLAG: staff-room person, no role note — please confirm (country rep aide? official?)"
+UNK-S-003,OFFICIAL,STAFF,袁大荣,工作人员,Male,,,gate-assessment.org/verify/UNK-S-003,#6B7280,"FLAG: staff-room person, no role note — please confirm (country rep aide? official?)"

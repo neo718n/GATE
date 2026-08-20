@@ -920,6 +920,49 @@ export type NewCertificateVerification =
   typeof certificateVerifications.$inferInsert;
 export type Award = (typeof awardEnum.enumValues)[number];
 
+// ────────────────────────────────────────────────────────────────────────────
+// Event Badges (China Camp 2026 and future in-person events)
+// ────────────────────────────────────────────────────────────────────────────
+
+export const eventBadgeCategoryEnum = pgEnum("event_badge_category", [
+  "PARTICIPANT",
+  "DELEGATION",
+  "GUEST",
+  "OFFICIAL",
+]);
+
+export const eventBadgeRoleEnum = pgEnum("event_badge_role", [
+  "CONTESTANT",
+  "TEAM_LEADER",
+  "PARENT",
+  "COUNTRY_REP",
+  "MEDIA",
+  "STAFF",
+]);
+
+export const eventBadges = pgTable(
+  "event_badges",
+  {
+    id: serial("id").primaryKey(),
+    cardNo: text("card_no").notNull().unique(),
+    category: eventBadgeCategoryEnum("category").notNull(),
+    roleBadge: eventBadgeRoleEnum("role_badge").notNull(),
+    fullName: text("full_name").notNull(),
+    country: text("country").notNull(),
+    gender: genderEnum("gender"),
+    dateOfBirth: date("date_of_birth"),
+    sourceNote: text("source_note"),
+    badgeColorHex: text("badge_color_hex").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    cardNoIdx: index("event_badges_card_no_idx").on(t.cardNo),
+  }),
+);
+
+export type EventBadge = typeof eventBadges.$inferSelect;
+export type NewEventBadge = typeof eventBadges.$inferInsert;
+
 export type Role = (typeof roleEnum.enumValues)[number];
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;
