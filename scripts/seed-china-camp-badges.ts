@@ -52,6 +52,10 @@ const badges: NewEventBadge[] = [
   { cardNo: "UZB-C-025", category: "PARTICIPANT", roleBadge: "CONTESTANT", fullName: "SOFARBAEV SAIDMUROD", country: "Uzbekistan", gender: "male", dateOfBirth: "2014-07-16", sourceNote: "5", badgeColorHex: "#0066FF" },
   { cardNo: "UZB-C-006", category: "PARTICIPANT", roleBadge: "CONTESTANT", fullName: "TOVMURATOV DIYORBEK", country: "Uzbekistan", gender: "male", dateOfBirth: "2015-06-28", sourceNote: "Grade 4", badgeColorHex: "#0066FF" },
   { cardNo: "UZB-C-008", category: "PARTICIPANT", roleBadge: "CONTESTANT", fullName: "Yangiboev Asilbek", country: "Uzbekistan", gender: "male", dateOfBirth: "2013-05-01", sourceNote: "Grade 6", badgeColorHex: "#0066FF" },
+  // Not in the original 55-attendee CSV — sat the Math contest (photo 11) without a
+  // printed badge. Added post-event 2026-08-22 so the QR performance feature covers
+  // him too. No DOB on file.
+  { cardNo: "UZB-C-030", category: "PARTICIPANT", roleBadge: "CONTESTANT", fullName: "Muhammad Yusuf Xurramov", country: "Uzbekistan", gender: "male", dateOfBirth: null, sourceNote: "Grade 4 (KHISO) — unregistered, added post-event", badgeColorHex: "#0066FF" },
 
   { cardNo: "UZB-T-002", category: "DELEGATION", roleBadge: "TEAM_LEADER", fullName: "AMIROV ABDULHAY", country: "Uzbekistan", gender: "male", dateOfBirth: "2002-09-18", sourceNote: "Teacher", badgeColorHex: "#5B21B6" },
   { cardNo: "UZB-T-003", category: "DELEGATION", roleBadge: "TEAM_LEADER", fullName: "JURAKULOV SHAVKATJON", country: "Uzbekistan", gender: "male", dateOfBirth: "1995-03-13", sourceNote: "Teacher", badgeColorHex: "#5B21B6" },

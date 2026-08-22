@@ -22,6 +22,7 @@ import {
   lookupRawBadgeByCode,
   sanitizeBadge,
 } from "@/lib/badges/lookup";
+import { lookupExamResultsForBadge, sanitizeResult } from "@/lib/badges/results";
 
 export const metadata: Metadata = {
   title: "Verify Certificate · G.A.T.E.",
@@ -54,6 +55,10 @@ export default async function VerifyResultPage({
       clearFailures(ipKey);
     }
 
+    const results = badge
+      ? (await lookupExamResultsForBadge(badge.id)).map(sanitizeResult)
+      : [];
+
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-16">
         <Link
@@ -66,6 +71,7 @@ export default async function VerifyResultPage({
         <BadgeResultCard
           status={status}
           badge={badge ? sanitizeBadge(badge) : undefined}
+          results={results}
           attemptedCode={canonical}
         />
       </div>

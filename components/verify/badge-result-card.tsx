@@ -3,17 +3,26 @@ import {
   ShieldCheck,
   ShieldX,
   ArrowLeft,
+  ArrowRight,
   Hash,
   MapPin,
   CalendarDays,
   Building2,
+  Trophy,
 } from "lucide-react";
 import type {
   BadgeVerifyStatus,
   PublicEventBadge,
 } from "@/lib/badges/lookup";
+import type { PublicEventBadgeResult } from "@/lib/badges/results";
+import { AWARD_LABELS, AWARD_CLASSES } from "@/lib/awards";
 import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { PrintButton } from "./print-button";
+
+const SUBJECT_LABELS: Record<PublicEventBadgeResult["subject"], string> = {
+  math: "Mathematics",
+  english: "English",
+};
 
 const ROLE_LABELS: Record<PublicEventBadge["roleBadge"], string> = {
   CONTESTANT: "Contestant",
@@ -43,10 +52,11 @@ const VENUE_LINE = "Hangzhou Institute of Technology · Building B1";
 interface Props {
   status: BadgeVerifyStatus;
   badge?: PublicEventBadge;
+  results?: PublicEventBadgeResult[];
   attemptedCode: string;
 }
 
-export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
+export function BadgeResultCard({ status, badge, results = [], attemptedCode }: Props) {
   if (status === "not_found") {
     return (
       <div className="rounded-2xl border border-destructive/30 bg-card p-6 sm:p-8 shadow-sm">
@@ -190,6 +200,45 @@ export function BadgeResultCard({ status, badge, attemptedCode }: Props) {
           />
         </dl>
       </div>
+
+      {results.length > 0 && (
+        <div className="px-6 sm:px-10 py-8 sm:py-10 border-t border-border">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50 text-center">
+            Contest Performance
+          </p>
+          <div className="mt-5 space-y-4 max-w-md mx-auto">
+            {results.map((r) => (
+              <div
+                key={r.subject}
+                className="rounded-xl border border-border bg-foreground/[0.015] p-4 sm:p-5"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm font-semibold text-foreground">
+                    {SUBJECT_LABELS[r.subject]}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${AWARD_CLASSES[r.award]}`}
+                  >
+                    <Trophy className="h-3 w-3" aria-hidden />
+                    {AWARD_LABELS[r.award]}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-xs text-foreground/60">
+                  {r.correctCount}/{r.totalQuestions} correct &middot;{" "}
+                  {r.pointsEarned}/{r.pointsMax} points
+                </p>
+                <Link
+                  href={`/verify/${badge.cardNo}/performance`}
+                  className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gate-gold hover:text-gate-gold-2 transition-colors"
+                >
+                  View Full Performance
+                  <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <footer className="px-6 sm:px-10 py-5 border-t border-border bg-background/40 text-xs text-foreground/55">
         <p className="flex items-start gap-1.5">

@@ -963,6 +963,58 @@ export const eventBadges = pgTable(
 export type EventBadge = typeof eventBadges.$inferSelect;
 export type NewEventBadge = typeof eventBadges.$inferInsert;
 
+// ────────────────────────────────────────────────────────────────────────────
+// Event Badge Results (China Camp 2026 paper contest — Math + English)
+// ────────────────────────────────────────────────────────────────────────────
+// Scores for the physical, paper-based China Camp contest. This is a separate,
+// standalone data source from the digital exam pipeline above (exams/
+// examSessions/examAnswers) — that pipeline is for the online exam product and
+// was never used for this in-person paper contest. Static reference content
+// (what each question tests, the correct answer, diagnostic notes) lives in
+// lib/badges/answer-keys.ts, not in the database — this table stores only the
+// dynamic, per-student data: which letters they picked, their score, their
+// medal. Diagnostics are computed at read time by joining `answers` against
+// the matching static key (see lib/badges/results.ts).
+
+export const examSubjectEnum = pgEnum("exam_subject", ["math", "english"]);
+
+export const eventBadgeResults = pgTable(
+  "event_badge_results",
+  {
+    id: serial("id").primaryKey(),
+    eventBadgeId: integer("event_badge_id")
+      .notNull()
+      .references(() => eventBadges.id, { onDelete: "cascade" }),
+    subject: examSubjectEnum("subject").notNull(),
+    category: integer("category").notNull(), // 1–5, same grade-band scheme as eventBadges/CSV
+    answers: jsonb("answers").$type<string[]>().notNull(), // given letters, in question order
+    correctCount: integer("correct_count").notNull(),
+    totalQuestions: integer("total_questions").notNull(),
+    pointsEarned: integer("points_earned").notNull(),
+    pointsMax: integer("points_max").notNull(),
+    award: awardEnum("award").notNull(),
+    notes: text("notes"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    eventBadgeIdx: index("event_badge_results_badge_idx").on(t.eventBadgeId),
+    uniqueSubject: unique().on(t.eventBadgeId, t.subject),
+  }),
+);
+
+export const eventBadgeResultsRelations = relations(
+  eventBadgeResults,
+  ({ one }) => ({
+    eventBadge: one(eventBadges, {
+      fields: [eventBadgeResults.eventBadgeId],
+      references: [eventBadges.id],
+    }),
+  }),
+);
+
+export type EventBadgeResult = typeof eventBadgeResults.$inferSelect;
+export type NewEventBadgeResult = typeof eventBadgeResults.$inferInsert;
+
 export type Role = (typeof roleEnum.enumValues)[number];
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;

@@ -1,0 +1,272 @@
+// Auto-generated reference content — the static, never-changing Math and English
+// answer keys + diagnostic taxonomy for the China Camp 2026 paper contest.
+// Source: this session's "Question Report" analysis of results/Math/problems/*.pdf
+// and the answer-key sections of results/English/GATE_2026_English_*.pdf.
+//
+// This file holds ONLY static reference content (what each question tests, and
+// what the correct answer is). Per-student data (which letters a contestant
+// picked, their score, their medal) lives in the `eventBadgeResults` database
+// table and is computed against these keys at read time — see lib/badges/results.ts.
+
+export interface MathQuestionKey {
+  q: number;
+  domain: "NUM" | "ALG" | "GEO" | "COM" | "LOG" | "PAT" | "PRO" | "DAT";
+  domainName: string;
+  level: 1 | 2 | 3;
+  difficulty: "Easy" | "Medium" | "Hard";
+  correct: string;
+  note: string;
+}
+
+export interface EnglishQuestionKey {
+  q: number;
+  section: "A" | "B" | "C";
+  skill: string;
+  subskill: string;
+  level: string;
+  correct: string;
+  points: number;
+  note: string;
+}
+
+export const MATH_CATEGORY_LABEL: Record<1 | 2 | 3 | 4 | 5, string> = {
+  1: "Category 1 (Grades 1–2)",
+  2: "Category 2 (Grades 3–4)",
+  3: "Category 3 (Grades 5–6)",
+  4: "Category 4 (Grades 7–8)",
+  5: "Category 5 (Grades 9–11)",
+};
+
+export const MATH_ANSWER_KEYS: Record<1 | 2 | 3 | 4 | 5, MathQuestionKey[]> = {
+  1: [
+    { q: 1, domain: "PAT", domainName: "Patterns", level: 2, difficulty: "Medium", correct: "A", note: 'Turns a picture into a number pattern. Missing the "+6 each time" rule is the main slip.' },
+    { q: 2, domain: "NUM", domainName: "Numbers", level: 2, difficulty: "Medium", correct: "D", note: 'Needs two number tricks at once — build the biggest number, then the smallest. Doing only one right is common.' },
+    { q: 3, domain: "NUM", domainName: "Numbers", level: 2, difficulty: "Medium", correct: "D", note: 'Build the biggest and smallest number under a digit-total rule. Forgetting a number can\'t start with 0 is the trap.' },
+    { q: 4, domain: "PRO", domainName: "Ratios & Rates", level: 2, difficulty: "Medium", correct: "B", note: 'Two different step sizes must both turn into distance. Mixing up "steps taken" with "distance walked" is the trap.' },
+    { q: 5, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "A", note: 'Count rectangles hidden inside overlapping shapes. Missing rectangles made of two smaller ones is the usual miss.' },
+    { q: 6, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "B", note: 'A small two-unknown puzzle (2-seat and 3-seat desks) — early algebra, by trial or by equation.' },
+    { q: 7, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "B", note: 'A number puzzle (AB+CCC+CCC=2025) that needs careful digit logic, not guessing.' },
+    { q: 8, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "A", note: 'Fit numbers into a shape so every side matches, then find the smallest product. Two strategy steps in one question.' },
+    { q: 9, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "D", note: 'Count cubes in a 3D stack. Forgetting the hidden cubes at the back is the classic mistake.' },
+    { q: 10, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "A", note: 'An "every 4th student" pattern plus a smallest-possible-number condition — easy to round the wrong way.' },
+    { q: 11, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "C", note: 'An evenly-spaced age pattern plus one equation (oldest = 3 &times; youngest).' },
+    { q: 12, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "A", note: 'A system of picture-equations, solved step by step — an early taste of real algebra.' },
+    { q: 13, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "B", note: 'Counting paths on a grid with an odd-shaped border — a harder version of Pascal\'s Triangle counting.' },
+    { q: 14, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "D", note: 'Find two numbers from their product and their sum — needs trying pairs systematically, not by chance.' },
+    { q: 15, domain: "NUM", domainName: "Numbers", level: 2, difficulty: "Medium", correct: "C", note: 'Uses the Least Common Multiple, applied to a real clock/bell situation.' },
+    { q: 16, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "C", note: 'A web of linked numbers where every connected pair must add to 8, 9, or 10 — one unknown affects the whole picture.' },
+    { q: 17, domain: "COM", domainName: "Counting & Choices", level: 2, difficulty: "Medium", correct: "C", note: 'Counting 3-digit odd numbers from 4 digits. Forgetting "the last digit must be odd" changes the count.' },
+    { q: 18, domain: "NUM", domainName: "Numbers", level: 2, difficulty: "Medium", correct: "C", note: 'Several steps of clock-time addition; easy to forget the one longer break.' },
+    { q: 19, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "C", note: 'Classic trap: asks for a guaranteed worst case, not an average case — the most commonly missed question type.' },
+    { q: 20, domain: "PRO", domainName: "Ratios & Rates", level: 3, difficulty: "Hard", correct: "C", note: 'Trap: looks like simple proportion, but cats and time combine together — plain cross-multiplying gives the wrong answer.' },
+    { q: 21, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "C", note: 'Same "worst case guarantee" idea as Q19, made harder because candies shift down as they\'re taken.' },
+    { q: 22, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "C", note: '3D surface area — must subtract faces where cubes touch. A high point for spatial thinking at this age.' },
+    { q: 23, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "C", note: 'Move from a triangle-shaped number grid to a general rule that works for any row.' },
+    { q: 24, domain: "PAT", domainName: "Patterns", level: 2, difficulty: "Medium", correct: "A", note: 'A repeating pattern plus division with a remainder.' },
+    { q: 25, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "A", note: 'Work out a hidden rule from several worked examples — the rule is never stated outright.' },
+  ],
+  2: [
+    { q: 1, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "E", note: 'Spot the one shape that doesn\'t match a pattern by turning or flipping.' },
+    { q: 2, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "A", note: 'Break a letter-to-number code using two partly-known words — needs careful elimination, not guessing.' },
+    { q: 3, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "B", note: 'Judge which shapes are split into two equal halves, including tricky staircase-shaped cuts.' },
+    { q: 4, domain: "PAT", domainName: "Patterns", level: 1, difficulty: "Easy", correct: "A", note: 'Checks how a pattern is built, not the final number — a direct, single-idea check.' },
+    { q: 5, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "D", note: 'Work backwards from a final total to the starting amount.' },
+    { q: 6, domain: "ALG", domainName: "Algebra", level: 1, difficulty: "Easy", correct: "D", note: 'One simple equation (legs vs. heads) — a direct, single-step use of algebra.' },
+    { q: 7, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "E", note: 'Match a number pattern on a circle to the shape it draws when connected.' },
+    { q: 8, domain: "LOG", domainName: "Logic Puzzles", level: 2, difficulty: "Medium", correct: "C", note: 'Simple map reading — check which places are still connected once some roads close.' },
+    { q: 9, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "A", note: 'Track a column in a triangle-shaped number grid — needs two pattern rules used together.' },
+    { q: 10, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "D", note: 'Cover a shape using triangles on a grid — a spatial-fitting problem.' },
+    { q: 11, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "C", note: 'Trap: a "must always be true" question about points around a circle — mixing up "possible" with "certain" is the usual error.' },
+    { q: 12, domain: "NUM", domainName: "Numbers", level: 1, difficulty: "Easy", correct: "B", note: 'Simple unit conversion (minutes vs. seconds) and direct comparison.' },
+    { q: 13, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "B", note: 'A small system of two equations (a sum and a difference).' },
+    { q: 14, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "D", note: 'Set logic (overlap between two groups) without a drawn diagram to lean on.' },
+    { q: 15, domain: "PRO", domainName: "Ratios & Rates", level: 3, difficulty: "Hard", correct: "E", note: 'Trap: more buckets means less sand per bucket — assuming direct proportion instead of inverse is the common mistake.' },
+    { q: 16, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'Find the smallest perimeter under a whole-number-sides rule.' },
+    { q: 17, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "C", note: 'Elegant shortcut question: add all five clues together and work backwards — trying each clue alone almost never works.' },
+    { q: 18, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "E", note: 'A classic logic-grid puzzle with five clues to combine.' },
+    { q: 19, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "D", note: 'Counting arrangements with a "no two neighbours in a row" rule.' },
+    { q: 20, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "C", note: 'Count regular hexagons hiding inside a bigger triangular grid — needs a careful, systematic search.' },
+    { q: 21, domain: "NUM", domainName: "Numbers", level: 1, difficulty: "Easy", correct: "B", note: 'Read the picture and subtract — no hidden trick.' },
+    { q: 22, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "D", note: 'Count grid points inside a shape — an early, informal version of a well-known geometry rule.' },
+    { q: 23, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "C", note: 'Build one equation from distances marked on a number line.' },
+    { q: 24, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "B", note: 'Apply a "subtract and write below" pattern rule to a new, bigger diagram.' },
+    { q: 25, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "A", note: 'Combine several overlapping patterns and find the largest possible overlap.' },
+  ],
+  3: [
+    { q: 1, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "C", note: 'Break an overlapping-rectangles picture into areas that add and subtract correctly.' },
+    { q: 2, domain: "NUM", domainName: "Numbers", level: 1, difficulty: "Medium", correct: "A", note: 'Fraction arithmetic plus estimating — an exact answer isn\'t required, just a close guess.' },
+    { q: 3, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "D", note: 'Check several claims at once about a hidden number pattern — get the pattern right first, then test each claim.' },
+    { q: 4, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'Work out one rectangle\'s exact size from how a taller and a shorter tower are built from it.' },
+    { q: 5, domain: "NUM", domainName: "Numbers", level: 2, difficulty: "Medium", correct: "C", note: 'A "position in a line" puzzle (count from front + count from back = total + 1).' },
+    { q: 6, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "C", note: 'Picture one fold of paper, tracking which side (front or back colour) ends up showing.' },
+    { q: 7, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "E", note: 'Use several digit rules together (even, odd, greater-than) to find the one number that fits all of them.' },
+    { q: 8, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "D", note: 'A pattern that changes rule partway through — the student must switch strategies mid-count.' },
+    { q: 9, domain: "COM", domainName: "Counting & Choices", level: 2, difficulty: "Medium", correct: "C", note: 'Count ordered pairs (12 &times; 11) — easy to accidentally count each pair only once instead of twice.' },
+    { q: 10, domain: "PRO", domainName: "Ratios & Rates", level: 2, difficulty: "Medium", correct: "D", note: 'Two-part direct proportion (more children, more days, more juice).' },
+    { q: 11, domain: "PAT", domainName: "Patterns", level: 2, difficulty: "Medium", correct: "B", note: 'A repeating colour pattern — find the remainder after dividing by the pattern\'s length.' },
+    { q: 12, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "E", note: 'Picture a 3D block from directly above — spatial visualisation.' },
+    { q: 13, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "C", note: 'Combine the Least Common Multiple with a "smallest possible total" condition across three shapes.' },
+    { q: 14, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "D", note: 'Count seating arrangements with a "must leave a gap" rule.' },
+    { q: 15, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'Cover a square using three tile sizes, with a "use every colour once" rule — then use as few tiles as possible.' },
+    { q: 16, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "D", note: 'From one inequality, work out what must always be true about a 5-digit number — "always true" is stricter than "possible."' },
+    { q: 17, domain: "DAT", domainName: "Data & Graphs", level: 3, difficulty: "Hard", correct: "C", note: 'Trap: find the biggest possible percent under a limit and a whole-number-of-people rule — easy to forget the count must be a whole number.' },
+    { q: 18, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "A", note: 'A system of two equations, then use it to work out total money earned.' },
+    { q: 19, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "A", note: 'An ordering puzzle — five runners, several relative-position clues.' },
+    { q: 20, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'Classic insight question: the "double it with each cut" trick — but stacking pieces isn\'t allowed here, which changes the answer.' },
+    { q: 21, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "D", note: 'Work out two number totals from a labelled diagram, then add them together.' },
+    { q: 22, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "B", note: 'A ratio problem where half of one group moves into another group.' },
+    { q: 23, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "E", note: 'An ordering puzzle with five objects and several placement clues.' },
+    { q: 24, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'A matchstick puzzle — rebuild a shape by moving as few sticks as possible.' },
+    { q: 25, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "A", note: 'Classic tournament-design question: find the fewest races needed to be completely sure of the top two.' },
+  ],
+  4: [
+    { q: 1, domain: "DAT", domainName: "Data & Graphs", level: 2, difficulty: "Medium", correct: "E", note: 'Rebuild missing bar-chart values using a pattern in the totals.' },
+    { q: 2, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "B", note: 'Angle-chasing with parallel lines and the exterior-angle rule.' },
+    { q: 3, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "A", note: 'A "magic shape" number puzzle — work out unknowns from matching sums.' },
+    { q: 4, domain: "PRO", domainName: "Ratios & Rates", level: 2, difficulty: "Medium", correct: "E", note: 'Apply several percentage changes one after another, then add up the total weight.' },
+    { q: 5, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'Work out one block\'s size from two towers, then use it across a row of 11 — a unit conversion is hiding in there too.' },
+    { q: 6, domain: "LOG", domainName: "Logic Puzzles", level: 2, difficulty: "Medium", correct: "C", note: 'Read a tic-tac-toe position and pick a move that can\'t lose — a small, clear set of options to check.' },
+    { q: 7, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "B", note: 'Classic "fewest swaps" question: the answer comes from breaking the setup into loops, not from trial and error.' },
+    { q: 8, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "A", note: 'Spot the area formula from an early step of a growing pattern, then apply it much further along.' },
+    { q: 9, domain: "DAT", domainName: "Data & Graphs", level: 2, difficulty: "Medium", correct: "D", note: 'Basic statistics from a graph — mean, mode, and range. A core data-reading skill.' },
+    { q: 10, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "C", note: 'Turn a picture with spaced-out objects into a system of equations.' },
+    { q: 11, domain: "PRO", domainName: "Ratios & Rates", level: 2, difficulty: "Medium", correct: "D", note: 'Fill in a ratio table by scaling one known ratio up or down.' },
+    { q: 12, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "B", note: 'A "magic square" style puzzle — solve a small system from row and column totals.' },
+    { q: 13, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "E", note: 'Turn a real seating setup into one equation.' },
+    { q: 14, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "D", note: 'Work out area after folding paper — needs finding the area of the overlapping triangle.' },
+    { q: 15, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "A", note: 'Clock-hand angle arithmetic around a full circle, plus the idea of an angle bisector.' },
+    { q: 16, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "C", note: 'Shortest path on a grid with blocked squares — a step-by-step search, like simple pathfinding.' },
+    { q: 17, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "C", note: 'Algebra and a physical setup combined — the equation is hidden inside the picture.' },
+    { q: 18, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "C", note: 'Hidden skill area: looks like geometry, but solving it really means counting cases carefully — the hardest single question in the whole set.' },
+    { q: 19, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "D", note: 'A logic puzzle with an extra twist: exactly one person\'s two guesses are both right, and no one else\'s are.' },
+    { q: 20, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "A", note: 'Add up a custom-defined operation across many numbers — needs simplifying algebraically first, or it takes far too long.' },
+    { q: 21, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "C", note: 'A "balance scale" style system — two linked equations from a real-world lever picture.' },
+    { q: 22, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "B", note: 'Fit numbers into boxes under a matching-sum rule, then count every way it can be done.' },
+    { q: 23, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "D", note: '"Skyscraper"-style logic puzzle — fill a grid so the outside numbers show how many boxes are "visible" from that side.' },
+    { q: 24, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "E", note: 'Spot a hidden rule from several worked examples that all combine four numbers into one.' },
+    { q: 25, domain: "PRO", domainName: "Ratios & Rates", level: 2, difficulty: "Medium", correct: "D", note: 'A "how many days will the food last" problem — the total supply stays fixed even as the group size changes partway through.' },
+  ],
+  5: [
+    { q: 1, domain: "COM", domainName: "Counting & Choices", level: 3, difficulty: "Hard", correct: "E", note: 'Count matching pairs from a labelled list, under a "one buys, one rents" rule.' },
+    { q: 2, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "C", note: 'Compare powers by rewriting them with the same base, then use a "two true, one false" logic filter.' },
+    { q: 3, domain: "GEO", domainName: "Shapes & Space", level: 2, difficulty: "Medium", correct: "C", note: 'Check the Triangle Inequality Rule on several sets of lengths.' },
+    { q: 4, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "D", note: 'Apply the rules of exponents inside a made-up notation defined earlier in the question.' },
+    { q: 5, domain: "DAT", domainName: "Data & Graphs", level: 2, difficulty: "Medium", correct: "D", note: 'Turn speed &times; time (with a fraction) into distance, then match it to the right bar chart.' },
+    { q: 6, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "E", note: 'Extend a straight-line graph past the part shown, and match it to the right picture.' },
+    { q: 7, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'Angle-chasing using equal rods that form isosceles triangles.' },
+    { q: 8, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "B", note: 'Plug numbers into a custom formula, then use it again in reverse to find an unknown.' },
+    { q: 9, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "A", note: 'A system of 4 equations from a weekly schedule, used to predict a 5th day.' },
+    { q: 10, domain: "ALG", domainName: "Algebra", level: 3, difficulty: "Hard", correct: "A", note: 'Exponent rules combined with a two-step "balance scale" system.' },
+    { q: 11, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "D", note: 'Classic "shadow" question using similar triangles, with an "equal shadows" condition.' },
+    { q: 12, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "E", note: 'A seating/placement puzzle mixing spatial clues and number clues.' },
+    { q: 13, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "B", note: 'A chain of right triangles — uses the geometric-mean relationship.' },
+    { q: 14, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "C", note: 'Classic technique question: compare sums of square roots by squaring them.' },
+    { q: 15, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "D", note: 'Number rules plus a step-by-step game simulation — the most demanding single question in the set.' },
+    { q: 16, domain: "GEO", domainName: "Shapes & Space", level: 3, difficulty: "Hard", correct: "D", note: 'A rotation, worked out using the Law of Cosines.' },
+    { q: 17, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "D", note: 'A grid puzzle where coloured regions carry math operations (like a KenKen) — several rounds of step-by-step deduction.' },
+    { q: 18, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "B", note: 'Build and simplify an algebraic expression (expand it, then combine like terms).' },
+    { q: 19, domain: "ALG", domainName: "Algebra", level: 2, difficulty: "Medium", correct: "C", note: 'Read the right range off a graph made of two connected straight lines.' },
+    { q: 20, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "E", note: 'A grid puzzle with greater-than/less-than clues between boxes (like Futoshiki).' },
+    { q: 21, domain: "NUM", domainName: "Numbers", level: 3, difficulty: "Hard", correct: "C", note: 'Uses the "integer part of a number" idea together with square roots — real number-theory territory.' },
+    { q: 22, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "C", note: 'A placement puzzle (a path through every position) combined with arithmetic.' },
+    { q: 23, domain: "PRO", domainName: "Ratios & Rates", level: 3, difficulty: "Hard", correct: "C", note: 'Two connected ratio tables, needing a two-step conclusion.' },
+    { q: 24, domain: "LOG", domainName: "Logic Puzzles", level: 3, difficulty: "Hard", correct: "B", note: 'A simulated flipping mechanism — each move flips its neighbours. Computer-science style thinking on a written test.' },
+    { q: 25, domain: "PAT", domainName: "Patterns", level: 3, difficulty: "Hard", correct: "C", note: 'Spot a hidden multi-part rule from four separate worked examples.' },
+  ],
+};
+
+export const ENGLISH_PAPER_LABEL: Record<"cat4" | "cat5", string> = {
+  cat4: "Category 4 Entry Diagnostic (Grades 7–8, A2→B1)",
+  cat5: "Category 5 Advanced Diagnostic (Grades 9–11, B2→C2)",
+};
+
+export const ENGLISH_CAT4_KEY: EnglishQuestionKey[] = [
+  { q: 1, section: "A", skill: "Grammar", subskill: 'Present Continuous (ongoing trend)', level: "A2", correct: "C", points: 1, note: 'A/B confuse simple vs continuous for a trend in progress; D confuses present with past.' },
+  { q: 2, section: "A", skill: "Grammar", subskill: 'Past Simple (irregular verbs)', level: "A2", correct: "C", points: 1, note: 'A/B show past-tense marking not internalised; D is not even a real verb form.' },
+  { q: 3, section: "A", skill: "Grammar", subskill: 'Prepositions of Time', level: "A2", correct: "A", points: 1, note: 'B/C show the student hasn\'t learned which preposition pairs with centuries vs. precise times.' },
+  { q: 4, section: "A", skill: "Grammar", subskill: 'Indefinite Articles', level: "A2", correct: "B", points: 1, note: 'Choosing A signals the vowel-sound rule for \'a\' vs \'an\' isn\'t learned.' },
+  { q: 5, section: "A", skill: "Grammar", subskill: 'Comparative Adjectives', level: "A2+", correct: "B", points: 2, note: 'C/D show superlative used where a two-item comparison needs the comparative.' },
+  { q: 6, section: "A", skill: "Grammar", subskill: 'Modal Verbs (obligation)', level: "A2+", correct: "C", points: 2, note: 'A/B show obligation (must) not distinguished from ability/possibility modals.' },
+  { q: 7, section: "A", skill: "Grammar", subskill: 'Present Perfect (unfinished time)', level: "A2+", correct: "A", points: 2, note: 'C/D show reliance on past simple/continuous instead of present perfect.' },
+  { q: 8, section: "A", skill: "Grammar", subskill: 'Quantifiers (countable/uncountable)', level: "A2+", correct: "B", points: 2, note: 'A/C/D show countable vs uncountable nouns not distinguished.' },
+  { q: 9, section: "A", skill: "Grammar", subskill: 'Passive Voice (modal + passive)', level: "B1", correct: "A", points: 3, note: 'B/C confuse present obligation with past speculation; D omits the passive infinitive.' },
+  { q: 10, section: "A", skill: "Grammar", subskill: 'First Conditional', level: "B1", correct: "B", points: 3, note: 'D is the most common learner error — doubling the future form in the if-clause.' },
+  { q: 11, section: "A", skill: "Grammar", subskill: 'Reported Speech (tense back-shift)', level: "B1", correct: "B", points: 3, note: 'A shows reported speech tense-shift not learned.' },
+  { q: 12, section: "A", skill: "Grammar", subskill: 'Relative Clauses (subject pronoun)', level: "B1", correct: "B", points: 3, note: 'A/D show relative pronouns for people vs. things/places not distinguished.' },
+  { q: 13, section: "A", skill: "Grammar", subskill: 'Question Formation (Wh-words)', level: "A2", correct: "B", points: 1, note: 'A/C/D show the wrong question word matched to the expected answer type.' },
+  { q: 14, section: "A", skill: "Grammar", subskill: 'Gerunds after Verbs', level: "A2+", correct: "C", points: 2, note: 'B is the most common error — infinitive after a verb that requires a gerund.' },
+  { q: 15, section: "A", skill: "Grammar", subskill: 'Mixed Conditional (inverted, past unreal) — CEILING ITEM', level: "B1", correct: "A", points: 3, note: 'CEILING ITEM: inverted third-conditional without \'if\'. Miss alone isn\'t a concern; with Q10-11 misses it signals a complex-sentence gap.' },
+  { q: 16, section: "B", skill: "Vocabulary", subskill: 'Word Meaning (academic adjective)', level: "A2", correct: "B", points: 1, note: 'Choosing A is a near-opposite confusion.' },
+  { q: 17, section: "B", skill: "Vocabulary", subskill: 'Synonym', level: "A2", correct: "B", points: 1, note: 'Any wrong answer suggests guessing from sound/spelling rather than meaning.' },
+  { q: 18, section: "B", skill: "Vocabulary", subskill: 'Antonym', level: "A2", correct: "B", points: 1, note: 'A/D show \'ancient\' linked to a topic area (history) but not its precise opposite.' },
+  { q: 19, section: "B", skill: "Vocabulary", subskill: 'Context / Cloze', level: "A2", correct: "B", points: 1, note: 'Wrong choices show the contrast clue isn\'t being used to narrow word choice.' },
+  { q: 20, section: "B", skill: "Vocabulary", subskill: 'Collocation', level: "A2", correct: "A", points: 1, note: 'Distractors test article agreement alongside collocation.' },
+  { q: 21, section: "B", skill: "Vocabulary", subskill: 'Word Meaning (academic adjective)', level: "A2+", correct: "B", points: 2, note: 'Choosing A is a direct antonym confusion.' },
+  { q: 22, section: "B", skill: "Vocabulary", subskill: 'Phrasal Verb (academic context)', level: "A2+", correct: "A", points: 2, note: 'Wrong particle choices show this phrasal verb\'s meaning (\'investigate\') isn\'t memorised.' },
+  { q: 23, section: "B", skill: "Vocabulary", subskill: 'Collocation / Word Form (noun after adjective)', level: "A2+", correct: "B", points: 2, note: 'A/C/D show the root word is recognised but not the correct part of speech.' },
+  { q: 24, section: "B", skill: "Vocabulary", subskill: 'Word Formation (noun suffix)', level: "A2+", correct: "B", points: 2, note: 'A/D show the base verb isn\'t converted to its noun form for this slot.' },
+  { q: 25, section: "B", skill: "Vocabulary", subskill: 'Context / Cloze (contrast clue)', level: "A2+", correct: "B", points: 2, note: 'A/C/D miss the logical contrast signalled by \'Although ... seemed ... but ... proved wrong\'.' },
+  { q: 26, section: "B", skill: "Vocabulary", subskill: 'Synonym (academic)', level: "B1", correct: "A", points: 3, note: 'Choosing B is a direct antonym confusion at the academic-vocabulary level.' },
+  { q: 27, section: "B", skill: "Vocabulary", subskill: 'Antonym (academic, near-synonym distractors) — CEILING ITEM', level: "B1", correct: "B", points: 3, note: 'CEILING ITEM: all options relate to \'decision-making\'; needs the precise meaning of \'arbitrary\' to find its true opposite.' },
+  { q: 28, section: "B", skill: "Vocabulary", subskill: 'Word Formation (adjective suffix)', level: "B1", correct: "B", points: 3, note: 'C shows the suffix pattern recognised but the noun form picked instead of the adjective.' },
+  { q: 29, section: "B", skill: "Vocabulary", subskill: 'Phrasal Verb (academic context)', level: "B1", correct: "A", points: 3, note: 'Wrong particle choices show this phrasal verb meaning \'cancelled\' isn\'t learned.' },
+  { q: 30, section: "B", skill: "Vocabulary", subskill: 'Collocation / Word Choice (academic)', level: "B1", correct: "A", points: 3, note: 'B/C/D show the word family is recognised but not the base verb form required after \'plans to\'.' },
+  { q: 31, section: "C", skill: "Reading", subskill: 'Reading — Sequence & Detail', level: "A2", correct: "A", points: 1, note: 'Checks tracking a chronological sequence across the full passage, not one isolated fact.' },
+  { q: 32, section: "C", skill: "Reading", subskill: 'Reading — Detail Retrieval', level: "A2", correct: "C", points: 1, note: 'Choosing A or B confuses the discoverer with the namer or an earlier researcher.' },
+  { q: 33, section: "C", skill: "Reading", subskill: 'Reading — Inference (reason behind a choice)', level: "A2+", correct: "B", points: 2, note: 'Requires connecting two separate details rather than one explicit sentence.' },
+  { q: 34, section: "C", skill: "Reading", subskill: 'Reading — Inference (secondary reason)', level: "A2+", correct: "B", points: 2, note: 'Tests noticing a second, less obvious justification buried mid-paragraph.' },
+  { q: 35, section: "C", skill: "Reading", subskill: 'Reading — Inference (author\'s implied point)', level: "B1", correct: "B", points: 3, note: 'A genuine \'read between the lines\' item — the moral is never stated directly.' },
+  { q: 36, section: "C", skill: "Reading", subskill: 'Reading — Author\'s Purpose', level: "A2+", correct: "B", points: 2, note: 'Requires identifying the sentence\'s function (a supporting reason), not treating it as an isolated fact.' },
+  { q: 37, section: "C", skill: "Reading", subskill: 'Reading — Synthesis (comparing viewpoints)', level: "B1", correct: "B", points: 3, note: 'Requires locating one specific concern among several, without confusing it with the next one.' },
+  { q: 38, section: "C", skill: "Reading", subskill: 'Reading — Vocabulary in Context', level: "B1", correct: "B", points: 3, note: 'Tests inferring meaning from context rather than a memorised definition.' },
+  { q: 39, section: "C", skill: "Reading", subskill: 'Reading — Inference (author\'s stance) — CEILING ITEM', level: "B1", correct: "C", points: 3, note: 'CEILING ITEM: requires rejecting two tempting extremes explicitly mentioned as other people\'s positions.' },
+  { q: 40, section: "C", skill: "Reading", subskill: 'Reading — Main Idea', level: "B1", correct: "B", points: 3, note: 'Persistent difficulty here suggests a global-comprehension gap, not a vocabulary gap.' },
+];
+
+export const ENGLISH_CAT5_KEY: EnglishQuestionKey[] = [
+  { q: 1, section: "A", skill: "Grammar", subskill: 'Inversion after negative adverbial', level: "B2", correct: "C", points: 2, note: 'A/B fail obligatory subject-auxiliary inversion; D applies inversion without the auxiliary.' },
+  { q: 2, section: "A", skill: "Grammar", subskill: 'Past modal of deduction', level: "B2", correct: "C", points: 2, note: 'D expresses past obligation rather than confident past deduction.' },
+  { q: 3, section: "A", skill: "Grammar", subskill: 'Participle clause (reduced relative)', level: "B2", correct: "B", points: 2, note: 'A/C show a voice error (active participle where the noun is the recipient); D produces a comma splice.' },
+  { q: 4, section: "A", skill: "Grammar", subskill: 'Subjunctive after verbs of demand', level: "B2", correct: "D", points: 2, note: 'Choosing an inflected form shows ordinary subject-verb agreement applied, unaware verbs of demand trigger the base form.' },
+  { q: 5, section: "A", skill: "Grammar", subskill: 'Mixed conditional (past cause / present result)', level: "C1", correct: "D", points: 3, note: 'B correctly forms the past-unreal condition but wrongly keeps the result clause in the past.' },
+  { q: 6, section: "A", skill: "Grammar", subskill: 'Cleft sentence for emphasis', level: "C1", correct: "B", points: 3, note: 'D (\'What was ... that\') is ungrammatical; the slot requires the it-cleft construction.' },
+  { q: 7, section: "A", skill: "Grammar", subskill: 'Concessive clause with \'as\'', level: "C1", correct: "C", points: 3, note: 'Tests the fronted adjective + \'as\' pattern; B/A/D each introduce a second subordinator (double-conjunction error).' },
+  { q: 8, section: "A", skill: "Grammar", subskill: 'Verb pattern: report verb + object + infinitive', level: "C1", correct: "B", points: 3, note: 'C is the frequent interference error (\'deem as\'); \'deem\' takes bare \'to be\', not a prepositional phrase.' },
+  { q: 9, section: "A", skill: "Grammar", subskill: 'Inversion in a conditional without \'if\' — CEILING ITEM', level: "C2", correct: "D", points: 4, note: 'CEILING ITEM: \'Were + subject + to-infinitive\' as the inverted hypothetical future condition.' },
+  { q: 10, section: "A", skill: "Grammar", subskill: 'Subtle article and quantifier contrast — CEILING ITEM', level: "C2", correct: "B", points: 4, note: 'CEILING ITEM: \'so + few/many + that\' vs. \'such + a + noun + that\'.' },
+  { q: 11, section: "A", skill: "Grammar", subskill: 'Reported speech with modal back-shift', level: "C1", correct: "B", points: 3, note: 'Retaining \'will\'/\'is going to\' shows tense harmony in indirect speech not internalised.' },
+  { q: 12, section: "A", skill: "Grammar", subskill: 'Relative clause with quantifier + \'of which\'', level: "B2", correct: "B", points: 2, note: 'A produces a comma splice; D adds a redundant verb, leaving no matrix predicate.' },
+  { q: 13, section: "A", skill: "Grammar", subskill: 'Passive with reporting verb (raising)', level: "C1", correct: "D", points: 3, note: 'Tests subject-raising in the reporting passive (\'X is believed to have V-ed\').' },
+  { q: 14, section: "A", skill: "Grammar", subskill: 'Adverbial placement altering scope', level: "C1", correct: "A", points: 3, note: 'Tests awareness that adverb position changes semantic scope (only + verb vs. only + subject).' },
+  { q: 15, section: "A", skill: "Grammar", subskill: 'Subjunctive in hypothetical comparison — CEILING ITEM', level: "C2", correct: "A", points: 4, note: 'CEILING ITEM: \'as though/as if\' with a counterfactual requires the past subjunctive even after a past main clause.' },
+  { q: 16, section: "B", skill: "Vocabulary", subskill: 'Academic word meaning', level: "B2", correct: "B", points: 2, note: 'A is a direct antonym confusion, typical when the word is only partly consolidated.' },
+  { q: 17, section: "B", skill: "Vocabulary", subskill: 'Formal register selection', level: "B2", correct: "D", points: 2, note: 'Wrong answers show meaning can be conveyed but academic vs. conversational register can\'t yet be discriminated.' },
+  { q: 18, section: "B", skill: "Vocabulary", subskill: 'Collocation (academic verb + noun)', level: "B2", correct: "B", points: 2, note: 'Distractors are plausible-sounding but wrong-register combinations.' },
+  { q: 19, section: "B", skill: "Vocabulary", subskill: 'Near-synonym discrimination', level: "C1", correct: "B", points: 3, note: 'All four options are academic-register words; only precise semantic knowledge solves this.' },
+  { q: 20, section: "B", skill: "Vocabulary", subskill: 'Word formation (negative prefix)', level: "C1", correct: "A", points: 3, note: 'Tests knowledge of which negative prefix a given stem selects — a pure lexical fact.' },
+  { q: 21, section: "B", skill: "Vocabulary", subskill: 'Idiomatic academic phrase', level: "C1", correct: "C", points: 3, note: 'A (\'at face value\') means the opposite of what the sentence\'s logic requires.' },
+  { q: 22, section: "B", skill: "Vocabulary", subskill: 'Phrasal verb (formal academic use)', level: "C1", correct: "D", points: 3, note: 'B/C/A are real phrasal verbs with entirely different meanings.' },
+  { q: 23, section: "B", skill: "Vocabulary", subskill: 'Word meaning in context', level: "B2", correct: "C", points: 2, note: 'Requires reading \'undermined\' as a negative signal and selecting the option denoting inconsistency.' },
+  { q: 24, section: "B", skill: "Vocabulary", subskill: 'Fine-grained connotation — CEILING ITEM', level: "C2", correct: "B", points: 4, note: 'CEILING ITEM: only \'pedantic\' carries the pejorative excess signalled by the sentence.' },
+  { q: 25, section: "B", skill: "Vocabulary", subskill: 'Latinate academic vocabulary — CEILING ITEM', level: "C2", correct: "D", points: 4, note: 'CEILING ITEM: \'obviate\' is often loosely (and wrongly) confused with \'defer\' (option B).' },
+  { q: 26, section: "B", skill: "Vocabulary", subskill: 'Antonym (abstract nouns)', level: "C1", correct: "D", points: 3, note: 'A is a near-synonym rather than an antonym, catching students who match on topic not direction.' },
+  { q: 27, section: "B", skill: "Vocabulary", subskill: 'Register and precision in reporting verbs', level: "C1", correct: "A", points: 3, note: 'B/C/D all presuppose the claim is true; only \'alleges\' encodes the writer\'s reservation.' },
+  { q: 28, section: "B", skill: "Vocabulary", subskill: 'Word formation (noun -> adjective)', level: "B2", correct: "C", points: 2, note: 'A is the classic trap: a real word from the same root with an unrelated meaning.' },
+  { q: 29, section: "B", skill: "Vocabulary", subskill: 'Discourse marker selection', level: "C1", correct: "A", points: 3, note: 'B signals contrast where the logic is consequential.' },
+  { q: 30, section: "B", skill: "Vocabulary", subskill: 'Precise verb choice with abstract objects', level: "C2", correct: "A", points: 4, note: 'B/D both mean \'to support\' (contradicting \'does not disprove ... merely\'); C denotes projection, not limitation.' },
+  { q: 31, section: "C", skill: "Reading", subskill: 'Reading — Detail (multi-clause)', level: "B2", correct: "B", points: 2, note: 'D is the informative distractor: the passage names psychology and biomedicine together.' },
+  { q: 32, section: "C", skill: "Reading", subskill: 'Reading — Author\'s stance toward a term', level: "C1", correct: "C", points: 3, note: 'Requires noticing the contrastive pivot and attributing the term to commentators, not the author.' },
+  { q: 33, section: "C", skill: "Reading", subskill: 'Reading — Synthesis of multiple causes', level: "C1", correct: "A", points: 3, note: 'NOT-question requires exhaustive checking; D/B/C indicate stopping at the first plausible option.' },
+  { q: 34, section: "C", skill: "Reading", subskill: 'Reading — Inference (systemic argument)', level: "C1", correct: "C", points: 3, note: 'Tests converting a compressed evaluative phrase into its underlying argument.' },
+  { q: 35, section: "C", skill: "Reading", subskill: 'Reading — Tone of the closing sentence — CEILING ITEM', level: "C2", correct: "D", points: 4, note: 'CEILING ITEM: hinges on the adverb \'fittingly\' signalling gentle irony.' },
+  { q: 36, section: "C", skill: "Reading", subskill: 'Reading — Position identification', level: "B2", correct: "A", points: 2, note: 'Baseline item: extracting a speaker\'s thesis before the finer analytical items.' },
+  { q: 37, section: "C", skill: "Reading", subskill: 'Reading — Rhetorical analysis', level: "C1", correct: "C", points: 3, note: 'Tests recognising a specific rhetorical move (conceding an image, then reversing its implication).' },
+  { q: 38, section: "C", skill: "Reading", subskill: 'Reading — Vocabulary in context', level: "C1", correct: "A", points: 3, note: 'Requires reading \'so-called\' as a distancing device, not a neutral label.' },
+  { q: 39, section: "C", skill: "Reading", subskill: 'Reading — Locating genuine common ground — CEILING ITEM', level: "C2", correct: "D", points: 4, note: 'CEILING ITEM: the speakers disagree about where precision resides, not about whether it matters.' },
+  { q: 40, section: "C", skill: "Reading", subskill: 'Reading — Argument structure across both passages — CEILING ITEM', level: "C2", correct: "A", points: 4, note: 'CEILING ITEM and capstone: recognising both texts recast a \'crisis\' as a systemic output. Strongest discriminator on the paper.' },
+];
+
+export const ENGLISH_ANSWER_KEYS: Record<"cat4" | "cat5", EnglishQuestionKey[]> = {
+  cat4: ENGLISH_CAT4_KEY,
+  cat5: ENGLISH_CAT5_KEY,
+};

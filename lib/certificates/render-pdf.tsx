@@ -8,14 +8,7 @@ import { CertificatePDF } from "@/components/certificate-pdf";
 import { db } from "@/lib/db";
 import { certificates } from "@/lib/db/schema";
 import { r2, BUCKET } from "@/lib/r2";
-
-const AWARD_LABELS: Record<string, string> = {
-  gold: "Gold Medal",
-  silver: "Silver Medal",
-  bronze: "Bronze Medal",
-  honorable_mention: "Honorable Mention",
-  participation: "Participation",
-};
+import { AWARD_LABELS } from "@/lib/awards";
 
 export function verifyUrlFor(code: string): string {
   const base = (

@@ -10,24 +10,8 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import type { LookupStatus, PublicCertificate } from "@/lib/certificates/types";
+import { AWARD_LABELS as TIER_LABELS, AWARD_CLASSES as TIER_CLASSES } from "@/lib/awards";
 import { PrintButton } from "./print-button";
-
-const TIER_LABELS: Record<string, string> = {
-  gold: "Gold Medal",
-  silver: "Silver Medal",
-  bronze: "Bronze Medal",
-  honorable_mention: "Honorable Mention",
-  participation: "Participation",
-};
-
-const TIER_CLASSES: Record<string, string> = {
-  gold: "bg-gate-gold/15 text-gate-gold border-gate-gold/30",
-  silver: "bg-foreground/10 text-foreground border-foreground/20",
-  bronze: "bg-amber-700/10 text-amber-700 dark:text-amber-500 border-amber-700/30",
-  honorable_mention:
-    "bg-gate-700/10 text-gate-700 dark:text-gate-600 border-gate-700/30",
-  participation: "bg-foreground/5 text-foreground/70 border-border",
-};
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-GB", {
