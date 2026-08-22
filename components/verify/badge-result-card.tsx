@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   ShieldCheck,
   ShieldX,
+  ShieldOff,
   ArrowLeft,
   ArrowRight,
   Hash,
@@ -57,6 +58,33 @@ interface Props {
 }
 
 export function BadgeResultCard({ status, badge, results = [], attemptedCode }: Props) {
+  if (status === "disabled") {
+    return (
+      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
+        <header className="flex items-start gap-4">
+          <div
+            aria-hidden
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-foreground/5 text-foreground/40"
+          >
+            <ShieldOff className="h-6 w-6" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/50">
+              Unavailable
+            </p>
+            <h1 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground mt-1">
+              Verification Temporarily Disabled
+            </h1>
+          </div>
+        </header>
+        <p className="mt-5 text-sm text-foreground/70 leading-relaxed">
+          Badge verification is currently offline. Please check back shortly,
+          or contact event staff for assistance.
+        </p>
+      </div>
+    );
+  }
+
   if (status === "not_found") {
     return (
       <div className="rounded-2xl border border-destructive/30 bg-card p-6 sm:p-8 shadow-sm">

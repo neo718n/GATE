@@ -9,7 +9,7 @@ import { eventBadges, type EventBadge } from "@/lib/db/schema";
 // so the two can never collide.
 export const BADGE_CODE_SHAPE = /^[A-Z]{2,4}-[A-Z]-\d{3}$/;
 
-export type BadgeVerifyStatus = "verified" | "not_found";
+export type BadgeVerifyStatus = "verified" | "not_found" | "disabled";
 
 export interface PublicEventBadge {
   cardNo: string;

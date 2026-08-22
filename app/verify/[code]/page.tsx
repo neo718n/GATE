@@ -23,6 +23,7 @@ import {
   sanitizeBadge,
 } from "@/lib/badges/lookup";
 import { lookupExamResultsForBadge, sanitizeResult } from "@/lib/badges/results";
+import { isBadgeVerifyEnabled } from "@/lib/badges/verify-flow";
 
 export const metadata: Metadata = {
   title: "Verify Certificate · G.A.T.E.",
@@ -46,6 +47,22 @@ export default async function VerifyResultPage({
   const canonicalCert = formatCode(decoded);
   if (!isValidCodeShape(canonicalCert) && isBadgeCodeShape(formatBadgeCode(decoded))) {
     const canonical = formatBadgeCode(decoded);
+
+    if (!(await isBadgeVerifyEnabled())) {
+      return (
+        <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-16">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50 hover:text-gate-gold transition-colors mb-6 print:hidden"
+          >
+            <ArrowLeft className="h-3 w-3" aria-hidden />
+            Main Page
+          </Link>
+          <BadgeResultCard status="disabled" attemptedCode={canonical} />
+        </div>
+      );
+    }
+
     const badge = await lookupRawBadgeByCode(canonical);
     const status = badge ? ("verified" as const) : ("not_found" as const);
 

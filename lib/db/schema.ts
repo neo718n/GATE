@@ -1015,6 +1015,22 @@ export const eventBadgeResultsRelations = relations(
 export type EventBadgeResult = typeof eventBadgeResults.$inferSelect;
 export type NewEventBadgeResult = typeof eventBadgeResults.$inferInsert;
 
+// ────────────────────────────────────────────────────────────────────────────
+// Badge Verify Settings (superadmin on/off switch for the public badge-QR
+// verify pages — /verify/[code]'s event-badge branch + /verify/[code]/performance)
+// ────────────────────────────────────────────────────────────────────────────
+// Single-row table. No row yet means "enabled" (today's default) — a row only
+// appears once a super_admin has toggled it for the first time. Scoped to
+// event badges only; the separate certificate-verification flow is unaffected.
+
+export const badgeVerifySettings = pgTable("badge_verify_settings", {
+  id: serial("id").primaryKey(),
+  enabled: boolean("enabled").notNull().default(true),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type BadgeVerifySettings = typeof badgeVerifySettings.$inferSelect;
+
 export type Role = (typeof roleEnum.enumValues)[number];
 export type User = typeof user.$inferSelect;
 export type NewUser = typeof user.$inferInsert;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, FileQuestion } from "lucide-react";
 import { formatBadgeCode, lookupRawBadgeByCode } from "@/lib/badges/lookup";
 import { lookupExamResultsForBadge, sanitizeResult } from "@/lib/badges/results";
+import { isBadgeVerifyEnabled } from "@/lib/badges/verify-flow";
 import { PerformanceReport } from "@/components/verify/performance-report";
 
 export const metadata: Metadata = {
@@ -28,6 +29,18 @@ export default async function BadgePerformancePage({
       Back to badge
     </Link>
   );
+
+  if (!(await isBadgeVerifyEnabled())) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-16">
+        {backLink}
+        <EmptyState
+          title="Verification Temporarily Disabled"
+          message="Badge verification is currently offline. Please check back shortly."
+        />
+      </div>
+    );
+  }
 
   if (!badge) {
     return (

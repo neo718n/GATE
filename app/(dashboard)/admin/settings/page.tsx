@@ -1,7 +1,14 @@
 import { requireRole } from "@/lib/authz";
+import { db } from "@/lib/db";
+import { badgeVerifySettings } from "@/lib/db/schema";
+import { toggleBadgeVerifyFlow } from "@/lib/actions/badges";
+import { Button } from "@/components/ui/button";
 
 export default async function SettingsPage() {
   await requireRole(["super_admin"]);
+
+  const [verifySettings] = await db.select().from(badgeVerifySettings).limit(1);
+  const badgeVerifyEnabled = verifySettings?.enabled ?? true;
 
   const checks = [
     {
@@ -74,6 +81,35 @@ export default async function SettingsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="flex flex-col gap-3">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/50 pb-1 border-b border-border">
+          Badge Verification (China Camp QR)
+        </p>
+        <div className="flex items-start justify-between gap-4 py-3">
+          <div className="flex items-start gap-4">
+            <span
+              className={`mt-1.5 h-2 w-2 rounded-full shrink-0 ${badgeVerifyEnabled ? "bg-green-500" : "bg-red-400"}`}
+            />
+            <div className="flex flex-col gap-0.5">
+              <p className="text-sm font-semibold text-foreground">
+                Public verification is {badgeVerifyEnabled ? "ON" : "OFF"}
+              </p>
+              <p className="text-xs font-light text-foreground/55 max-w-md">
+                Controls whether scanning a China Camp badge QR code (/verify/[code])
+                shows the contestant&apos;s identity and score, or a &quot;temporarily
+                disabled&quot; message. Certificate verification is unaffected.
+              </p>
+            </div>
+          </div>
+          <form action={toggleBadgeVerifyFlow} className="shrink-0">
+            <input type="hidden" name="enabled" value={String(badgeVerifyEnabled)} />
+            <Button type="submit" variant={badgeVerifyEnabled ? "destructive" : "gold"} size="sm">
+              {badgeVerifyEnabled ? "Turn Off" : "Turn On"}
+            </Button>
+          </form>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3">

@@ -92,6 +92,13 @@
       "when": 1787402198672,
       "tag": "0012_abnormal_mad_thinker",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1787411166825,
+      "tag": "0013_wild_masked_marvel",
+      "breakpoints": true
     }
   ]
 }
