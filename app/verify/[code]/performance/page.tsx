@@ -54,15 +54,33 @@ export default async function BadgePerformancePage({
     );
   }
 
-  const results = (await lookupExamResultsForBadge(badge.id)).map(sanitizeResult);
+  const allResults = (await lookupExamResultsForBadge(badge.id)).map(sanitizeResult);
 
-  if (results.length === 0) {
+  if (allResults.length === 0) {
     return (
       <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-16">
         {backLink}
         <EmptyState
           title="No Performance Data Yet"
           message={`${badge.fullName}'s contest result hasn't been recorded yet — check back after grading is complete.`}
+        />
+      </div>
+    );
+  }
+
+  // Results re-graded after a scoring mistake was found have their corrected
+  // score/medal live everywhere already (badge card, certificate) but the
+  // per-question breakdown here isn't individually re-verified yet — see
+  // eventBadgeResults.performanceReady in lib/db/schema.ts.
+  const results = allResults.filter((r) => r.performanceReady);
+
+  if (results.length === 0) {
+    return (
+      <div className="mx-auto max-w-2xl px-4 sm:px-6 py-10 sm:py-16">
+        {backLink}
+        <EmptyState
+          title="Coming Soon"
+          message={`${badge.fullName}'s score and medal are confirmed — the full question-by-question report is still being finalized.`}
         />
       </div>
     );

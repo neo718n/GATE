@@ -994,6 +994,15 @@ export const eventBadgeResults = pgTable(
     pointsMax: integer("points_max").notNull(),
     award: awardEnum("award").notNull(),
     notes: text("notes"),
+    // Some China Camp 2026 answer sheets were re-graded after the original
+    // OCR-by-eye pass found scoring mistakes — correctCount/pointsEarned/award
+    // above already reflect the corrected total, but the per-question
+    // `answers` breakdown hasn't been individually re-verified against which
+    // question(s) changed, so the diagnostic report would show misleading
+    // per-question detail. False hides "View Full Performance" behind a
+    // "Coming Soon" state without affecting the score/medal shown anywhere
+    // (badge card, certificate).
+    performanceReady: boolean("performance_ready").notNull().default(true),
     createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (t) => ({

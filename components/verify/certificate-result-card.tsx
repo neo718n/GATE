@@ -5,40 +5,19 @@ import {
   ShieldOff,
   ArrowLeft,
   ArrowRight,
-  Hash,
   MapPin,
   CalendarDays,
+  Hash,
+  Award as AwardIcon,
   Building2,
-  Trophy,
 } from "lucide-react";
-import type {
-  BadgeVerifyStatus,
-  PublicEventBadge,
-} from "@/lib/badges/lookup";
 import type { PublicEventBadgeResult } from "@/lib/badges/results";
 import { AWARD_LABELS, AWARD_CLASSES } from "@/lib/awards";
+import { CERTIFICATE_SUBJECT_LABEL } from "@/components/badges/certificate-pdf";
 import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { PrintButton } from "./print-button";
 
-const SUBJECT_LABELS: Record<PublicEventBadgeResult["subject"], string> = {
-  math: "Mathematics",
-  english: "English",
-};
-
-const ROLE_LABELS: Record<PublicEventBadge["roleBadge"], string> = {
-  CONTESTANT: "Contestant",
-  TEAM_LEADER: "Team Leader",
-  PARENT: "Parent",
-  COUNTRY_REP: "Country Representative",
-  MEDIA: "Media",
-  STAFF: "Staff",
-};
-
-// Regional-indicator flag emoji (🇺🇿) don't render on every platform — Windows
-// in particular shows the raw two-letter fallback ("uz") instead of a flag.
-// flagcdn.com + a plain <img> is the same pattern already used for country
-// flags elsewhere in this app (see phone-code-select.tsx) — reused here for
-// consistent cross-device rendering instead of relying on emoji font support.
+// Same cross-platform flag treatment as badge-result-card.tsx.
 const COUNTRY_ISO: Record<string, string> = {
   Uzbekistan: "uz",
   Tajikistan: "tj",
@@ -50,14 +29,23 @@ const EVENT_LINE = "GATE China 2026 · Hangzhou";
 const EVENT_DATES = "18–24 August 2026";
 const VENUE_LINE = "Hangzhou Institute of Technology · Building B1";
 
+export type CertificateVerifyStatus = "verified" | "not_found" | "disabled";
+
+export interface PublicCertificateBadge {
+  cardNo: string;
+  fullName: string;
+  country: string;
+}
+
 interface Props {
-  status: BadgeVerifyStatus;
-  badge?: PublicEventBadge;
-  results?: PublicEventBadgeResult[];
+  status: CertificateVerifyStatus;
+  badge?: PublicCertificateBadge;
+  result?: PublicEventBadgeResult;
+  serial?: string;
   attemptedCode: string;
 }
 
-export function BadgeResultCard({ status, badge, results = [], attemptedCode }: Props) {
+export function CertificateResultCard({ status, badge, result, serial, attemptedCode }: Props) {
   if (status === "disabled") {
     return (
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
@@ -78,14 +66,14 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
           </div>
         </header>
         <p className="mt-5 text-sm text-foreground/70 leading-relaxed">
-          Badge verification is currently offline. Please check back shortly,
-          or contact event staff for assistance.
+          Certificate verification is currently offline. Please check back
+          shortly, or contact event staff for assistance.
         </p>
       </div>
     );
   }
 
-  if (status === "not_found") {
+  if (status === "not_found" || !badge || !result || !serial) {
     return (
       <div className="rounded-2xl border border-destructive/30 bg-card p-6 sm:p-8 shadow-sm">
         <header className="flex items-start gap-4">
@@ -100,7 +88,7 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
               Not Found
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground mt-1">
-              Badge Not Found
+              Certificate Not Found
             </h1>
           </div>
         </header>
@@ -108,8 +96,8 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
           <span className="font-mono text-foreground bg-foreground/5 px-1.5 py-0.5 rounded break-all">
             {attemptedCode}
           </span>{" "}
-          isn&apos;t in the {EVENT_LINE} registry. Double-check the code — or
-          treat the badge as unverified.
+          doesn&apos;t match a certificate in the {EVENT_LINE} registry.
+          Double-check the code — or treat the certificate as unverified.
         </p>
         <Link
           href="/verify"
@@ -122,21 +110,14 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
     );
   }
 
-  if (!badge) return null;
-
   const iso = COUNTRY_ISO[badge.country];
 
   return (
     <article className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden print:border-none print:shadow-none">
-      {/* Role-color accent bar — echoes the strip on the physical badge */}
-      <div
-        aria-hidden
-        className="h-1.5 w-full"
-        style={{ backgroundColor: badge.badgeColorHex }}
-      />
+      <div aria-hidden className="h-1.5 w-full bg-gate-gold" />
 
-      {/* Partnership lockup — same institutions as the logo band on the
-          physical badge, so the digital and printed credential visibly match */}
+      {/* Partnership lockup — same institutions as the certificate itself, so
+          the digital and printed credential visibly match */}
       <div className="px-6 sm:px-10 py-5 flex items-center justify-center gap-5 sm:gap-7 border-b border-border/60 bg-foreground/[0.015]">
         <ThemeAwareLogo size="xs" showTagline={false} />
         <span aria-hidden className="h-6 w-px bg-border" />
@@ -155,7 +136,6 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
         />
       </div>
 
-      {/* Hero: verification status is the primary focus of the page */}
       <header className="px-6 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8 text-center bg-emerald-500/[0.04]">
         <div className="flex justify-end print:hidden">
           <PrintButton />
@@ -173,7 +153,7 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
           Verified
         </h1>
         <p className="mt-2 text-xs sm:text-sm text-foreground/60">
-          Confirmed against the official G.A.T.E. event registry
+          Confirmed against the official G.A.T.E. certificate registry
         </p>
       </header>
 
@@ -191,10 +171,10 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
         </h2>
 
         <span
-          className="mt-4 inline-flex items-center rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-[0.1em] text-white"
-          style={{ backgroundColor: badge.badgeColorHex }}
+          className={`mt-4 inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1 text-xs font-bold uppercase tracking-[0.1em] ${AWARD_CLASSES[result.award]}`}
         >
-          {ROLE_LABELS[badge.roleBadge]}
+          <AwardIcon className="h-3.5 w-3.5" aria-hidden />
+          {AWARD_LABELS[result.award]} &middot; {CERTIFICATE_SUBJECT_LABEL[result.subject]}
         </span>
 
         <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm text-left max-w-md mx-auto">
@@ -219,67 +199,40 @@ export function BadgeResultCard({ status, badge, results = [], attemptedCode }: 
           />
           <Field
             icon={<Hash className="h-3.5 w-3.5" />}
-            label="Badge Code"
+            label="Certificate Serial"
+            value={<span className="font-mono text-foreground tracking-wider">{serial}</span>}
+          />
+          <Field
+            icon={<AwardIcon className="h-3.5 w-3.5" />}
+            label="Score"
             value={
-              <span className="font-mono text-foreground tracking-wider">
-                {badge.cardNo}
+              <span className="font-mono text-foreground">
+                {result.pointsEarned}/{result.pointsMax} points
               </span>
             }
           />
+          <Field
+            icon={<Hash className="h-3.5 w-3.5" />}
+            label="Badge Code"
+            value={<span className="font-mono text-foreground tracking-wider">{badge.cardNo}</span>}
+          />
         </dl>
-      </div>
 
-      {results.length > 0 && (
-        <div className="px-6 sm:px-10 py-8 sm:py-10 border-t border-border">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50 text-center">
-            Contest Performance
-          </p>
-          <div className="mt-5 space-y-4 max-w-md mx-auto">
-            {results.map((r) => (
-              <div
-                key={r.subject}
-                className="rounded-xl border border-border bg-foreground/[0.015] p-4 sm:p-5"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-semibold text-foreground">
-                    {SUBJECT_LABELS[r.subject]}
-                  </span>
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${AWARD_CLASSES[r.award]}`}
-                  >
-                    <Trophy className="h-3 w-3" aria-hidden />
-                    {AWARD_LABELS[r.award]}
-                  </span>
-                </div>
-                <p className="mt-1.5 text-xs text-foreground/60">
-                  {r.correctCount}/{r.totalQuestions} correct &middot;{" "}
-                  {r.pointsEarned}/{r.pointsMax} points
-                </p>
-                {r.performanceReady ? (
-                  <Link
-                    href={`/verify/${badge.cardNo}/performance`}
-                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-gate-gold hover:text-gate-gold-2 transition-colors"
-                  >
-                    View Full Performance
-                    <ArrowRight className="h-3.5 w-3.5" aria-hidden />
-                  </Link>
-                ) : (
-                  <span className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-foreground/40">
-                    View Full Performance &middot; Coming Soon
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+        <Link
+          href={`/verify/${badge.cardNo}/performance`}
+          className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-gate-gold hover:text-gate-gold-2 transition-colors print:hidden"
+        >
+          View Full Performance
+          <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+        </Link>
+      </div>
 
       <footer className="px-6 sm:px-10 py-5 border-t border-border bg-background/40 text-xs text-foreground/55">
         <p className="flex items-start gap-1.5">
           <Building2 className="h-3.5 w-3.5 shrink-0 mt-0.5 text-foreground/40" aria-hidden />
           <span>
-            <span className="font-semibold text-foreground/70">Lost this badge?</span>{" "}
-            Report it at {VENUE_LINE}.
+            <span className="font-semibold text-foreground/70">Questions about this certificate?</span>{" "}
+            Contact us at {VENUE_LINE}.
           </span>
         </p>
       </footer>

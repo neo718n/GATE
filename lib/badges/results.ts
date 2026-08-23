@@ -21,6 +21,7 @@ export interface PublicEventBadgeResult {
   pointsMax: number;
   award: EventBadgeResult["award"];
   notes: string | null;
+  performanceReady: boolean;
 }
 
 export function sanitizeResult(row: EventBadgeResult): PublicEventBadgeResult {
@@ -34,6 +35,7 @@ export function sanitizeResult(row: EventBadgeResult): PublicEventBadgeResult {
     pointsMax: row.pointsMax,
     award: row.award,
     notes: row.notes,
+    performanceReady: row.performanceReady,
   };
 }
 

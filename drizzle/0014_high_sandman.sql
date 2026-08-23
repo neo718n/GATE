@@ -1,0 +1,1 @@
+ALTER TABLE "event_badge_results" ADD COLUMN "performance_ready" boolean DEFAULT true NOT NULL;
