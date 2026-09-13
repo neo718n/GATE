@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { CHINA_CAMP_PHOTOS, PHOTO_GALLERY } from "@/lib/marketing/china-camp-photos";
-import { PROGRAM_SLUGS, programCtaHref } from "@/lib/program-cta";
+import { NotifyMeButton } from "@/components/site/landing/notify-me";
 
 type Round = {
   feeUsd: number;
@@ -54,13 +54,13 @@ const PROGRAM_COMPONENTS = [
 ];
 
 const DAILY_SCHEDULE = [
-  { day: "Day 1", date: "19 Jul", title: "Arrival", items: ["Airport transfer", "Dormitory check-in", "Welcome dinner", "Campus tour at sunset"] },
-  { day: "Day 2", date: "20 Jul", title: "Opening", items: ["Opening ceremony", "Faculty introduction", "Diagnostic Assessment — Part 1", "Welcome lecture"] },
-  { day: "Day 3", date: "21 Jul", title: "Intensive I", items: ["Morning workshop", "Diagnostic Assessment — Part 2", "Library study hours"] },
-  { day: "Day 4", date: "22 Jul", title: "Intensive II", items: ["Lecture series (3 sessions)", "Group problem-solving", "Evening cultural program"] },
-  { day: "Day 5", date: "23 Jul", title: "Hangzhou", items: ["West Lake excursion", "Historical sites tour", "Networking dinner with Chinese students"] },
-  { day: "Day 6", date: "24 Jul", title: "Capstone", items: ["Capstone seminar with faculty panel", "Individual academic consultation", "Performance report distribution", "Awards ceremony"] },
-  { day: "Day 7", date: "25 Jul", title: "Departure", items: ["Closing ceremony", "Certificate distribution", "Group photo", "Airport transfer"] },
+  { day: "Day 1", date: "18 Aug", title: "Arrival", items: ["Airport transfer", "Dormitory check-in", "Welcome dinner", "Campus tour at sunset"] },
+  { day: "Day 2", date: "19 Aug", title: "Opening", items: ["Opening ceremony", "Faculty introduction", "Diagnostic Assessment — Part 1", "Welcome lecture"] },
+  { day: "Day 3", date: "20 Aug", title: "Intensive I", items: ["Morning workshop", "Diagnostic Assessment — Part 2", "Library study hours"] },
+  { day: "Day 4", date: "21 Aug", title: "Intensive II", items: ["Lecture series (3 sessions)", "Group problem-solving", "Evening cultural program"] },
+  { day: "Day 5", date: "22 Aug", title: "Hangzhou", items: ["West Lake excursion", "Historical sites tour", "Networking dinner with Chinese students"] },
+  { day: "Day 6", date: "23 Aug", title: "Capstone", items: ["Capstone seminar with faculty panel", "Individual academic consultation", "Performance report distribution", "Awards ceremony"] },
+  { day: "Day 7", date: "24 Aug", title: "Departure", items: ["Closing ceremony", "Certificate distribution", "Group photo", "Airport transfer"] },
 ];
 
 const INCLUDES = [
@@ -81,7 +81,7 @@ const NOT_INCLUDED = [
   "Personal expenses",
 ];
 
-export function ChinaCampSection({ round, isAuthenticated = false }: { round: Round | undefined; isAuthenticated?: boolean }) {
+export function ChinaCampSection({ round }: { round: Round | undefined }) {
   return (
     <section id="hangzhou-camp" className="bg-card border-b border-border">
       {/* HERO BANNER */}
@@ -113,7 +113,7 @@ export function ChinaCampSection({ round, isAuthenticated = false }: { round: Ro
               educational facilities and a leading Chinese academic environment.
             </p>
             <div className="flex flex-wrap items-center gap-5 mt-3 text-[12px] font-medium text-gate-white/85 uppercase tracking-[0.18em]">
-              <span>19–25 July 2026</span>
+              <span>18–24 August 2026</span>
               <span className="h-3 w-px bg-gate-gold-2/40" />
               <span>Hangzhou, China</span>
               <span className="h-3 w-px bg-gate-gold-2/40" />
@@ -211,7 +211,7 @@ export function ChinaCampSection({ round, isAuthenticated = false }: { round: Ro
             Seven-Day Schedule
           </h3>
           <p className="text-sm font-normal text-foreground/75 max-w-md leading-[1.65]">
-            Provisional structure. Final schedule confirmed upon registration.
+            This is what the seven days actually looked like for the August cohort.
           </p>
         </div>
 
@@ -339,25 +339,21 @@ export function ChinaCampSection({ round, isAuthenticated = false }: { round: Ro
 
         <div className="flex flex-col gap-5 lg:items-end lg:text-right">
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">
-            Ready to Apply
+            Next Cohort
           </span>
           <h3 className="font-serif text-3xl md:text-4xl font-medium text-foreground leading-[1.15]">
-            Join the Hangzhou<br />Academic Camp
+            Want to Join<br />the Next One?
           </h3>
           <div className="flex flex-col gap-3 mt-3 lg:items-end">
-            <div className="flex items-center gap-3 text-[12px] font-semibold text-foreground/80 uppercase tracking-[0.18em]">
-              <span>19–25 July 2026</span>
-              <span className="h-3 w-px bg-foreground/30" />
-              <span>{round ? dollarsFromCents(round.feeUsd) : "TBA"}</span>
-            </div>
             <p className="text-[14px] font-normal text-foreground/80 max-w-sm leading-[1.65]">
-              Open to students Grades 1–12 worldwide. Parental consent and valid passport
-              required for participants under 18.
+              Dates and location for the next onsite camp are still being finalized. Leave your
+              details and we&apos;ll reach out personally the moment applications open — open to
+              students Grades 1–11 worldwide.
             </p>
             <div className="flex flex-wrap gap-3 mt-3 lg:justify-end">
-              <Button variant="gold" size="lg" asChild>
-                <Link href={programCtaHref(PROGRAM_SLUGS.CHINA_CAMP, isAuthenticated)}>{isAuthenticated ? "Enroll in Camp" : "Apply for Camp"}</Link>
-              </Button>
+              <NotifyMeButton variant="gold" size="lg">
+                Notify Me
+              </NotifyMeButton>
               <Button variant="outline" size="lg" asChild>
                 <Link href="/contact">Contact for Details</Link>
               </Button>

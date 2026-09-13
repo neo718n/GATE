@@ -100,6 +100,13 @@ export const careerStatusEnum = pgEnum("career_status", [
   "hired",
 ]);
 
+export const waitlistStatusEnum = pgEnum("waitlist_status", [
+  "new",
+  "contacted",
+  "converted",
+  "archived",
+]);
+
 export const stripePaymentStatusEnum = pgEnum("stripe_payment_status", [
   "pending",
   "paid",
@@ -403,6 +410,31 @@ export const careerApplications = pgTable("career_applications", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const waitlistSignups = pgTable(
+  "waitlist_signups",
+  {
+    id: serial("id").primaryKey(),
+    fullName: text("full_name").notNull(),
+    // Stored lowercased/trimmed so the unique index actually de-duplicates.
+    email: text("email").notNull().unique(),
+    phone: text("phone").notNull(),
+    phoneCountryIso: text("phone_country_iso").notNull(),
+    countryName: text("country_name").notNull(),
+    countryIso: text("country_iso").notNull(),
+    detectedCountryIso: text("detected_country_iso"),
+    source: text("source").notNull().default("homepage_hero"),
+    status: waitlistStatusEnum("status").notNull().default("new"),
+    ipHash: text("ip_hash"),
+    userAgentClass: text("user_agent_class"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    createdAtIdx: index("waitlist_signups_created_at_idx").on(t.createdAt),
+    statusIdx: index("waitlist_signups_status_idx").on(t.status),
+  }),
+);
 
 export const payments = pgTable("payments", {
   id: serial("id").primaryKey(),
@@ -1052,6 +1084,7 @@ export type Result = typeof results.$inferSelect;
 export type Partner = typeof partners.$inferSelect;
 export type Position = typeof positions.$inferSelect;
 export type CareerApplication = typeof careerApplications.$inferSelect;
+export type WaitlistSignup = typeof waitlistSignups.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type Document = typeof documents.$inferSelect;

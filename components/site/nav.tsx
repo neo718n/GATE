@@ -7,6 +7,7 @@ import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { SignOutButton } from "@/components/sign-out-button";
+import { NotifyMeButton } from "@/components/site/landing/notify-me";
 import { cn } from "@/lib/utils";
 
 const PRIMARY_LINKS = [
@@ -149,14 +150,7 @@ export function SiteNav({ session }: { session?: NavSession | null }) {
                 </Button>
               </>
             ) : (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login">Sign In</Link>
-                </Button>
-                <Button variant="gold" size="sm" asChild>
-                  <Link href="/register">Apply Now</Link>
-                </Button>
-              </>
+              <NotifyMeButton size="sm">Notify Me</NotifyMeButton>
             )}
           </div>
 
@@ -203,14 +197,9 @@ export function SiteNav({ session }: { session?: NavSession | null }) {
                     </SignOutButton>
                   </>
                 ) : (
-                  <>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href="/login" onClick={() => setOpen(false)}>Sign In</Link>
-                    </Button>
-                    <Button variant="gold" size="sm" asChild>
-                      <Link href="/register" onClick={() => setOpen(false)}>Apply Now</Link>
-                    </Button>
-                  </>
+                  <NotifyMeButton size="sm" className="w-full" onClick={() => setOpen(false)}>
+                    Notify Me
+                  </NotifyMeButton>
                 )}
               </div>
             </div>

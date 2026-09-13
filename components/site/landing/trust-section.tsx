@@ -1,6 +1,6 @@
 export function TrustSection() {
   return (
-    <section className="py-20 px-6 bg-card border-b border-border">
+    <section id="partners" className="py-20 px-6 bg-card border-b border-border">
       <div className="mx-auto max-w-7xl flex flex-col gap-10">
         <div className="flex flex-col items-center gap-3 text-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-gate-gold">

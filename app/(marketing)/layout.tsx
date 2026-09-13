@@ -1,7 +1,10 @@
+import { headers } from "next/headers";
 import { SiteNav } from "@/components/site/nav";
 import { SiteFooter } from "@/components/site/footer";
-import { TelegramSupportButton } from "@/components/site/telegram-support-button";
+import { NotifyMeProvider } from "@/components/site/landing/notify-me";
 import { getCurrentSession } from "@/lib/authz";
+import { countryFromHeaders } from "@/lib/certificates/log";
+import { getCountryByIso } from "@/lib/phone-codes";
 
 export default async function MarketingLayout({
   children,
@@ -9,6 +12,8 @@ export default async function MarketingLayout({
   children: React.ReactNode;
 }) {
   const session = await getCurrentSession();
+  const headersList = await headers();
+  const detectedIso = getCountryByIso(countryFromHeaders(headersList)).iso2;
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
@@ -18,10 +23,11 @@ export default async function MarketingLayout({
       >
         Skip to main content
       </a>
-      <SiteNav session={session} />
-      <main id="main-content" className="flex-1 pt-16">{children}</main>
-      <SiteFooter />
-      <TelegramSupportButton />
+      <NotifyMeProvider defaultCountryIso={detectedIso}>
+        <SiteNav session={session} />
+        <main id="main-content" className="flex-1 pt-16">{children}</main>
+        <SiteFooter />
+      </NotifyMeProvider>
     </div>
   );
 }

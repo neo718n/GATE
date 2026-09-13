@@ -28,6 +28,7 @@ export default async function DashboardLayout({
       { href: "/admin/notifications", label: "Notifications" },
       { href: "/admin/partners", label: "Partner Applications" },
       { href: "/admin/careers", label: "Career Applications" },
+      { href: "/admin/waitlist", label: "China Camp Waitlist" },
       { href: "/admin/content", label: "Content" },
       { href: "/admin/analytics", label: "Analytics" },
       { href: "/admin/settings", label: "System Settings" },
@@ -43,6 +44,7 @@ export default async function DashboardLayout({
       { href: "/admin/certificates", label: "Certificates" },
       { href: "/admin/certificates/verifications", label: "Verifications" },
       { href: "/admin/inquiries", label: "Academic Inquiries" },
+      { href: "/admin/waitlist", label: "China Camp Waitlist" },
       { href: "/admin/content", label: "Content" },
     ],
     coordinator: [

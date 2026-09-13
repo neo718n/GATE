@@ -12,6 +12,7 @@ import {
   results,
   partners,
   careerApplications,
+  waitlistSignups,
   payments,
   notifications,
 } from "@/lib/db/schema";
@@ -44,6 +45,7 @@ const PARTICIPANT_REG_STATUSES = ["draft", "submitted", "verified", "rejected"] 
 const USER_ROLES = ["super_admin", "admin", "coordinator", "participant", "partner_contact", "career_applicant"] as const;
 const PARTNER_STATUSES = ["pending", "approved", "rejected"] as const;
 const CAREER_STATUSES = ["submitted", "reviewing", "shortlisted", "rejected", "hired"] as const;
+const WAITLIST_STATUSES = ["new", "contacted", "converted", "archived"] as const;
 const PAYMENT_STATUSES = ["pending", "paid", "failed", "refunded"] as const;
 const AWARD_VALUES = ["gold", "silver", "bronze", "honorable_mention", "participation"] as const;
 
@@ -397,6 +399,32 @@ export async function updateCareerStatus(formData: FormData) {
     .set({ status, updatedAt: new Date() })
     .where(eq(careerApplications.id, id));
   revalidatePath("/admin/careers");
+}
+
+// ── Waitlist ──────────────────────────────────────────────────────────────
+
+/**
+ * Updates a waitlist signup's follow-up status.
+ * Requires super_admin or admin role. Status must be one of: new, contacted, converted, archived.
+ *
+ * @param formData - Form data containing:
+ *   - id (string, required): Numeric waitlist signup ID
+ *   - status (string, required): New status (validated against WAITLIST_STATUSES)
+ * @returns {Promise<void>}
+ * @throws {Error} If user lacks required role
+ * @throws {Error} If id is invalid or missing
+ * @throws {Error} If status is not a valid waitlist status
+ */
+export async function updateWaitlistStatus(formData: FormData) {
+  await requireRole(["super_admin", "admin"]);
+  const id = parseInt(formData.get("id") as string);
+  if (isNaN(id) || !id) throw new Error("Invalid request");
+  const status = assertEnum(formData.get("status") as string, WAITLIST_STATUSES, "status");
+  await db
+    .update(waitlistSignups)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(waitlistSignups.id, id));
+  revalidatePath("/admin/waitlist");
 }
 
 // ── Results ───────────────────────────────────────────────────────────────

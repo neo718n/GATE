@@ -1,28 +1,35 @@
 import Link from "next/link";
-import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
+import Image from "next/image";
+import { Logo } from "@/components/brand/logo";
 
-const ASSESSMENT_LINKS = [
-  { href: "/about", label: "About G.A.T.E." },
-  { href: "/structure", label: "Assessment Structure" },
-  { href: "/subjects", label: "Subjects" },
-  { href: "/onsite-assessment", label: "Hangzhou Training Camp" },
-  { href: "/awards", label: "Awards & Certificates" },
+const EDITION_LINKS = [
+  { href: "/#the-week", label: "The week" },
+  { href: "/#papers", label: "Papers & answer keys" },
+  { href: "/#partners", label: "Partners" },
+  { href: "/#next-edition", label: "Next edition" },
 ];
 
-const PARTICIPATE_LINKS = [
-  { href: "/register", label: "Apply Now" },
-  { href: "/academic-info", label: "Academic Information" },
-  { href: "/verify", label: "Verify Certificate" },
+const PROGRAMME_LINKS = [
+  { href: "/about", label: "About G.A.T.E." },
+  { href: "/onsite-assessment", label: "Onsite camp" },
+  { href: "/structure", label: "Structure" },
+  { href: "/subjects", label: "Subjects" },
+  { href: "/awards", label: "Awards & certificates" },
+  { href: "/academic-info", label: "Academic information" },
+];
+
+const TRUST_LINKS = [
+  { href: "/verify", label: "Verify certificate" },
+  { href: "/academic-integrity", label: "Academic integrity" },
+  { href: "/rules", label: "Rules & regulations" },
+  { href: "/privacy", label: "Privacy policy" },
+  { href: "/terms", label: "Terms of participation" },
+];
+
+const BOTTOM_LINKS = [
+  { href: "/contact", label: "Contact" },
   { href: "/partnerships", label: "Partnerships" },
   { href: "/careers", label: "Careers" },
-  { href: "/contact", label: "Contact" },
-];
-
-const LEGAL_LINKS = [
-  { href: "/rules", label: "Rules & Regulations" },
-  { href: "/privacy", label: "Privacy Policy" },
-  { href: "/terms", label: "Terms of Participation" },
-  { href: "/academic-integrity", label: "Academic Integrity" },
 ];
 
 const SOCIAL_LINKS = [
@@ -58,30 +65,96 @@ const SOCIAL_LINKS = [
   },
 ];
 
+function LinkColumn({
+  heading,
+  links,
+}: {
+  heading: string;
+  links: { href: string; label: string }[];
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-white/55">
+        {heading}
+      </span>
+      <ul className="flex flex-col gap-3">
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link
+              href={link.href}
+              className="text-[13px] font-light text-gate-white/75 transition-colors hover:text-gate-gold-2"
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function SiteFooter() {
   return (
-    <footer className="bg-card border-t border-border">
+    <footer className="bg-gate-800">
+      <div className="h-0.5 bg-gradient-to-r from-gate-gold via-gate-gold-2 to-gate-gold" />
+
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-
-        {/* Brand row */}
-        <div className="pt-16 pb-12 flex flex-col md:flex-row md:items-end justify-between gap-10 border-b border-border">
-          <div className="flex flex-col gap-5">
-            <ThemeAwareLogo size="sm" showTagline={false} />
-            <p className="text-sm font-light text-foreground/55 max-w-xs leading-[1.9]">
-              International academic diagnostic and educational programs —
-              an online assessment across six disciplines, and an onsite
-              training camp at Xidian University, Hangzhou.
-            </p>
+        {/* Partnership row */}
+        <div className="flex flex-wrap items-center justify-between gap-8 border-b border-gate-gold/20 py-8">
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-4">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-white/55">
+              In partnership with
+            </span>
+            <Image
+              src="/partners/xidian-university.png"
+              alt="Xidian University"
+              width={96}
+              height={96}
+              className="h-12 w-auto brightness-0 invert opacity-85"
+            />
+            <Image
+              src="/partners/edsquare-transparent.png"
+              alt="EdSquare"
+              width={128}
+              height={30}
+              className="h-[18px] w-auto brightness-0 invert opacity-85"
+            />
           </div>
+          <Link
+            href="/verify"
+            className="inline-flex h-11 items-center whitespace-nowrap rounded-xl border border-gate-gold/50 px-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-gate-gold-2 transition-colors hover:bg-gate-gold/12"
+          >
+            Verify a certificate
+          </Link>
+        </div>
 
-          <div className="flex flex-col gap-4">
+        {/* Links grid */}
+        <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,minmax(0,1fr))]">
+          <div className="flex flex-col gap-5">
+            <Logo size="sm" variant="dark" showTagline={false} />
+            <p className="max-w-xs text-[13px] font-light leading-[1.9] text-gate-white/70">
+              International academic diagnostic and educational programs, held with Xidian
+              University, Hangzhou.
+            </p>
             <a
               href="mailto:info@gate-assessment.org"
-              className="text-sm font-light text-foreground/65 hover:text-foreground transition-colors"
+              className="text-[13px] font-light text-gate-white/70 transition-colors hover:text-gate-gold-2"
             >
               info@gate-assessment.org
             </a>
-            <div className="flex items-center gap-5">
+            <a
+              href="https://t.me/gate_global_support"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-9 w-fit items-center gap-2 rounded-full px-3.5 transition-transform hover:scale-[1.03]"
+              style={{ backgroundColor: "#2AABEE" }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="#FFFFFF" aria-hidden="true">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+              </svg>
+              <span className="text-xs font-semibold text-white">Telegram support</span>
+            </a>
+            <div className="flex items-center gap-5 pt-1">
               {SOCIAL_LINKS.map((s) => (
                 <a
                   key={s.label}
@@ -89,52 +162,41 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={s.label}
-                  className="text-foreground/30 hover:text-foreground/65 transition-colors"
+                  className="text-gate-white/40 transition-colors hover:text-gate-gold-2"
                 >
                   {s.icon}
                 </a>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Links grid */}
-        <div className="py-12 grid grid-cols-2 md:grid-cols-3 gap-10">
-          {[
-            { heading: "Assessment", links: ASSESSMENT_LINKS },
-            { heading: "Participate", links: PARTICIPATE_LINKS },
-            { heading: "Legal", links: LEGAL_LINKS },
-          ].map(({ heading, links }) => (
-            <div key={heading} className="flex flex-col gap-5">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-foreground/50">
-                {heading}
-              </span>
-              <ul className="flex flex-col gap-3.5">
-                {links.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className="text-sm font-light text-foreground/60 hover:text-foreground transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <LinkColumn heading="2026 Edition" links={EDITION_LINKS} />
+          <LinkColumn heading="Programme" links={PROGRAMME_LINKS} />
+          <LinkColumn heading="Trust & Legal" links={TRUST_LINKS} />
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-3">
-          <p className="text-[10px] font-light tracking-[0.12em] text-foreground/40">
-            © G.A.T.E. Assessment 2026
-          </p>
-          <p className="text-[10px] font-light tracking-[0.08em] text-foreground/35">
-            Global Academic &amp; Theoretical Excellence Assessment
-          </p>
+        <div className="flex flex-col-reverse items-center justify-between gap-5 border-t border-gate-gold/20 py-6 sm:flex-row sm:items-start">
+          <div className="flex flex-col gap-1.5 text-center sm:text-left">
+            <p className="text-[11px] font-light tracking-[0.12em] text-gate-white/55">
+              © G.A.T.E. Assessment 2026
+            </p>
+            <p className="text-[11px] font-light tracking-[0.08em] text-gate-white/40">
+              Global Academic &amp; Theoretical Excellence Assessment
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            {BOTTOM_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-[11px] font-light tracking-[0.08em] text-gate-white/55 transition-colors hover:text-gate-gold-2"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
         </div>
-
       </div>
     </footer>
   );

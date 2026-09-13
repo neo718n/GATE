@@ -106,6 +106,20 @@
       "when": 1787445367657,
       "tag": "0014_high_sandman",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1789300876022,
+      "tag": "0015_silly_the_initiative",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1789311940719,
+      "tag": "0016_fair_cloak",
+      "breakpoints": true
     }
   ]
 }
