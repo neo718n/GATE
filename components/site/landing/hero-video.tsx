@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { HERO_CLIPS } from "@/lib/marketing/hangzhou-media";
 
 const STORAGE_KEY = "gate-hero-clip";
+const SMALL_SCREEN = "(max-width: 640px)";
 
 // The clip is chosen on the client (never during SSR) so every fresh visit can
 // show a different one. Within a session the choice is remembered, so moving
@@ -28,19 +29,28 @@ function pickClipIndex(): number {
   return i;
 }
 
-let cachedIndex: number | null = null;
+type Choice = { index: number; small: boolean };
+
+let cached: Choice | null = null;
 const neverChanges = () => () => {};
-const clientSnapshot = () => (cachedIndex ??= pickClipIndex());
-const serverSnapshot = () => null;
+const clientSnapshot = (): Choice =>
+  (cached ??= {
+    index: pickClipIndex(),
+    small: window.matchMedia(SMALL_SCREEN).matches,
+  });
+const serverSnapshot = (): Choice | null => null;
 
 export function HeroVideo() {
   // Deliberately server/client-divergent: null while rendering on the server,
   // a concrete clip once hydrated. useSyncExternalStore makes that explicit
   // instead of hiding it in an effect.
-  const clipIndex = useSyncExternalStore(neverChanges, clientSnapshot, serverSnapshot);
+  const choice = useSyncExternalStore(neverChanges, clientSnapshot, serverSnapshot);
   const [playing, setPlaying] = useState(false);
 
-  const clip = clipIndex === null ? null : HERO_CLIPS[clipIndex];
+  const clip = choice === null ? null : HERO_CLIPS[choice.index];
+  // Phones get the 540p cut — roughly half the bytes, and at that display
+  // width the extra resolution is invisible.
+  const src = clip && choice ? (choice.small ? clip.srcSmall : clip.src) : null;
 
   return (
     <>
@@ -49,26 +59,22 @@ export function HeroVideo() {
           playing ? "opacity-0" : "opacity-100"
         }`}
       />
-      {clip && (
+      {clip && src && (
         // Decorative background footage — the hero's meaning is carried by the
         // heading and copy, so it is hidden from assistive technology.
         <video
-          key={clip.src}
+          key={src}
           aria-hidden="true"
           tabIndex={-1}
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ${
             playing ? "opacity-100" : "opacity-0"
           }`}
-          src={clip.src}
+          src={src}
           poster={clip.poster}
           autoPlay
           muted
           loop
           playsInline
-          // The poster carries the hero until motion starts, but the motion is
-          // the point of this section — so the clip is fetched eagerly rather
-          // than waiting on metadata first. Cost is bounded: clips are curated
-          // and the session re-uses one cached file across pages.
           preload="auto"
           onPlaying={() => setPlaying(true)}
         />

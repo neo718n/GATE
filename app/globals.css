@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Viewports at least as wide as they are tall (4:3 and wider) can host the
+   16:9 hero footage full-bleed without cropping away most of the frame.
+   Narrower/portrait viewports get the letterboxed treatment instead. */
+@custom-variant wide (@media (min-aspect-ratio: 4/3));
+
 :root {
   /* Brand palette — GATE Brand Kit v2 */
   --gate-900: #060f1c;
