@@ -26,7 +26,7 @@ function verifyUrlFor(code: string): string {
     process.env.NEXT_PUBLIC_APP_URL ??
     "https://gate-assessment.org"
   ).replace(/\/+$/, "");
-  return `${base}/verify/${code}`;
+  return `${base}/verify/certificate/${code}`;
 }
 
 async function main() {

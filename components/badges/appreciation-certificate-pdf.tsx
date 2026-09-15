@@ -415,7 +415,7 @@ export function AppreciationCertificatePage({
             <View>
               <Text style={styles.verifyLabel}>VERIFY AT</Text>
               <Text style={styles.verifyMono}>gate-assessment.org</Text>
-              <Text style={styles.verifyMono}>/verify/{badgeCode}</Text>
+              <Text style={styles.verifyMono}>/verify/certificate/{badgeCode}</Text>
               <Text style={styles.verifySerial}>{serial}</Text>
             </View>
           </View>
