@@ -1057,6 +1057,41 @@ export type EventBadgeResult = typeof eventBadgeResults.$inferSelect;
 export type NewEventBadgeResult = typeof eventBadgeResults.$inferInsert;
 
 // ────────────────────────────────────────────────────────────────────────────
+// Event Badge Appreciations (China Camp 2026 — non-contestant badge holders)
+// ────────────────────────────────────────────────────────────────────────────
+// A "Certificate of Appreciation" for a badge holder who has no exam score —
+// OFFICIAL/COUNTRY_REP, STAFF, MEDIA, and similar roles never sit the paper
+// contest, so they can never get an eventBadgeResults row. This is the
+// non-contestant counterpart to that table: one row per badge, no
+// subject/answers/award, just the role it honors. /verify/certificate/[code]
+// checks this after finding no eventBadgeResults for the badge.
+export const eventBadgeAppreciations = pgTable(
+  "event_badge_appreciations",
+  {
+    id: serial("id").primaryKey(),
+    eventBadgeId: integer("event_badge_id")
+      .notNull()
+      .unique()
+      .references(() => eventBadges.id, { onDelete: "cascade" }),
+    roleLabel: text("role_label").notNull(), // e.g. "Country Representative"
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+);
+
+export const eventBadgeAppreciationsRelations = relations(
+  eventBadgeAppreciations,
+  ({ one }) => ({
+    eventBadge: one(eventBadges, {
+      fields: [eventBadgeAppreciations.eventBadgeId],
+      references: [eventBadges.id],
+    }),
+  }),
+);
+
+export type EventBadgeAppreciation = typeof eventBadgeAppreciations.$inferSelect;
+export type NewEventBadgeAppreciation = typeof eventBadgeAppreciations.$inferInsert;
+
+// ────────────────────────────────────────────────────────────────────────────
 // Badge Verify Settings (superadmin on/off switch for the public badge-QR
 // verify pages — /verify/[code]'s event-badge branch + /verify/[code]/performance)
 // ────────────────────────────────────────────────────────────────────────────

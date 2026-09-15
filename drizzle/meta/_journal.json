@@ -120,6 +120,13 @@
       "when": 1789311940719,
       "tag": "0016_fair_cloak",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789489793171,
+      "tag": "0017_event_badge_appreciations",
+      "breakpoints": true
     }
   ]
 }
