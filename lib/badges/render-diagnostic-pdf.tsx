@@ -9,6 +9,9 @@ import { pdfSafeName } from "@/components/badges/badge-card-pdf";
 import { DiagnosticReportPDF } from "@/components/verify/diagnostic-report-pdf";
 
 const EVENT_LABEL = "China Camp 2026 · 18–24 August 2026";
+// Fixed official issue date (last day of the camp) so every download of the
+// same report is identical, regardless of when it's generated.
+const ISSUED_ON = "24 August 2026";
 
 function badgeVerifyUrl(cardNo: string): string {
   const base = (
@@ -56,7 +59,7 @@ export async function renderDiagnosticReportPdf(
       verifyUrl={verifyUrl}
       verifyQr={verifyQr}
       qrByUrl={qrByUrl}
-      issuedOn={new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+      issuedOn={ISSUED_ON}
       eventLabel={EVENT_LABEL}
     />,
   );
