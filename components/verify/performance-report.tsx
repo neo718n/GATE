@@ -1,4 +1,4 @@
-import { AlertTriangle, MapPin } from "lucide-react";
+import { AlertTriangle, FileText, MapPin } from "lucide-react";
 import type { PublicEventBadgeResult } from "@/lib/badges/results";
 import {
   computeMathDiagnostics,
@@ -8,6 +8,7 @@ import {
 import { AWARD_LABELS, AWARD_CLASSES } from "@/lib/awards";
 import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { PrintButton } from "./print-button";
+import { DownloadReportButton } from "./download-report-button";
 
 const STATUS_DOT: Record<QuestionStatus, string> = {
   correct: "bg-emerald-500",
@@ -49,6 +50,27 @@ export function PerformanceReport({ fullName, country, cardNo, results }: Props)
           <PrintButton />
         </div>
       </header>
+
+      <div className="rounded-2xl border border-gate-gold/30 bg-gradient-to-br from-gate-gold/[0.07] via-transparent to-transparent p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between print:hidden">
+        <div className="flex items-start gap-3.5">
+          <div
+            aria-hidden
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gate-gold/15 text-gate-gold"
+          >
+            <FileText className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="font-serif text-lg font-semibold text-foreground leading-tight">
+              Official Diagnostic Report
+            </p>
+            <p className="mt-1 text-sm text-foreground/60 max-w-md">
+              A personal PDF with your skill profile, every question reviewed, a 4-week study plan and hand-picked
+              learning resources.
+            </p>
+          </div>
+        </div>
+        <DownloadReportButton cardNo={cardNo} />
+      </div>
 
       {results.map((r) =>
         r.subject === "math" ? (

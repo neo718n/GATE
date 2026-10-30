@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   // explicitly to make sure it actually ships in the deployed function.
   outputFileTracingIncludes: {
     "/api/admin/badges/export": ["./public/partners/**"],
+    "/verify/[code]/performance/pdf": ["./public/partners/**"],
   },
   images: {
     remotePatterns: [
