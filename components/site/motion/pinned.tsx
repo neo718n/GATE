@@ -142,14 +142,20 @@ export function ZoomMedia({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-  const width = useTransform(scrollYProgress, [0, 0.7], ["min(72rem, 86vw)", "100vw"]);
-  const height = useTransform(scrollYProgress, [0, 0.7], ["70vh", "100vh"]);
-  const radius = useTransform(scrollYProgress, [0, 0.7], [32, 0]);
-  const overlayOpacity = useTransform(scrollYProgress, [0.45, 0.8], [0, 1]);
-  const overlayY = useTransform(scrollYProgress, [0.45, 0.85], [40, 0]);
+  // The zoom finishes in the first ~40% of the pin and the overlay text is
+  // fully in by ~50%, so the copy then holds on screen for the remaining half
+  // (≈1 viewport of scrolling) — long enough to actually read it.
+  const width = useTransform(scrollYProgress, [0, 0.4], ["min(72rem, 86vw)", "100vw"]);
+  const height = useTransform(scrollYProgress, [0, 0.4], ["70vh", "100vh"]);
+  const radius = useTransform(scrollYProgress, [0, 0.4], [32, 0]);
+  // Function form: clamps explicitly, so the copy stays at full opacity for
+  // the rest of the pin instead of fading back out.
+  const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+  const overlayOpacity = useTransform(scrollYProgress, (p) => clamp01((p - 0.25) / 0.23));
+  const overlayY = useTransform(scrollYProgress, (p) => 40 * (1 - clamp01((p - 0.25) / 0.25)));
 
   return (
-    <div ref={ref} className={cn("relative h-[220vh] bg-ivory", className)}>
+    <div ref={ref} className={cn("relative h-[300vh] bg-ivory", className)}>
       <div className="sticky top-0 flex h-screen items-center justify-center overflow-hidden">
         <motion.div style={{ width, height, borderRadius: radius }} className="relative overflow-hidden bg-ink">
           {children}

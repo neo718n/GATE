@@ -30,7 +30,10 @@ function Word({
   progress: MotionValue<number>;
   range: [number, number];
 }) {
-  const opacity = useTransform(progress, range, [0.14, 1]);
+  // Function form clamps explicitly — the array form of a scroll-driven
+  // opacity can fade back out past the end of its range.
+  const [a, b] = range;
+  const opacity = useTransform(progress, (p) => 0.14 + 0.86 * Math.min(1, Math.max(0, (p - a) / (b - a))));
   return (
     <span aria-hidden className="relative mr-[0.25em] mt-[0.1em]">
       <motion.span style={{ opacity }}>{children}</motion.span>
