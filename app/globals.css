@@ -224,6 +224,16 @@ body {
   -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
 
+/* Backdrop blur is one of the most expensive effects to scroll on phones;
+   a more opaque fill looks the same there and keeps scrolling smooth. */
+@media (max-width: 1023px) {
+  .glass {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 .text-gold-gradient {
   background: linear-gradient(100deg, #a8771f 0%, #c9993a 35%, #e8c060 60%, #b98a2c 100%);
   -webkit-background-clip: text;

@@ -90,7 +90,10 @@ export function Globe({ className, tone = "light" }: { className?: string; tone?
     if (!canvas || !arcCanvas) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Phones: fewer dots and a lower pixel ratio keep scrolling at 60fps.
+    const small = window.matchMedia("(max-width: 1023px)").matches;
+    const dpr = Math.min(window.devicePixelRatio || 1, small ? 1.5 : 2);
+    let visible = true;
     let size = canvas.offsetWidth;
     let phi = BASE_PHI;
     let t = 0;
@@ -159,7 +162,7 @@ export function Globe({ className, tone = "light" }: { className?: string; tone?
       phi,
       theta: THETA,
       ...TONES[tone],
-      mapSamples: 18000,
+      mapSamples: small ? 11000 : 18000,
       mapBaseBrightness: 0.02,
       markerColor: GOLD,
       opacity: 0.92,
@@ -174,7 +177,7 @@ export function Globe({ className, tone = "light" }: { className?: string; tone?
         state.phi = phi;
         state.width = size * dpr;
         state.height = size * dpr;
-        drawArcs();
+        if (visible) drawArcs();
       },
     });
 
@@ -183,7 +186,16 @@ export function Globe({ className, tone = "light" }: { className?: string; tone?
       arcCanvas.style.opacity = "1";
     });
 
+    // Stop rendering while the globe is off screen (hero scrolled past,
+    // footer not reached yet) so it doesn't steal frames from scrolling.
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      globe.toggle(visible);
+    });
+    io.observe(canvas);
+
     return () => {
+      io.disconnect();
       globe.destroy();
       window.removeEventListener("resize", resize);
     };

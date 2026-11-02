@@ -341,7 +341,9 @@ export function SiteNav({ session }: { session?: NavSession | null }) {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 320, damping: 34 }}
-              className="fixed inset-y-0 right-0 z-[61] flex w-[min(360px,88vw)] flex-col gap-6 overflow-y-auto bg-white p-6 shadow-2xl lg:hidden"
+              // Children must not shrink: on short phone screens flexbox would
+              // squash the program card into a thin strip instead of scrolling.
+              className="fixed inset-y-0 right-0 z-[61] flex w-[min(360px,88vw)] flex-col gap-6 overflow-y-auto overscroll-contain bg-white p-6 shadow-2xl lg:hidden [&>*]:shrink-0"
               data-lenis-prevent
             >
               <div className="flex items-center justify-between">
@@ -359,10 +361,14 @@ export function SiteNav({ session }: { session?: NavSession | null }) {
               <Link href={`/${current.slug}`} className="relative flex h-40 flex-col justify-end overflow-hidden rounded-2xl">
                 <Image src={current.heroImage.src} alt={current.heroImage.alt} fill sizes="360px" className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink/90 to-transparent" />
-                <div className="relative p-4">
+                <div className="relative flex flex-col gap-1 p-4">
+                  <span className="w-fit rounded-full bg-gate-gold px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink">
+                    {isPast(current) ? t.latest : t.upcoming}
+                  </span>
                   <span className="font-serif text-xl font-medium text-white">{current.name}</span>
                   <span className="block text-[12px] text-white/75">
                     {current.city} · {current.dateLabel}
+                    {current.price ? ` · ${current.price.label}` : ""}
                   </span>
                 </div>
               </Link>

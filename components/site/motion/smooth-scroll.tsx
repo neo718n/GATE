@@ -11,8 +11,13 @@ import Lenis from "lenis";
 export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Touch screens keep the phone's own native momentum scrolling — it is
+    // smoother than anything a script can do and costs no frames.
+    if (window.matchMedia("(pointer: coarse)").matches) return;
 
-    const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
+    // lerp instead of a long duration: smooth, but the page follows the
+    // wheel closely instead of lagging behind it.
+    const lenis = new Lenis({ lerp: 0.14, smoothWheel: true });
     let frame = requestAnimationFrame(function raf(time) {
       lenis.raf(time);
       frame = requestAnimationFrame(raf);

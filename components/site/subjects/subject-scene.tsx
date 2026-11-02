@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Center, Float, Text3D } from "@react-three/drei";
 import * as THREE from "three";
@@ -264,8 +264,25 @@ function Slot({ index, count, progress, children }: { index: number; count: numb
 }
 
 export default function SubjectScene({ progress, keys }: { progress: MotionValue<number>; keys: SubjectKey[] }) {
+  // Render only while on screen, and at a lower pixel ratio on phones.
+  const wrap = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const [small] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
+  useEffect(() => {
+    if (!wrap.current) return;
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { rootMargin: "200px" });
+    io.observe(wrap.current);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <Canvas camera={{ position: [0, 0, 7], fov: 40 }} dpr={[1, 1.6]} gl={{ antialias: true, alpha: true }}>
+    <div ref={wrap} className="h-full w-full">
+    <Canvas
+      frameloop={visible ? "always" : "never"}
+      camera={{ position: [0, 0, 7], fov: 40 }}
+      dpr={small ? [1, 1.25] : [1, 1.6]}
+      gl={{ antialias: !small, alpha: true }}
+    >
       <ambientLight intensity={0.85} />
       <directionalLight position={[4, 6, 5]} intensity={2.2} color="#fff6e0" />
       <directionalLight position={[-5, -2, -3]} intensity={0.8} color="#bcd0ff" />
@@ -279,5 +296,6 @@ export default function SubjectScene({ progress, keys }: { progress: MotionValue
         );
       })}
     </Canvas>
+    </div>
   );
 }

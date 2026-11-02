@@ -3,7 +3,7 @@
 import { Link, useLocale } from "@/lib/i18n/client";
 import { plural } from "@/lib/i18n/plural";
 import { motion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useRef, useSyncExternalStore } from "react";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import { Globe } from "@/components/site/motion/globe";
 import { Counter, Reveal, SplitHeading } from "@/components/site/motion/reveal";
@@ -11,6 +11,19 @@ import { ZoomMedia } from "@/components/site/motion/pinned";
 import { HeroVideo } from "@/components/site/landing/hero-video";
 import type { Edition } from "@/lib/editions";
 import { APPLY_URL } from "@/lib/portal-urls";
+
+const DESKTOP = "(min-width: 1024px)";
+function useIsDesktop() {
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia(DESKTOP);
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia(DESKTOP).matches,
+    () => true,
+  );
+}
 
 function dayCount(e: Edition) {
   return Math.round((new Date(e.endDate).getTime() - new Date(e.startDate).getTime()) / 86_400_000);
@@ -71,10 +84,13 @@ function Facts({ edition }: { edition: Edition }) {
 export function UpcomingHero({ edition, headingLevel = "h1" }: { edition: Edition; headingLevel?: "h1" | "h2" }) {
   const t = T[useLocale()];
   const ref = useRef<HTMLElement>(null);
+  const desktop = useIsDesktop();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
-  const globeY = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  const globeScale = useTransform(scrollYProgress, [0, 1], [1, 0.85]);
-  const copyY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  // Parallax only on desktop: on a phone the globe sits below the copy and
+  // shrinking it while it scrolls into view just makes it look tiny.
+  const globeY = useTransform(scrollYProgress, [0, 1], desktop ? [0, 140] : [0, 0]);
+  const globeScale = useTransform(scrollYProgress, [0, 1], desktop ? [1, 0.85] : [1, 1]);
+  const copyY = useTransform(scrollYProgress, [0, 1], desktop ? [0, -60] : [0, 0]);
 
   return (
     <section ref={ref} className="relative min-h-screen overflow-hidden px-6 pb-16 pt-32 md:pt-36">
@@ -124,14 +140,17 @@ export function UpcomingHero({ edition, headingLevel = "h1" }: { edition: Editio
           </Reveal>
         </motion.div>
 
-        <motion.div style={{ y: globeY, scale: globeScale }} className="relative mx-auto w-full max-w-[640px]">
+        <motion.div
+          style={{ y: globeY, scale: globeScale }}
+          className="relative -mx-16 w-[calc(100%+8rem)] max-w-[640px] sm:mx-auto sm:w-full lg:mt-0"
+        >
           <div className="absolute inset-[12%] rounded-full bg-gate-gold/15 blur-3xl" />
           <Globe />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
-            className="glass absolute bottom-[14%] right-[4%] flex flex-col gap-0.5 rounded-2xl px-4 py-3"
+            className="glass absolute bottom-[14%] right-20 flex flex-col gap-0.5 rounded-2xl px-4 py-3 sm:right-[4%]"
           >
             <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-gate-gold">{t.hostCity}</span>
             <span className="font-serif text-xl font-medium text-ink">
