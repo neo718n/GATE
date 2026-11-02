@@ -234,6 +234,31 @@ body {
   }
 }
 
+/* Loading skeletons: ivory blocks with a soft gold-tinted sweep. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: rgba(11, 31, 58, 0.06);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 238, 0.85), rgba(232, 192, 96, 0.12), transparent);
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+@keyframes skeleton-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after {
+    animation: none;
+  }
+}
+
 .text-gold-gradient {
   background: linear-gradient(100deg, #a8771f 0%, #c9993a 35%, #e8c060 60%, #b98a2c 100%);
   -webkit-background-clip: text;

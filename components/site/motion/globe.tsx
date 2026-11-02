@@ -81,6 +81,7 @@ const TONES = {
 export function Globe({ className, tone = "light" }: { className?: string; tone?: keyof typeof TONES }) {
   const globeRef = useRef<HTMLCanvasElement>(null);
   const arcRef = useRef<HTMLCanvasElement>(null);
+  const placeholderRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; offset: number } | null>(null);
   const dragOffset = useRef(0);
 
@@ -184,6 +185,13 @@ export function Globe({ className, tone = "light" }: { className?: string; tone?
     requestAnimationFrame(() => {
       canvas.style.opacity = "1";
       arcCanvas.style.opacity = "1";
+      // Cross-fade the shimmering placeholder out as the globe fades in.
+      const ph = placeholderRef.current;
+      if (ph) {
+        ph.style.opacity = "0";
+        // Remove it after the fade so its shimmer animation stops running.
+        setTimeout(() => (ph.style.display = "none"), 1100);
+      }
     });
 
     // Stop rendering while the globe is off screen (hero scrolled past,
@@ -220,6 +228,12 @@ export function Globe({ className, tone = "light" }: { className?: string; tone?
       style={{ cursor: "grab" }}
       aria-hidden
     >
+      {tone === "light" && (
+        <div
+          ref={placeholderRef}
+          className="skeleton pointer-events-none absolute inset-[10%] rounded-full transition-opacity duration-1000"
+        />
+      )}
       <canvas
         ref={globeRef}
         className="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-1000"
