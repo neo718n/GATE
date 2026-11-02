@@ -3,6 +3,7 @@
 import { X, AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
+import { useLocale } from "@/lib/i18n/client";
 
 interface Props {
   onScanned: (raw: string) => void;
@@ -11,6 +12,7 @@ interface Props {
 
 export function QrScannerDialog({ onScanned, onClose }: Props) {
   const [unsupported, setUnsupported] = useState(false);
+  const ru = useLocale() === "ru";
 
   useEffect(() => {
     if (
@@ -31,7 +33,7 @@ export function QrScannerDialog({ onScanned, onClose }: Props) {
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Scan QR code"
+      aria-label={ru ? "Сканирование QR-кода" : "Scan QR code"}
       className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
       onClick={onClose}
     >
@@ -41,12 +43,12 @@ export function QrScannerDialog({ onScanned, onClose }: Props) {
       >
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-semibold tracking-tight">
-            Scan certificate QR code
+            {ru ? "Отсканируйте QR-код сертификата" : "Scan certificate QR code"}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close scanner"
+            aria-label={ru ? "Закрыть сканер" : "Close scanner"}
             className="rounded-lg p-1.5 text-foreground/60 hover:text-foreground hover:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gate-gold/30"
           >
             <X className="h-4 w-4" />
@@ -58,8 +60,10 @@ export function QrScannerDialog({ onScanned, onClose }: Props) {
               <div className="space-y-2">
                 <AlertCircle className="h-6 w-6 text-gate-gold mx-auto" />
                 <p className="text-sm text-gate-white/80">
-                  Your browser can't access the camera. Please type the
-                  verification code instead.
+                  {ru
+                    ? "Браузер не может получить доступ к камере. Введите код проверки вручную."
+                    : "Your browser can't access the camera. Please type the verification code instead."}
+
                 </p>
               </div>
             </div>
@@ -75,7 +79,7 @@ export function QrScannerDialog({ onScanned, onClose }: Props) {
           )}
         </div>
         <p className="mt-3 text-xs text-foreground/50">
-          Point your camera at the QR code printed on the certificate.
+          {ru ? "Наведите камеру на QR-код, напечатанный на сертификате." : "Point your camera at the QR code printed on the certificate."}
         </p>
       </div>
     </div>

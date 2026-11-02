@@ -2,6 +2,9 @@
 import { Montserrat, Cormorant_Garamond } from "next/font/google";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SEO_KEYWORDS, SITE_URL } from "@/lib/site";
+import { getLocale } from "@/lib/i18n/server";
+import { LocaleProvider } from "@/lib/i18n/client";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -19,22 +22,23 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
+const DESCRIPTION =
+  "G.A.T.E. (GATE) is an international academic program for students in Grades 1–12: a week at a Chinese university with an academic assessment graded by professors, lectures, campus life and cultural excursions.";
+
 export const metadata: Metadata = {
   title: {
-    default: "G.A.T.E. Assessment",
-    template: "%s · G.A.T.E. Assessment",
+    default: "G.A.T.E. — GATE Academic Programs for Students",
+    template: "%s · G.A.T.E.",
   },
-  description:
-    "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a multi-stage Global Final hosted across international venues.",
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-  ),
+  description: DESCRIPTION,
+  applicationName: "G.A.T.E.",
+  keywords: SEO_KEYWORDS,
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     type: "website",
     siteName: "G.A.T.E. Assessment",
-    title: "G.A.T.E. Assessment",
-    description:
-      "Global Academic & Theoretical Excellence Assessment — an international academic assessment program with a multi-stage Global Final hosted across international venues.",
+    title: "G.A.T.E. — GATE Academic Programs for Students",
+    description: DESCRIPTION,
     images: [
       {
         url: "/brand/GATE-Logo-Primary-Dark@2x.png",
@@ -46,19 +50,19 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "G.A.T.E. Assessment",
-    description:
-      "Global Academic & Theoretical Excellence Assessment — an international academic assessment program.",
+    title: "G.A.T.E. — GATE Academic Programs for Students",
+    description: DESCRIPTION,
     images: ["/brand/GATE-Logo-Primary-Dark@2x.png"],
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       suppressHydrationWarning
       className={`${montserrat.variable} ${cormorant.variable} h-full antialiased`}
     >
@@ -74,7 +78,9 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('gate-theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})()`,
           }}
         />
-        <ThemeProvider>{children}</ThemeProvider>
+        <LocaleProvider locale={locale}>
+          <ThemeProvider>{children}</ThemeProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

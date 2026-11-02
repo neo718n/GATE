@@ -3,6 +3,14 @@
 import { z } from "zod";
 import { resend, DEFAULT_FROM } from "@/lib/email";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+import { getLocale } from "@/lib/i18n/server";
+
+const RU_FIELD_ERRORS = {
+  name: "Укажите имя — от 2 до 100 символов.",
+  email: "Проверьте адрес электронной почты.",
+  subject: "Укажите тему — от 3 до 150 символов.",
+  message: "Сообщение должно быть не короче 10 символов.",
+} as const;
 
 const schema = z.object({
   name: z.string().min(2).max(100),
@@ -21,6 +29,7 @@ export async function submitContact(
   _prev: ContactFormState,
   formData: FormData,
 ): Promise<ContactFormState> {
+  const ru = (await getLocale()) === "ru";
   const turnstileToken = formData.get("cf-turnstile-response");
   const tokenOk = await verifyTurnstileToken(
     typeof turnstileToken === "string" ? turnstileToken : null,
@@ -28,7 +37,9 @@ export async function submitContact(
   if (!tokenOk) {
     return {
       success: false,
-      error: "Human verification failed. Please refresh and try again.",
+      error: ru
+        ? "Не удалось подтвердить, что вы не робот. Обновите страницу и попробуйте ещё раз."
+        : "Human verification failed. Please refresh and try again.",
     };
   }
 
@@ -44,7 +55,7 @@ export async function submitContact(
     const fieldErrors: ContactFormState["fieldErrors"] = {};
     for (const issue of parsed.error.issues) {
       const field = issue.path[0] as keyof z.infer<typeof schema>;
-      fieldErrors[field] = issue.message;
+      fieldErrors[field] = ru ? RU_FIELD_ERRORS[field] : issue.message;
     }
     return { success: false, fieldErrors };
   }
@@ -66,7 +77,10 @@ export async function submitContact(
   });
 
   if (error) {
-    return { success: false, error: "Failed to send message. Please try again." };
+    return {
+      success: false,
+      error: ru ? "Не удалось отправить сообщение. Попробуйте ещё раз." : "Failed to send message. Please try again.",
+    };
   }
 
   return { success: true };

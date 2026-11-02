@@ -168,7 +168,7 @@ export function NotifyMeForm({
               id={`${source}-phoneNumber`}
               name="phoneNumber"
               type="tel"
-              placeholder="71 234 56 78"
+              placeholder="7700 900123"
               className="flex-1"
               required
             />

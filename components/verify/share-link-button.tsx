@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Link as LinkIcon } from "lucide-react";
+import { Check, Link as LinkIcon } from "lucide-react";
+import { useLocale } from "@/lib/i18n/client";
 
 export function ShareLinkButton({ url }: { url: string }) {
   const [copied, setCopied] = useState(false);
+  const ru = useLocale() === "ru";
 
   async function copy() {
     try {
@@ -22,20 +24,20 @@ export function ShareLinkButton({ url }: { url: string }) {
       onClick={copy}
       aria-label={
         copied
-          ? "Verification link copied"
-          : `Copy verification link ${url}`
+          ? ru ? "Ссылка для проверки скопирована" : "Verification link copied"
+          : ru ? `Скопировать ссылку для проверки ${url}` : `Copy verification link ${url}`
       }
       className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-colors"
     >
       {copied ? (
         <>
           <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden />
-          Copied
+          {ru ? "Скопировано" : "Copied"}
         </>
       ) : (
         <>
           <LinkIcon className="h-3.5 w-3.5" aria-hidden />
-          Share verification link
+          {ru ? "Поделиться ссылкой для проверки" : "Share verification link"}
         </>
       )}
     </button>

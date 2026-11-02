@@ -165,7 +165,7 @@ export function ProfileFormClient({
               id="city"
               name="city"
               required
-              placeholder="e.g. London, Seoul, Almaty"
+              placeholder="e.g. London, Paris, Vienna"
               defaultValue={defaultCity}
             />
           </div>

@@ -1320,3 +1320,166 @@ export type IntegrationPartnerStatus =
   (typeof integrationPartnerStatusEnum.enumValues)[number];
 export type PartnerSigningAlg =
   (typeof integrationPartnerSigningAlgEnum.enumValues)[number];
+
+// ────────────────────────────────────────────────────────────────────────────
+// Program applications (apply.* and partners.* subdomains)
+//
+// One table for every camp application, whether a family applied and paid
+// online or a country representative registered the student. Applicants do
+// not get user accounts; representatives sign in with their own email-OTP
+// session (rep_sessions), separate from better-auth.
+// ────────────────────────────────────────────────────────────────────────────
+
+export const registrationSourceEnum = pgEnum("registration_source", [
+  "individual",
+  "representative",
+]);
+
+export const registrationStatusV2Enum = pgEnum("application_status", [
+  "pending_payment",
+  "paid",
+  "submitted",
+  "cancelled",
+]);
+
+export const contactMethodEnum = pgEnum("contact_method", [
+  "whatsapp",
+  "telegram",
+  "instagram",
+  "phone",
+  "email",
+]);
+
+export const representatives = pgTable("representatives", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  name: text("name").notNull(),
+  organization: text("organization"),
+  phone: text("phone"),
+  active: boolean("active").notNull().default(true),
+  notes: text("notes"),
+  lastLoginAt: timestamp("last_login_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const repOtps = pgTable(
+  "rep_otps",
+  {
+    id: serial("id").primaryKey(),
+    email: text("email").notNull(),
+    codeHash: text("code_hash").notNull(),
+    attempts: integer("attempts").notNull().default(0),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({ emailIdx: index("rep_otps_email_idx").on(t.email) }),
+);
+
+export const repSessions = pgTable("rep_sessions", {
+  id: serial("id").primaryKey(),
+  representativeId: integer("representative_id")
+    .notNull()
+    .references(() => representatives.id, { onDelete: "cascade" }),
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const repInviteLinks = pgTable(
+  "rep_invite_links",
+  {
+    id: serial("id").primaryKey(),
+    representativeId: integer("representative_id")
+      .notNull()
+      .references(() => representatives.id, { onDelete: "cascade" }),
+    token: text("token").notNull().unique(),
+    label: text("label").notNull(),
+    active: boolean("active").notNull().default(true),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (t) => ({ repIdx: index("rep_invite_links_rep_idx").on(t.representativeId) }),
+);
+
+export const applications = pgTable(
+  "applications",
+  {
+    id: serial("id").primaryKey(),
+    reference: text("reference").notNull().unique(),
+    editionSlug: text("edition_slug").notNull(),
+    source: registrationSourceEnum("source").notNull(),
+    representativeId: integer("representative_id").references(() => representatives.id, {
+      onDelete: "set null",
+    }),
+    inviteLinkId: integer("invite_link_id").references(() => repInviteLinks.id, {
+      onDelete: "set null",
+    }),
+    status: registrationStatusV2Enum("status").notNull(),
+    firstName: text("first_name").notNull(),
+    lastName: text("last_name").notNull(),
+    dateOfBirth: date("date_of_birth").notNull(),
+    gender: genderEnum("gender").notNull(),
+    country: text("country").notNull(),
+    city: text("city").notNull(),
+    school: text("school").notNull(),
+    grade: integer("grade").notNull(),
+    subject: text("subject").notNull(),
+    email: text("email").notNull(),
+    contactMethod: contactMethodEnum("contact_method").notNull(),
+    contactValue: text("contact_value").notNull(),
+    guardianName: text("guardian_name").notNull(),
+    guardianPhone: text("guardian_phone").notNull(),
+    confirmedAt: timestamp("confirmed_at").notNull(),
+    amountCents: integer("amount_cents"),
+    stripeCheckoutSessionId: text("stripe_checkout_session_id").unique(),
+    stripePaymentIntentId: text("stripe_payment_intent_id"),
+    paidAt: timestamp("paid_at"),
+    confirmationEmailSentAt: timestamp("confirmation_email_sent_at"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  },
+  (t) => ({
+    repIdx: index("applications_rep_idx").on(t.representativeId),
+    statusIdx: index("applications_status_idx").on(t.status),
+    editionIdx: index("applications_edition_idx").on(t.editionSlug),
+  }),
+);
+
+export const representativeRelations = relations(representatives, ({ many }) => ({
+  applications: many(applications),
+  inviteLinks: many(repInviteLinks),
+  sessions: many(repSessions),
+}));
+
+export const repInviteLinkRelations = relations(repInviteLinks, ({ one, many }) => ({
+  representative: one(representatives, {
+    fields: [repInviteLinks.representativeId],
+    references: [representatives.id],
+  }),
+  applications: many(applications),
+}));
+
+export const repSessionRelations = relations(repSessions, ({ one }) => ({
+  representative: one(representatives, {
+    fields: [repSessions.representativeId],
+    references: [representatives.id],
+  }),
+}));
+
+export const applicationRelations = relations(applications, ({ one }) => ({
+  representative: one(representatives, {
+    fields: [applications.representativeId],
+    references: [representatives.id],
+  }),
+  inviteLink: one(repInviteLinks, {
+    fields: [applications.inviteLinkId],
+    references: [repInviteLinks.id],
+  }),
+}));
+
+export type Representative = typeof representatives.$inferSelect;
+export type Application = typeof applications.$inferSelect;
+export type NewApplication = typeof applications.$inferInsert;
+export type RepInviteLink = typeof repInviteLinks.$inferSelect;

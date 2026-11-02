@@ -1,4 +1,5 @@
-import Link from "next/link";
+import { Link } from "@/lib/i18n/client";
+import { getLocale } from "@/lib/i18n/server";
 import {
   ShieldCheck,
   ShieldX,
@@ -25,9 +26,52 @@ const COUNTRY_ISO: Record<string, string> = {
   China: "cn",
 };
 
-const EVENT_LINE = "GATE China 2026 · Hangzhou";
-const EVENT_DATES = "18–24 August 2026";
-const VENUE_LINE = "Hangzhou Institute of Technology · Building B1";
+const T = {
+  en: {
+    eventLine: "GATE China 2026 · Hangzhou",
+    eventDates: "18–24 August 2026",
+    venueLine: "Hangzhou Institute of Technology · Building B1",
+    unavailable: "Unavailable",
+    disabledTitle: "Verification Temporarily Disabled",
+    disabledLead: "Certificate verification is currently offline. Please check back shortly, or contact event staff for assistance.",
+    notFound: "Not Found",
+    notFoundTitle: "Certificate Not Found",
+    noMatch: (event: string) => `doesn't match a certificate in the ${event} registry. Double-check the code — or treat the certificate as unverified.`,
+    tryAnother: "Try another code",
+    verified: "Verified",
+    confirmed: "Confirmed against the official G.A.T.E. certificate registry",
+    country: "Country",
+    serial: "Certificate Serial",
+    score: "Score",
+    points: (p: number, m: number) => `${p}/${m} points`,
+    badgeCode: "Badge Code",
+    viewFull: "View Full Performance",
+    questions: "Questions about this certificate?",
+    contactAt: (venue: string) => `Contact us at ${venue}.`,
+  },
+  ru: {
+    eventLine: "GATE China 2026 · Ханчжоу",
+    eventDates: "18–24 августа 2026",
+    venueLine: "Ханчжоуский технологический институт · корпус B1",
+    unavailable: "Недоступно",
+    disabledTitle: "Проверка временно отключена",
+    disabledLead: "Проверка сертификатов сейчас недоступна. Загляните чуть позже или обратитесь к организаторам.",
+    notFound: "Не найден",
+    notFoundTitle: "Сертификат не найден",
+    noMatch: (event: string) => `не соответствует ни одному сертификату в реестре ${event}. Проверьте код ещё раз — или считайте сертификат неподтверждённым.`,
+    tryAnother: "Проверить другой код",
+    verified: "Подтверждено",
+    confirmed: "Сверено с официальным реестром сертификатов G.A.T.E.",
+    country: "Страна",
+    serial: "Серийный номер",
+    score: "Баллы",
+    points: (p: number, m: number) => `${p} из ${m}`,
+    badgeCode: "Код бейджа",
+    viewFull: "Подробные результаты",
+    questions: "Есть вопросы по сертификату?",
+    contactAt: (venue: string) => `Обратитесь к нам: ${venue}.`,
+  },
+};
 
 export type CertificateVerifyStatus = "verified" | "not_found" | "disabled";
 
@@ -45,7 +89,8 @@ interface Props {
   attemptedCode: string;
 }
 
-export function CertificateResultCard({ status, badge, result, serial, attemptedCode }: Props) {
+export async function CertificateResultCard({ status, badge, result, serial, attemptedCode }: Props) {
+  const t = T[await getLocale()];
   if (status === "disabled") {
     return (
       <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
@@ -58,16 +103,15 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/50">
-              Unavailable
+              {t.unavailable}
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground mt-1">
-              Verification Temporarily Disabled
+              {t.disabledTitle}
             </h1>
           </div>
         </header>
         <p className="mt-5 text-sm text-foreground/70 leading-relaxed">
-          Certificate verification is currently offline. Please check back
-          shortly, or contact event staff for assistance.
+          {t.disabledLead}
         </p>
       </div>
     );
@@ -85,10 +129,10 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-destructive">
-              Not Found
+              {t.notFound}
             </p>
             <h1 className="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-foreground mt-1">
-              Certificate Not Found
+              {t.notFoundTitle}
             </h1>
           </div>
         </header>
@@ -96,15 +140,14 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
           <span className="font-mono text-foreground bg-foreground/5 px-1.5 py-0.5 rounded break-all">
             {attemptedCode}
           </span>{" "}
-          doesn&apos;t match a certificate in the {EVENT_LINE} registry.
-          Double-check the code — or treat the certificate as unverified.
+          {t.noMatch(t.eventLine)}
         </p>
         <Link
           href="/verify"
           className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-gate-gold hover:text-gate-gold-2 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
-          Try another code
+          {t.tryAnother}
         </Link>
       </div>
     );
@@ -150,20 +193,20 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
           className="mt-4 font-serif text-4xl sm:text-5xl font-semibold tracking-tight text-emerald-700 dark:text-emerald-500"
           role="status"
         >
-          Verified
+          {t.verified}
         </h1>
         <p className="mt-2 text-xs sm:text-sm text-foreground/60">
-          Confirmed against the official G.A.T.E. certificate registry
+          {t.confirmed}
         </p>
       </header>
 
       <div className="px-6 sm:px-10 py-8 sm:py-10 border-t border-border text-center">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
-          {EVENT_LINE}
+          {t.eventLine}
         </p>
         <p className="mt-1 inline-flex items-center gap-1.5 text-xs sm:text-sm text-foreground/60">
           <CalendarDays className="h-3.5 w-3.5 shrink-0" aria-hidden />
-          {EVENT_DATES}
+          {t.eventDates}
         </p>
 
         <h2 className="mt-5 font-serif text-2xl sm:text-4xl font-semibold tracking-tight text-foreground break-words">
@@ -180,7 +223,7 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
         <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm text-left max-w-md mx-auto">
           <Field
             icon={<MapPin className="h-3.5 w-3.5" />}
-            label="Country"
+            label={t.country}
             value={
               <span className="inline-flex items-center gap-1.5">
                 {iso && (
@@ -199,21 +242,21 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
           />
           <Field
             icon={<Hash className="h-3.5 w-3.5" />}
-            label="Certificate Serial"
+            label={t.serial}
             value={<span className="font-mono text-foreground tracking-wider">{serial}</span>}
           />
           <Field
             icon={<AwardIcon className="h-3.5 w-3.5" />}
-            label="Score"
+            label={t.score}
             value={
               <span className="font-mono text-foreground">
-                {result.pointsEarned}/{result.pointsMax} points
+                {t.points(result.pointsEarned, result.pointsMax)}
               </span>
             }
           />
           <Field
             icon={<Hash className="h-3.5 w-3.5" />}
-            label="Badge Code"
+            label={t.badgeCode}
             value={<span className="font-mono text-foreground tracking-wider">{badge.cardNo}</span>}
           />
         </dl>
@@ -222,7 +265,7 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
           href={`/verify/${badge.cardNo}/performance`}
           className="mt-8 inline-flex items-center gap-1.5 text-sm font-semibold text-gate-gold hover:text-gate-gold-2 transition-colors print:hidden"
         >
-          View Full Performance
+          {t.viewFull}
           <ArrowRight className="h-3.5 w-3.5" aria-hidden />
         </Link>
       </div>
@@ -231,8 +274,8 @@ export function CertificateResultCard({ status, badge, result, serial, attempted
         <p className="flex items-start gap-1.5">
           <Building2 className="h-3.5 w-3.5 shrink-0 mt-0.5 text-foreground/40" aria-hidden />
           <span>
-            <span className="font-semibold text-foreground/70">Questions about this certificate?</span>{" "}
-            Contact us at {VENUE_LINE}.
+            <span className="font-semibold text-foreground/70">{t.questions}</span>{" "}
+            {t.contactAt(t.venueLine)}
           </span>
         </p>
       </footer>

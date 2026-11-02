@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
     "/api/admin/badges/export": ["./public/partners/**"],
     "/verify/[code]/performance/pdf": ["./public/partners/**"],
   },
+  // Pages from the retired "online round → global final" model. They point
+  // at "/" (which always features the current year) rather than a specific
+  // year, so the permanent redirect never goes stale.
+  async redirects() {
+    return [
+      { source: "/structure", destination: "/", permanent: true },
+      { source: "/onsite-assessment", destination: "/", permanent: true },
+      { source: "/academic-info", destination: "/about", permanent: true },
+    ];
+  },
   images: {
     remotePatterns: [
       {

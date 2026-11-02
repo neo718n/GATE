@@ -1,7 +1,8 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { db } from "@/lib/db";
-import { payments, participants, enrollments } from "@/lib/db/schema";
+import { applications, payments, participants, enrollments } from "@/lib/db/schema";
+import { sendApplicationConfirmation } from "@/lib/applications/email";
 import { eq } from "drizzle-orm";
 import Stripe from "stripe";
 import { sendPaymentConfirmationEmail } from "@/lib/send-payment-email";
@@ -29,6 +30,27 @@ export async function POST(req: NextRequest) {
   // Handle successful payment completion
   // Flow: (1) Extract card details from PaymentIntent, (2) Update payment record to "paid",
   // (3) Update enrollment status (or participant status for legacy), (4) Send confirmation email with invoice/receipt
+  // Program applications (apply.* subdomain) have their own table and flow.
+  if (event.type === "checkout.session.completed" && event.data.object.metadata?.kind === "application") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    const applicationId = Number(session.metadata?.applicationId);
+    if (Number.isFinite(applicationId) && session.payment_status === "paid") {
+      const [app] = await db
+        .update(applications)
+        .set({
+          status: "paid",
+          paidAt: new Date(),
+          stripePaymentIntentId: (session.payment_intent as string | null) ?? null,
+          updatedAt: new Date(),
+        })
+        .where(eq(applications.id, applicationId))
+        .returning();
+      const locale = session.metadata?.locale === "ru" ? "ru" : "en";
+      if (app) await sendApplicationConfirmation(app, locale).catch((err) => console.error("Application email failed:", err));
+    }
+    return NextResponse.json({ received: true });
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const { participantId, enrollmentId } = session.metadata ?? {};

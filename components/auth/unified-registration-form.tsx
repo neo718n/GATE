@@ -482,7 +482,7 @@ export function UnifiedRegistrationForm() {
           id="city"
           value={form.city}
           onChange={set("city")}
-          placeholder="e.g. London, Seoul, Almaty"
+          placeholder="e.g. London, Paris, Vienna"
           required
         />
       </div>

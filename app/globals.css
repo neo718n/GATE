@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "react-day-picker/style.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -150,5 +151,131 @@ body {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* ── Marketing site: light-only design system ───────────────────────────── */
+/*
+   `.site` wraps every marketing page. It re-declares the semantic tokens so
+   the public site stays light even when a dashboard user has dark mode on. */
+.site {
+  color-scheme: light;
+  --ivory: #faf7f0;
+  --ivory-2: #f3ede0;
+  --ivory-3: #e9e0cc;
+  --ink: #0b1f3a;
+  --ink-2: #3a4a62;
+  --ink-3: #6b7a90;
+  --line: rgba(11, 31, 58, 0.1);
+
+  --background: var(--ivory);
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--ivory);
+  --muted: var(--ivory-2);
+  --muted-foreground: var(--ink-3);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--gate-gold);
+  --glass-bg: rgba(250, 247, 240, 0.72);
+  --glass-border: rgba(11, 31, 58, 0.08);
+
+  background: var(--ivory);
+  color: var(--ink);
+}
+
+@theme inline {
+  --color-ivory: var(--ivory);
+  --color-ivory-2: var(--ivory-2);
+  --color-ivory-3: var(--ivory-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-line: var(--line);
+}
+
+/* Soft gold light used behind heroes and section headings. */
+.gold-aura {
+  background:
+    radial-gradient(60% 50% at 75% 20%, rgba(232, 192, 96, 0.22), transparent 70%),
+    radial-gradient(50% 45% at 10% 80%, rgba(43, 85, 145, 0.08), transparent 70%);
+}
+
+/* Barely-there engineering grid for the "high-tech" layer. */
+.tech-grid {
+  background-image:
+    linear-gradient(to right, rgba(11, 31, 58, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 31, 58, 0.05) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 40%, transparent 100%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 20px 50px -24px rgba(11, 31, 58, 0.25);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+.text-gold-gradient {
+  background: linear-gradient(100deg, #a8771f 0%, #c9993a 35%, #e8c060 60%, #b98a2c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Date of birth calendar (react-day-picker) in brand colours */
+.gate-daypicker .rdp-root {
+  --rdp-accent-color: #0b1f3a;
+  --rdp-accent-background-color: #f3ede0;
+  --rdp-day-height: 40px;
+  --rdp-day-width: 40px;
+  --rdp-day_button-height: 38px;
+  --rdp-day_button-width: 38px;
+  --rdp-day_button-border-radius: 999px;
+  --rdp-today-color: #c9993a;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  color: #0b1f3a;
+}
+.gate-daypicker .rdp-selected .rdp-day_button {
+  background: #0b1f3a;
+  color: #faf7f0;
+  border-color: #0b1f3a;
+}
+.gate-daypicker .rdp-dropdown_root {
+  border-radius: 12px;
+  padding: 2px 8px;
+  border: 1px solid rgba(11, 31, 58, 0.1);
+}
+.gate-daypicker .rdp-caption_label {
+  font-weight: 600;
+}
+
+/* Lenis smooth scrolling */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site *,
+  .site *::before,
+  .site *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -1,10 +1,17 @@
-import type { Metadata } from "next";
+import { LegalPage } from "@/components/site/legal-page";
+import { getLocale, pageMetadata } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description:
-    "G.A.T.E. Assessment privacy policy — how we collect, use, store, and protect your personal data.",
-};
+export const generateMetadata = () =>
+  pageMetadata("/privacy", {
+    en: {
+      title: "Privacy Policy",
+      description: "G.A.T.E. Assessment privacy policy — how we collect, use, store, and protect your personal data.",
+    },
+    ru: {
+      title: "Политика конфиденциальности",
+      description: "Политика конфиденциальности G.A.T.E. Assessment: как мы собираем, используем, храним и защищаем ваши персональные данные.",
+    },
+  });
 
 const SECTIONS = [
   {
@@ -61,7 +68,7 @@ const SECTIONS = [
     number: "06",
     title: "International Data Transfers",
     content: [
-      "G.A.T.E. operates an international program with participants from across the world. Your personal data may be processed in countries other than your country of residence. In particular, data related to the Global Onsite Assessment may be shared with the host institution and authorized event partners located in the host country for the purpose of organizing and administering the in-person final.",
+      "G.A.T.E. operates an international program with participants from across the world. Your personal data may be processed in countries other than your country of residence. In particular, data related to an onsite program may be shared with the host institution and authorized event partners located in the host country for the purpose of organizing and administering the program.",
       "When transferring personal data internationally, G.A.T.E. implements appropriate safeguards consistent with applicable data protection laws, including contractual protections with our data processors.",
     ],
   },
@@ -70,7 +77,7 @@ const SECTIONS = [
     title: "Sharing Your Information",
     content: [
       "G.A.T.E. does not sell, rent, or trade your personal data to third parties.",
-      "We may share your data with: authorized service providers (cloud hosting, email delivery, payment processing) under binding data processing agreements; the host institution and authorized event partners solely for the purpose of administering the Global Onsite Assessment; legal authorities where required by applicable law or in response to lawful requests.",
+      "We may share your data with: authorized service providers (cloud hosting, email delivery, payment processing) under binding data processing agreements; the host institution and authorized event partners solely for the purpose of administering the onsite program; legal authorities where required by applicable law or in response to lawful requests.",
       "G.A.T.E. may publish anonymized, aggregated statistics about participation (such as country-level participation counts) without identifying individual participants.",
     ],
   },
@@ -87,9 +94,9 @@ const SECTIONS = [
     number: "09",
     title: "Children's Privacy",
     content: [
-      "The G.A.T.E. Assessment is designed for students aged 14 to 19. Participants under the age of 18 are considered minors, and their registration requires the verified consent of a parent or legal guardian.",
+      "G.A.T.E. programs are designed for school students in Grades 1–12. Participants under the age of 18 are considered minors, and their registration requires the verified consent of a parent or legal guardian.",
       "By completing registration for a minor, the parent or guardian confirms that they have read this Privacy Policy, that they consent on behalf of the minor to the collection and processing of the minor's personal data as described herein, and that all information submitted is accurate.",
-      "G.A.T.E. does not knowingly collect personal data from children under the age of 14. If we become aware that data from a child under 14 has been collected without appropriate consent, we will delete that data promptly.",
+      "G.A.T.E. does not knowingly collect personal data from a minor without the consent of a parent or legal guardian. If we become aware that a minor's data has been collected without appropriate consent, we will delete that data promptly.",
     ],
   },
   {
@@ -119,48 +126,136 @@ const SECTIONS = [
   },
 ];
 
-export default function PrivacyPage() {
+const SECTIONS_RU = [
+  {
+    number: "01",
+    title: "Оператор данных",
+    content: [
+      "G.A.T.E. Assessment («G.A.T.E.», «мы», «нас», «наш») является оператором персональных данных, собираемых через платформу и программу G.A.T.E.",
+      "По всем вопросам конфиденциальности, включая запросы на доступ к данным и жалобы, пишите на info@gate-assessment.org",
+    ],
+  },
+  {
+    number: "02",
+    title: "Какие данные мы собираем",
+    content: [
+      "Личные и контактные данные: имя и фамилия, дата рождения, гражданство, адрес электронной почты и номер телефона (если указан).",
+      "Учебные данные: название школы или учебного заведения, класс, страна обучения и выбранный предмет.",
+      "Данные диагностики: ответы, баллы, результаты проверки и сведения о сертификатах.",
+      "Технические данные: IP-адрес, тип браузера, идентификаторы устройства и данные об использовании платформы, которые собираются автоматически во время работы с платформой G.A.T.E.",
+      "Мы не собираем номера банковских карт и реквизиты счетов напрямую. Все платежи обрабатывает сертифицированный платёжный провайдер, на которого распространяется его собственная политика конфиденциальности.",
+    ],
+  },
+  {
+    number: "03",
+    title: "Как мы используем данные",
+    content: [
+      "Чтобы обработать вашу регистрацию, проверить соответствие условиям участия и организовать ваше участие в G.A.T.E. Assessment.",
+      "Чтобы провести и оценить диагностику, опубликовать результаты, выдать сертификаты и награды.",
+      "Чтобы сообщать вам об инструкциях, результатах, изменениях в расписании и новостях программы.",
+      "Чтобы поддерживать и улучшать платформу G.A.T.E., выявлять мошенничество и обеспечивать безопасность.",
+      "Чтобы выполнять требования закона, в том числе по хранению документации.",
+      "Чтобы рассказывать вам о будущих программах G.A.T.E. и новостях — только с вашего согласия, которое можно отозвать в любой момент.",
+    ],
+  },
+  {
+    number: "04",
+    title: "Правовые основания обработки",
+    content: [
+      "Исполнение договора: обработка необходима для выполнения условий регистрации и оказания услуг, на которые вы записались.",
+      "Законные интересы: предотвращение мошенничества, безопасность платформы, соблюдение академической честности и развитие программы — с учётом ваших прав и свобод.",
+      "Согласие: рекламные рассылки и необязательная обработка данных. Согласие можно отозвать в любой момент, написав на info@gate-assessment.org.",
+      "Требование закона: когда обработка предусмотрена применимым законодательством.",
+    ],
+  },
+  {
+    number: "05",
+    title: "Срок хранения",
+    content: [
+      "Регистрационные данные и данные диагностики хранятся не более пяти (5) лет с даты участия, после чего надёжно удаляются или обезличиваются, если закон не требует более длительного хранения.",
+      "Записи для проверки сертификатов и документов — имя участника, уровень награды и предмет — могут храниться бессрочно, чтобы система проверки документов G.A.T.E. оставалась надёжной.",
+      "Вы можете запросить досрочное удаление персональных данных с учётом ограничений, описанных в разделе 07.",
+    ],
+  },
+  {
+    number: "06",
+    title: "Международная передача данных",
+    content: [
+      "G.A.T.E. — международная программа с участниками со всего мира, поэтому ваши данные могут обрабатываться за пределами страны вашего проживания. В частности, данные, связанные с очной программой, могут передаваться принимающему университету и уполномоченным партнёрам в стране проведения для её организации.",
+      "При международной передаче данных G.A.T.E. применяет надлежащие меры защиты в соответствии с законодательством о защите данных, включая договорные гарантии с обработчиками данных.",
+    ],
+  },
+  {
+    number: "07",
+    title: "Кому мы передаём данные",
+    content: [
+      "G.A.T.E. не продаёт, не сдаёт в аренду и не обменивает ваши персональные данные третьим лицам.",
+      "Мы можем передавать данные: уполномоченным поставщикам услуг (облачный хостинг, отправка писем, обработка платежей) на основании договоров об обработке данных; принимающему университету и уполномоченным партнёрам — исключительно для проведения очной программы; государственным органам — когда этого требует закон или законный запрос.",
+      "G.A.T.E. может публиковать обезличенную сводную статистику об участии (например, число участников по странам), не позволяющую установить личность.",
+    ],
+  },
+  {
+    number: "08",
+    title: "Ваши права",
+    content: [
+      "В зависимости от законодательства о защите данных вашей страны вы можете иметь право: получить доступ к вашим данным, которые у нас хранятся; потребовать исправить неточные или неполные данные; потребовать удалить персональные данные (с учётом требований закона о хранении и нашего законного интереса в сохранении академических записей); возразить против определённой обработки или потребовать её ограничить; получить данные в переносимом формате; отозвать согласие в любой момент, если обработка основана на согласии.",
+      "Чтобы воспользоваться этими правами, направьте письменный запрос на info@gate-assessment.org. Мы ответим в течение тридцати (30) дней. Перед выполнением запроса мы можем попросить подтвердить вашу личность.",
+      "Жители Европейской экономической зоны, Великобритании и других юрисдикций с развитым законодательством о защите данных сохраняют права, которые им предоставляет это законодательство. G.A.T.E. соблюдает эти права в объёме, требуемом законом.",
+    ],
+  },
+  {
+    number: "09",
+    title: "Данные детей",
+    content: [
+      "Программы G.A.T.E. рассчитаны на школьников 1–12 классов. Участники младше 18 лет считаются несовершеннолетними, и для их регистрации требуется подтверждённое согласие родителя или законного представителя.",
+      "Регистрируя несовершеннолетнего, родитель или законный представитель подтверждает, что ознакомился с настоящей Политикой конфиденциальности, даёт от имени несовершеннолетнего согласие на сбор и обработку его персональных данных, как описано в ней, и что все указанные сведения достоверны.",
+      "G.A.T.E. сознательно не собирает персональные данные несовершеннолетних без согласия родителя или законного представителя. Если нам станет известно, что такие данные были собраны без надлежащего согласия, мы незамедлительно их удалим.",
+    ],
+  },
+  {
+    number: "10",
+    title: "Безопасность",
+    content: [
+      "G.A.T.E. применяет технические и организационные меры для защиты ваших данных от несанкционированного доступа, раскрытия, изменения или уничтожения: разграничение доступа, шифрование данных при передаче и регулярные проверки безопасности.",
+      "Передача данных через интернет не может быть абсолютно безопасной. Мы принимаем все разумные меры предосторожности, но не можем гарантировать абсолютную защиту и не несём ответственности за несанкционированный доступ, вызванный обстоятельствами вне нашего разумного контроля.",
+    ],
+  },
+  {
+    number: "11",
+    title: "Файлы cookie",
+    content: [
+      "Платформа G.A.T.E. использует необходимые cookie для входа в аккаунт, безопасной работы сессии и запоминания выбранного языка. Без них платформа не работает, поэтому отключить их нельзя.",
+      "Мы также можем использовать аналитические cookie, чтобы понимать, как участники пользуются платформой, и делать её удобнее. Необязательные cookie можно в любой момент отключить в настройках браузера, но это может повлиять на работу платформы.",
+    ],
+  },
+  {
+    number: "12",
+    title: "Изменения Политики",
+    content: [
+      "G.A.T.E. может время от времени обновлять настоящую Политику конфиденциальности с учётом изменений в нашей работе или законодательстве. Новая редакция публикуется на платформе с обновлённой датой вступления в силу.",
+      "О существенных изменениях мы уведомим зарегистрированных участников по электронной почте. Продолжение использования платформы G.A.T.E. после вступления новой редакции в силу означает согласие с ней.",
+      "Вопросы по настоящей Политике конфиденциальности: info@gate-assessment.org",
+    ],
+  },
+];
+
+export default async function PrivacyPage() {
+  if ((await getLocale()) === "ru") {
+    return (
+      <LegalPage
+        title="Политика конфиденциальности"
+        updated="Редакция: ноябрь 2026 · G.A.T.E. Assessment"
+        intro="Настоящая Политика конфиденциальности объясняет, как G.A.T.E. Assessment собирает, использует, хранит и защищает персональные данные участников, координаторов и посетителей сайта в рамках программы G.A.T.E. Assessment. Пожалуйста, внимательно ознакомьтесь с ней до регистрации. Пользуясь платформой G.A.T.E. или участвуя в любой части программы, вы подтверждаете, что прочитали и поняли настоящую Политику."
+        sections={SECTIONS_RU}
+      />
+    );
+  }
   return (
-    <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
-        <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Legal</span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Privacy Policy</h1>
-          <p className="text-sm font-light text-gate-800/50 mt-1">
-            Effective: 2025 &nbsp;·&nbsp; G.A.T.E. Assessment
-          </p>
-        </div>
-      </section>
-
-      <section className="py-20 px-6 bg-gate-white">
-        <div className="mx-auto max-w-4xl flex flex-col gap-0">
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9] pb-12 border-b border-gate-fog/60">
-            This Privacy Policy explains how G.A.T.E. Assessment collects, uses, stores, and protects personal
-            information provided by participants, coordinators, and visitors in connection with the G.A.T.E.
-            Assessment program. Please read this policy carefully before registering. By using the G.A.T.E.
-            platform or participating in any part of the program, you acknowledge that you have read and
-            understood this policy.
-          </p>
-
-          {SECTIONS.map((section) => (
-            <div key={section.number} className="flex flex-col gap-6 py-12 border-b border-gate-fog/60 last:border-0">
-              <div className="flex items-baseline gap-5">
-                <span className="text-[10px] font-semibold tracking-[0.3em] text-gate-gold shrink-0">
-                  {section.number}
-                </span>
-                <h2 className="font-serif text-2xl font-light text-gate-800">{section.title}</h2>
-              </div>
-              <div className="flex flex-col gap-4 pl-9">
-                {section.content.map((para, i) => (
-                  <p key={i} className="text-sm font-light text-gate-800/65 leading-[1.9]">
-                    {para}
-                  </p>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
+    <LegalPage
+      title="Privacy Policy"
+      updated="Updated: November 2026 · G.A.T.E. Assessment"
+      intro="This Privacy Policy explains how G.A.T.E. Assessment collects, uses, stores, and protects personal information provided by participants, coordinators, and visitors in connection with the G.A.T.E. Assessment program. Please read this policy carefully before registering. By using the G.A.T.E. platform or participating in any part of the program, you acknowledge that you have read and understood this policy."
+      sections={SECTIONS}
+    />
   );
 }

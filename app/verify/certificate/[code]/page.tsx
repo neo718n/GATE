@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/client";
+import { getLocale } from "@/lib/i18n/server";
 import { ArrowLeft } from "lucide-react";
 import {
   formatBadgeCode,
@@ -17,10 +18,13 @@ import {
 } from "@/components/verify/certificate-result-card";
 import { AppreciationResultCard } from "@/components/verify/appreciation-result-card";
 
-export const metadata: Metadata = {
-  title: "Verify Certificate · G.A.T.E.",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ru = (await getLocale()) === "ru";
+  return {
+    title: ru ? "Проверка сертификата · G.A.T.E." : "Verify Certificate · G.A.T.E.",
+    robots: { index: false, follow: false },
+  };
+}
 
 // Every badge holder earns at most one certificate today (one subject each —
 // see scripts/seed-event-badge-results.ts) — the QR/URL only carries the
@@ -38,6 +42,7 @@ export default async function CertificateVerifyPage({
 }) {
   const { code } = await params;
   const canonical = formatBadgeCode(decodeURIComponent(code));
+  const ru = (await getLocale()) === "ru";
 
   const backLink = (
     <Link
@@ -45,7 +50,7 @@ export default async function CertificateVerifyPage({
       className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50 hover:text-gate-gold transition-colors mb-6 print:hidden"
     >
       <ArrowLeft className="h-3 w-3" aria-hidden />
-      Main Page
+      {ru ? "На главную" : "Main Page"}
     </Link>
   );
 

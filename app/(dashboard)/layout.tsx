@@ -20,6 +20,8 @@ export default async function DashboardLayout({
       { href: "/admin", label: "Overview" },
       { href: "/admin/users", label: "Users & Roles" },
       { href: "/admin/question-providers", label: "Question Providers" },
+      { href: "/admin/applications", label: "Applications" },
+      { href: "/admin/representatives", label: "Representatives" },
       { href: "/admin/participants", label: "Participants" },
       { href: "/admin/cycles", label: "Assessment Cycles" },
       { href: "/admin/subjects", label: "Subjects" },

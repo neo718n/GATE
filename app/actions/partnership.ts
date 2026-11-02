@@ -1,8 +1,18 @@
-﻿"use server";
+"use server";
 
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { partners } from "@/lib/db/schema";
+import { getLocale } from "@/lib/i18n/server";
+
+const RU_FIELD_ERRORS: Record<string, string> = {
+  organizationName: "Укажите название организации.",
+  type: "Выберите тип организации.",
+  country: "Укажите страну.",
+  website: "Введите корректный адрес сайта.",
+  contactName: "Укажите контактное лицо.",
+  contactEmail: "Проверьте адрес электронной почты.",
+};
 
 const schema = z.object({
   organizationName: z.string().min(2, "Organization name is required"),
@@ -27,13 +37,14 @@ export async function submitPartnerApplication(
   _prev: PartnerFormState,
   formData: FormData,
 ): Promise<PartnerFormState> {
+  const ru = (await getLocale()) === "ru";
   const raw = Object.fromEntries(formData);
   const parsed = schema.safeParse(raw);
 
   if (!parsed.success) {
     const fieldErrors: PartnerFormState["fieldErrors"] = {};
     for (const [k, v] of Object.entries(parsed.error.flatten().fieldErrors)) {
-      (fieldErrors as Record<string, string>)[k] = v?.[0] ?? "";
+      (fieldErrors as Record<string, string>)[k] = (ru && RU_FIELD_ERRORS[k]) || (v?.[0] ?? "");
     }
     return { success: false, error: null, fieldErrors };
   }
@@ -53,6 +64,10 @@ export async function submitPartnerApplication(
     });
     return { success: true, error: null, fieldErrors: {} };
   } catch {
-    return { success: false, error: "Submission failed. Please try again.", fieldErrors: {} };
+    return {
+      success: false,
+      error: ru ? "Не удалось отправить заявку. Попробуйте ещё раз." : "Submission failed. Please try again.",
+      fieldErrors: {},
+    };
   }
 }

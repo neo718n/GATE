@@ -1,10 +1,18 @@
-import type { Metadata } from "next";
+import { LegalPage } from "@/components/site/legal-page";
+import { getLocale, pageMetadata } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Academic Integrity",
-  description:
-    "G.A.T.E. Assessment academic integrity policy — standards of conduct, prohibited behaviors, investigation process, and consequences of misconduct.",
-};
+export const generateMetadata = () =>
+  pageMetadata("/academic-integrity", {
+    en: {
+      title: "Academic Integrity",
+      description:
+        "G.A.T.E. Assessment academic integrity policy — standards of conduct, prohibited behaviors, investigation process, and consequences of misconduct.",
+    },
+    ru: {
+      title: "Академическая честность",
+      description: "Политика академической честности G.A.T.E. Assessment: стандарты поведения, запрещённые действия, порядок разбирательства и последствия нарушений.",
+    },
+  });
 
 const VIOLATIONS = [
   "Receiving or providing assistance from any person or unauthorized resource during the examination",
@@ -56,9 +64,9 @@ const SECTIONS = [
     number: "04",
     title: "Detection and Monitoring",
     content: [
-      "Phase I examinations are conducted under remotely proctored conditions using technology and human review processes designed to detect unauthorized behavior in real time.",
+      "Every G.A.T.E. assessment is conducted in person at the host university and supervised throughout by G.A.T.E. staff and host-institution invigilators.",
       "G.A.T.E. employs statistical analysis of examination responses, including similarity analysis, to identify patterns that may indicate unauthorized collaboration, shared answer sets, or impersonation.",
-      "Phase II examinations are conducted in person at the designated host venue under supervised conditions equivalent to formal university examination standards.",
+      "Examination conditions are equivalent to formal university examination standards, including identity checks, assigned seating and the collection of all papers at the end of each session.",
       "G.A.T.E. reserves the right to investigate any submission that raises reasonable suspicion of misconduct, at any time prior to or following the publication of results.",
     ],
   },
@@ -115,57 +123,128 @@ const SECTIONS = [
   },
 ];
 
-export default function AcademicIntegrityPage() {
+const SECTIONS_RU = [
+  {
+    number: "01",
+    title: "Наши принципы",
+    content: [
+      "Академическая честность — основа G.A.T.E. Assessment. Ценность сертификата или награды G.A.T.E. целиком зависит от того, насколько участники, школы, университеты и академические партнёры доверяют нашей процедуре.",
+      "G.A.T.E. Assessment обеспечивает высочайшие стандарты справедливости, прозрачности и независимой проверки на каждом этапе программы. Мы вкладываемся в разработку заданий, независимую проверку и системы наблюдения именно для того, чтобы каждый результат точно отражал личные заслуги участника.",
+      "Каждый, кто регистрируется и участвует в G.A.T.E. Assessment, берёт на себя личное обязательство соблюдать эти стандарты — не только потому, что так требуется, но и потому, что честность программы принадлежит всему сообществу участников.",
+    ],
+  },
+  {
+    number: "02",
+    title: "Что считается нарушением",
+    content: [
+      "«Нарушение академической честности» — любое действие или бездействие, умышленное или по небрежности, которое даёт участнику несправедливое преимущество, подрывает справедливость или честность диагностики, искажает самостоятельность работы или личность участника либо ставит под сомнение достоверность результатов и документов G.A.T.E.",
+      "Приведённые ниже примеры носят иллюстративный характер, и список не является исчерпывающим. G.A.T.E. вправе определять, является ли конкретное поведение нарушением, применяя это определение с учётом обстоятельств каждого случая.",
+    ],
+  },
+  {
+    number: "03",
+    title: "Запрещённые действия",
+    content: [],
+    list: [
+      "Получение или оказание помощи со стороны любого лица или использование неразрешённых источников во время диагностики",
+      "Использование калькуляторов, справочных материалов, записей, электронных устройств или любых ресурсов, которые прямо не разрешены",
+      "Выдача себя за другое лицо: прохождение диагностики под чужим именем или допущение того, что кто-то проходит её за вас",
+      "Передача, разглашение, воспроизведение или распространение заданий или ответов в любой форме — до, во время или после диагностики",
+      "Сдача работы, выполненной не полностью самостоятельно",
+      "Сговор с другими участниками для согласования ответов или обмена заданиями",
+      "Вмешательство в результаты, процедуру оценивания или систему проверки документов",
+      "Указание ложных сведений о личности, возрасте, месте учёбы или учебном заведении при регистрации",
+      "Попытки получить доступ к заданиям или методике оценивания недозволенными способами",
+      "Подделка, изменение или искажение любого сертификата, награды или документа G.A.T.E.",
+    ],
+  },
+  {
+    number: "04",
+    title: "Выявление и контроль",
+    content: [
+      "Каждая диагностика G.A.T.E. проводится очно в принимающем университете — под постоянным наблюдением сотрудников G.A.T.E. и экзаменаторов принимающего учреждения.",
+      "G.A.T.E. применяет статистический анализ ответов, включая анализ сходства, чтобы выявлять признаки несанкционированного сотрудничества, совпадающих наборов ответов или подмены участника.",
+      "Условия соответствуют стандартам официальных университетских экзаменов: проверка личности, закреплённые места и сбор всех работ по окончании каждой сессии.",
+      "G.A.T.E. вправе в любой момент — до или после публикации результатов — провести проверку любой работы, если есть обоснованные подозрения в нарушении.",
+    ],
+  },
+  {
+    number: "05",
+    title: "Порядок разбирательства",
+    content: [
+      "Если у G.A.T.E. есть обоснованные подозрения в нарушении академической честности, применяется следующий порядок:",
+      "Шаг 1 — Уведомление. Участник получает письменное уведомление с описанием конкретного нарушения, имеющихся доказательств и возможных последствий в случае его подтверждения.",
+      "Шаг 2 — Объяснение. У участника есть пять (5) календарных дней с даты уведомления, чтобы направить письменное объяснение. Если объяснение не поступило в этот срок, G.A.T.E. принимает решение на основании имеющихся доказательств.",
+      "Шаг 3 — Рассмотрение. Комиссия по академической честности — не менее двух сотрудников G.A.T.E., не участвовавших в проведении диагностики, — изучает обвинение, доказательства и объяснение участника.",
+      "Шаг 4 — Решение. Участник получает письменное решение в течение двадцати одного (21) календарного дня после истечения срока для объяснения. В решении указывается, подтверждено ли нарушение и какие меры применены.",
+      "Разбирательство проводится внутри G.A.T.E. и не подлежит внешнему контролю или пересмотру. Решение G.A.T.E. окончательно и обязательно и может быть обжаловано только в порядке, описанном в разделе 07.",
+    ],
+  },
+  {
+    number: "06",
+    title: "Последствия подтверждённого нарушения",
+    content: [
+      "Подтверждённое нарушение может повлечь любые или все из перечисленных мер — по усмотрению G.A.T.E. и соразмерно тяжести нарушения:",
+    ],
+    list: [
+      "Немедленная дисквалификация из текущего цикла G.A.T.E. Assessment без возврата регистрационного взноса",
+      "Аннулирование и бессрочный отзыв всех наград, отличий и сертификатов, выданных в рамках соответствующего цикла",
+      "Временный или бессрочный запрет на участие в будущих циклах G.A.T.E. Assessment по усмотрению G.A.T.E.",
+      "Уведомление школы или учебного заведения участника, если, по мнению G.A.T.E., характер нарушения этого требует",
+      "Передача информации в правоохранительные или надзорные органы, если действия могут являться преступлением по применимому законодательству",
+      "Публичное аннулирование документов в системе проверки G.A.T.E.",
+    ],
+  },
+  {
+    number: "07",
+    title: "Обжалование",
+    content: [
+      "Участник, в отношении которого вынесено решение о подтверждённом нарушении, может подать одну (1) официальную письменную апелляцию в течение семи (7) календарных дней с момента получения решения. Апелляции направляются на integrity@gate-assessment.org",
+      "Апелляция рассматривается, только если в ней представлены: (а) новые существенные доказательства, которые не были доступны или не учитывались при разбирательстве, или (б) конкретная и обоснованная процедурная ошибка, существенно повлиявшая на справедливость рассмотрения. Апелляции, в которых решение просто оспаривается без соблюдения этих критериев, не принимаются.",
+      "Апелляцию рассматривает старший сотрудник G.A.T.E., не участвовавший в первоначальном разбирательстве. Решение по апелляции выносится в течение четырнадцати (14) календарных дней с момента её получения.",
+      "Решение по апелляции окончательно, дальнейший внутренний пересмотр невозможен. G.A.T.E. не обязан участвовать во внешнем арбитраже или судебных разбирательствах в отношении решений об академической честности.",
+    ],
+  },
+  {
+    number: "08",
+    title: "Как сообщить о нарушении",
+    content: [
+      "Если у участника, родителя, педагога или учебного заведения есть обоснованные подозрения в нарушении академической честности — со стороны другого участника или из-за системного сбоя, — мы просим конфиденциально сообщить об этом.",
+      "Сообщения принимаются по адресу integrity@gate-assessment.org",
+      "Все сообщения рассматриваются строго конфиденциально в максимально возможной для разбирательства степени. G.A.T.E. не допускает никаких ответных мер против тех, кто добросовестно сообщил о проблеме. Заведомо ложные сообщения с целью навредить другому участнику сами по себе могут быть нарушением настоящих стандартов.",
+    ],
+  },
+  {
+    number: "09",
+    title: "Заявление участника",
+    content: [
+      "Регистрируясь в G.A.T.E. Assessment, каждый участник подтверждает:",
+      "Я выполню задания самостоятельно, опираясь только на собственные знания и рассуждения, без недозволенной помощи.",
+      "Я не буду получать доступ к заданиям, передавать или распространять их в какой-либо форме.",
+      "Все личные сведения, которые я указал(а) при регистрации, точны и достоверны.",
+      "Я понимаю требования G.A.T.E. Assessment к академической честности и принимаю последствия, которые может повлечь любое нарушение.",
+      "Это заявление — не формальность, а личное обязательство перед академическим сообществом и всеми, кто проходит диагностику в тех же условиях.",
+    ],
+  },
+];
+
+export default async function AcademicIntegrityPage() {
+  if ((await getLocale()) === "ru") {
+    return (
+      <LegalPage
+        title="Академическая честность"
+        updated="Редакция: ноябрь 2026 · G.A.T.E. Assessment"
+        intro="Политика академической честности G.A.T.E. Assessment определяет стандарты поведения для всех участников, действия, которые считаются нарушением, порядок разбирательства и последствия подтверждённых нарушений. Согласие с этими стандартами — обязательное условие регистрации."
+        sections={SECTIONS_RU}
+      />
+    );
+  }
   return (
-    <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
-        <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Legal</span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Academic Integrity</h1>
-          <p className="text-sm font-light text-gate-800/50 mt-1">
-            Effective: 2025 &nbsp;·&nbsp; G.A.T.E. Assessment
-          </p>
-        </div>
-      </section>
-
-      <section className="py-20 px-6 bg-gate-white">
-        <div className="mx-auto max-w-4xl flex flex-col gap-0">
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9] pb-12 border-b border-gate-fog/60">
-            The G.A.T.E. Assessment Academic Integrity Policy sets out the standards of conduct required of
-            all participants, the behaviors that constitute academic misconduct, the process by which
-            allegations are investigated, and the consequences of confirmed violations. Acceptance of
-            these standards is a condition of registration.
-          </p>
-
-          {SECTIONS.map((section) => (
-            <div key={section.number} className="flex flex-col gap-6 py-12 border-b border-gate-fog/60 last:border-0">
-              <div className="flex items-baseline gap-5">
-                <span className="text-[10px] font-semibold tracking-[0.3em] text-gate-gold shrink-0">
-                  {section.number}
-                </span>
-                <h2 className="font-serif text-2xl font-light text-gate-800">{section.title}</h2>
-              </div>
-              <div className="flex flex-col gap-4 pl-9">
-                {section.content.map((para, i) => (
-                  <p key={i} className="text-sm font-light text-gate-800/65 leading-[1.9]">
-                    {para}
-                  </p>
-                ))}
-                {"list" in section && section.list && (
-                  <ul className="flex flex-col gap-3 mt-1">
-                    {section.list.map((item, i) => (
-                      <li key={i} className="flex items-start gap-4">
-                        <span className="mt-2.5 h-px w-4 shrink-0 bg-gate-gold/50" />
-                        <span className="text-sm font-light text-gate-800/65 leading-[1.9]">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    </>
+    <LegalPage
+      title="Academic Integrity"
+      updated="Updated: November 2026 · G.A.T.E. Assessment"
+      intro="The G.A.T.E. Assessment Academic Integrity Policy sets out the standards of conduct required of all participants, the behaviors that constitute academic misconduct, the process by which allegations are investigated, and the consequences of confirmed violations. Acceptance of these standards is a condition of registration."
+      sections={SECTIONS}
+    />
   );
 }

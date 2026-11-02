@@ -1,142 +1,77 @@
-﻿import type { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+﻿import { ButtonLink, PageHero, Section } from "@/components/site/kit";
+import { Reveal } from "@/components/site/motion/reveal";
+import { SubjectsStage } from "@/components/site/subjects/subjects-stage";
+import { getCurrentEdition } from "@/lib/editions";
+import { localizeEdition } from "@/lib/editions-ru";
+import { getLocale, pageMetadata } from "@/lib/i18n/server";
+import { SUBJECTS, getSubjects } from "@/lib/subjects";
 
-export const metadata: Metadata = {
-  title: "Subject Areas",
-  description:
-    "Explore the six academic disciplines in the G.A.T.E. Assessment: Mathematics, Physics, Chemistry, Biology, Competitive Programming, and English.",
+export const generateMetadata = () =>
+  pageMetadata("/subjects", {
+    en: {
+      title: "Subject Areas",
+      description: "Explore the five academic disciplines in G.A.T.E.: Mathematics, English, Physics, Chemistry and Informatics.",
+    },
+    ru: {
+      title: "Предметы",
+      description: "Пять дисциплин G.A.T.E.: математика, английский язык, физика, химия и информатика.",
+    },
+  });
+
+const T = {
+  en: {
+    eyebrow: "Subject areas",
+    title: "Five disciplines, one standard",
+    lead: "Participants register in one subject area and are evaluated through papers designed and graded by university academics. Scroll to explore each one.",
+    grades: (a: number, b: number) => `Grades ${a}–${b}`,
+    ctaTitle: "Choose your discipline",
+    ctaLead:
+      "Each participant registers in a single subject area. Your subject selection is made during the application process and cannot be changed after submission.",
+    see: (name: string) => `See ${name}`,
+    practice: "Practice by subject",
+  },
+  ru: {
+    eyebrow: "Предметы",
+    title: "Пять дисциплин — один стандарт",
+    lead: "Участник выбирает один предмет и выполняет задания, которые составляют и проверяют преподаватели университета. Прокрутите страницу, чтобы познакомиться с каждым.",
+    grades: (a: number, b: number) => `${a}–${b} классы`,
+    ctaTitle: "Выберите свой предмет",
+    ctaLead: "Каждый участник выбирает один предмет при подаче заявки. После отправки заявки изменить его нельзя.",
+    see: (name: string) => `Смотреть: ${name}`,
+    practice: "Задания по предметам",
+  },
 };
 
-const SUBJECTS = [
-  {
-    code: "MAT",
-    name: "Mathematics",
-    description:
-      "Advanced problem solving across algebra, combinatorics, number theory, geometry, and mathematical analysis. Problems emphasize rigorous proof and creative reasoning.",
-    topics: ["Algebra & Number Theory", "Combinatorics", "Geometry", "Real Analysis", "Mathematical Proof"],
-  },
-  {
-    code: "PHY",
-    name: "Physics",
-    description:
-      "Classical and modern physics from mechanics and thermodynamics to electromagnetism and quantum foundations. Both theoretical derivation and numerical problem-solving are tested.",
-    topics: ["Mechanics & Dynamics", "Electromagnetism", "Thermodynamics", "Waves & Optics", "Modern Physics"],
-  },
-  {
-    code: "CHM",
-    name: "Chemistry",
-    description:
-      "Theoretical chemistry spanning physical, organic, and inorganic domains. Emphasis on chemical reasoning, reaction mechanisms, and thermodynamic principles.",
-    topics: ["Physical Chemistry", "Organic Chemistry", "Inorganic Chemistry", "Reaction Kinetics", "Thermochemistry"],
-  },
-  {
-    code: "BIO",
-    name: "Biology",
-    description:
-      "Theoretical biology from molecular and cellular mechanisms to ecology and evolution. Questions test conceptual depth and the ability to synthesize across levels of biological organization.",
-    topics: ["Cell & Molecular Biology", "Genetics & Evolution", "Physiology", "Ecology", "Biochemistry"],
-  },
-  {
-    code: "CP",
-    name: "Competitive Programming",
-    description:
-      "Algorithmic problem solving under time pressure — designing efficient solutions across data structures, graph theory, dynamic programming, and combinatorics. Problems reward both correctness and performance.",
-    topics: ["Data Structures & Algorithms", "Dynamic Programming", "Graph Theory", "Combinatorics", "String Algorithms"],
-  },
-  {
-    code: "ENG",
-    name: "English",
-    description:
-      "Academic English proficiency encompassing reading comprehension, analytical writing, and linguistic reasoning. Participants demonstrate command of language structure, argumentation, and critical interpretation of texts.",
-    topics: ["Reading Comprehension", "Academic Writing", "Grammar & Linguistics", "Critical Analysis", "Vocabulary & Usage"],
-  },
-];
+export default async function SubjectsPage() {
+  const locale = await getLocale();
+  const t = T[locale];
+  const base = getCurrentEdition();
+  const current = localizeEdition(base, locale);
+  const localized = getSubjects(locale);
+  const subjects = SUBJECTS.map((s) => {
+    const g = base.subjects.find((x) => x.name === s.name)?.grades;
+    const l = localized.find((x) => x.key === s.key) ?? s;
+    return { ...l, grades: g, gradeLabel: g ? `${current.name} · ${t.grades(g[0], g[1])}` : undefined };
+  });
 
-export default function SubjectsPage() {
   return (
     <>
-      {/* Header */}
-      <section className="py-20 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
-        <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-            Academic Disciplines
-          </span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">
-            Subject Areas
-          </h1>
-          <p className="text-base font-light text-gate-800/65 leading-relaxed max-w-2xl mt-2">
-            G.A.T.E. spans six rigorous academic disciplines. Participants
-            register in one subject area and are evaluated through theoretical
-            examinations designed by leading academics.
-          </p>
-        </div>
-      </section>
+      <PageHero eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
-      {/* Subjects Grid */}
-      <section className="py-20 px-6 bg-gate-white">
-        <div className="mx-auto max-w-7xl grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {SUBJECTS.map((subject) => (
-            <div
-              key={subject.code}
-              className="flex flex-col gap-5 border border-gate-fog bg-gate-fog/40 p-8 hover:bg-gate-fog/70 transition-colors"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-semibold tracking-[0.3em] text-gate-gold">
-                    {subject.code}
-                  </span>
-                  <h2 className="font-serif text-2xl font-light text-gate-800">
-                    {subject.name}
-                  </h2>
-                </div>
-              </div>
-              <p className="text-sm font-light text-gate-800/65 leading-relaxed flex-1">
-                {subject.description}
-              </p>
-              <div className="flex flex-col gap-3 pt-4 border-t border-gate-fog/60">
-                <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gray">
-                  Key Topics
-                </span>
-                <ul className="flex flex-col gap-2">
-                  {subject.topics.map((topic) => (
-                    <li key={topic} className="flex items-center gap-2 text-xs font-light text-gate-800/65">
-                      <span className="h-px w-4 bg-gate-gold/40 shrink-0" />
-                      {topic}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <SubjectsStage subjects={subjects} />
 
-      {/* Registration Note */}
-      <section className="py-20 px-6 border-t border-gate-fog/60 bg-gate-fog/35">
-        <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-            Registration
-          </span>
-          <h2 className="font-serif text-4xl font-light text-gate-800">
-            Choose Your Discipline
-          </h2>
-          <p className="text-sm font-light text-gate-800/65 leading-relaxed">
-            Each participant registers in a single subject area for the
-            Preliminary Round. Your subject selection is made during the
-            application process and cannot be changed after submission.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 mt-2">
-            <Button variant="gold" size="lg" asChild>
-              <Link href="/register">Apply Now</Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/structure">View Assessment Structure</Link>
-            </Button>
+      <Section tone="ivory-2">
+        <Reveal className="flex flex-col items-center gap-6 text-center">
+          <h2 className="max-w-3xl font-serif text-4xl font-medium leading-[1.05] text-ink md:text-6xl">{t.ctaTitle}</h2>
+          <p className="max-w-xl text-base leading-[1.8] text-ink-2">{t.ctaLead}</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <ButtonLink href={`/${current.slug}`}>{t.see(current.name)}</ButtonLink>
+            <ButtonLink href="/prepare" variant="outline">
+              {t.practice}
+            </ButtonLink>
           </div>
-        </div>
-      </section>
+        </Reveal>
+      </Section>
     </>
   );
 }
-

@@ -1,132 +1,216 @@
-﻿import type { Metadata } from "next";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+﻿import { BadgeCheck, FileText, QrCode, ScrollText } from "lucide-react";
+import { ButtonLink, PageHero, Section, SectionHeader } from "@/components/site/kit";
+import { Reveal, Stagger, StaggerItem } from "@/components/site/motion/reveal";
+import { TiltCard } from "@/components/site/motion/tilt";
+import { getCurrentEdition } from "@/lib/editions";
+import { localizeEdition } from "@/lib/editions-ru";
+import { getLocale, pageMetadata } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Awards & Certificates",
-  description: "G.A.T.E. Assessment recognition — Certificates of Distinction, High Achievement, Merit, and Honorable Mention.",
+export const generateMetadata = () =>
+  pageMetadata("/awards", {
+    en: {
+      title: "Awards & Certificates",
+      description:
+        "G.A.T.E. awards: 1st, 2nd and 3rd place in every subject and grade band receive gold, silver and bronze medals, a Certificate of Distinction, High Achievement or Merit, and prizes. Every participant receives a certificate and a diagnostic report.",
+    },
+    ru: {
+      title: "Награды и сертификаты",
+      description:
+        "Награды G.A.T.E.: за 1, 2 и 3 места в каждом предмете и возрастной группе — золотые, серебряные и бронзовые медали, сертификаты Distinction, High Achievement или Merit и подарки. Каждый участник получает сертификат и диагностический отчёт.",
+    },
+  });
+
+// Places are awarded separately in every subject and grade band. The
+// certificate names are the formal titles of 1st, 2nd and 3rd place.
+const MEDAL_COLORS = [
+  { from: "#f8e7b0", to: "#c9993a" },
+  { from: "#f4f6f9", to: "#8a9bb0" },
+  { from: "#f3dcc2", to: "#a0663a" },
+];
+
+const T = {
+  en: {
+    places: [
+      { place: "1st", label: "1st place", medal: "Gold medal", certificate: "Certificate of Distinction" },
+      { place: "2nd", label: "2nd place", medal: "Silver medal", certificate: "Certificate of High Achievement" },
+      { place: "3rd", label: "3rd place", medal: "Bronze medal", certificate: "Certificate of Merit" },
+    ],
+    prizes: "Prizes",
+    everyone: [
+      {
+        icon: ScrollText,
+        title: "Certificate of Completion",
+        desc: "Issued to every participant who completes a G.A.T.E. program. Suitable for portfolios and university applications.",
+      },
+      {
+        icon: FileText,
+        title: "Diagnostic Report",
+        desc: "A personal report: score breakdown, strengths, areas to develop and recommended resources to close those gaps.",
+      },
+    ],
+    standards: [
+      "Unique verification code per recipient",
+      "Participant name, discipline and program year",
+      "Official G.A.T.E. seal and authorized signature",
+      "Digital and printable formats",
+      "Accepted for university and scholarship applications",
+    ],
+    heroEyebrow: "Recognition",
+    heroTitle: "Awards & certificates",
+    heroLead:
+      "Medals, place certificates and prizes for the top three in every subject and grade band — and a verifiable certificate with a diagnostic report for every participant.",
+    medalsEyebrow: "Medals & prizes",
+    medalsTitle: "1st, 2nd and 3rd place",
+    medalsLead: "Awarded in every subject and every grade band, at the program's closing ceremony.",
+    everyoneEyebrow: "For every participant",
+    everyoneTitle: "Nobody leaves empty-handed",
+    standardsEyebrow: "Certificate standards",
+    standardsTitle: "Verifiable, anywhere",
+    standardsLead:
+      "Every G.A.T.E. certificate carries a QR code and a unique code that anyone — a school, a university, a scholarship office — can check online.",
+    verify: "Verify a certificate",
+    ctaTitle: "Begin your path to recognition",
+    ctaLead:
+      "Every participant receives a verifiable certificate and a diagnostic report. The top three in each subject and grade band receive medals, place certificates and prizes.",
+    see: (name: string) => `See ${name}`,
+  },
+  ru: {
+    places: [
+      { place: "1", label: "1 место", medal: "Золотая медаль", certificate: "Certificate of Distinction" },
+      { place: "2", label: "2 место", medal: "Серебряная медаль", certificate: "Certificate of High Achievement" },
+      { place: "3", label: "3 место", medal: "Бронзовая медаль", certificate: "Certificate of Merit" },
+    ],
+    prizes: "Подарки",
+    everyone: [
+      {
+        icon: ScrollText,
+        title: "Сертификат участника",
+        desc: "Выдаётся каждому, кто прошёл программу G.A.T.E. Подходит для портфолио и поступления в университет.",
+      },
+      {
+        icon: FileText,
+        title: "Диагностический отчёт",
+        desc: "Персональный отчёт: баллы по разделам, сильные стороны, зоны роста и материалы, которые помогут закрыть пробелы.",
+      },
+    ],
+    standards: [
+      "Уникальный код проверки для каждого получателя",
+      "Имя участника, предмет и год программы",
+      "Официальная печать G.A.T.E. и подпись уполномоченного лица",
+      "Электронная и печатная версии",
+      "Принимается при поступлении в вузы и на стипендиальные программы",
+    ],
+    heroEyebrow: "Признание",
+    heroTitle: "Награды и сертификаты",
+    heroLead:
+      "Медали, сертификаты и подарки для тройки лучших в каждом предмете и возрастной группе — и сертификат с онлайн-проверкой и диагностическим отчётом для каждого участника.",
+    medalsEyebrow: "Медали и подарки",
+    medalsTitle: "1, 2 и 3 места",
+    medalsLead: "Вручаются в каждом предмете и каждой возрастной группе на церемонии закрытия программы.",
+    everyoneEyebrow: "Каждому участнику",
+    everyoneTitle: "Без наград не уходит никто",
+    standardsEyebrow: "Стандарты сертификатов",
+    standardsTitle: "Проверка из любой точки мира",
+    standardsLead:
+      "На каждом сертификате G.A.T.E. есть QR-код и уникальный номер — школа, университет или стипендиальный фонд могут проверить его онлайн за минуту.",
+    verify: "Проверить сертификат",
+    ctaTitle: "Первый шаг к признанию",
+    ctaLead:
+      "Каждый участник получает сертификат с онлайн-проверкой и диагностический отчёт. Тройка лучших в каждом предмете и возрастной группе — медали, сертификаты и подарки.",
+    see: (name: string) => `Смотреть: ${name}`,
+  },
 };
 
-const RECOGNITION_TIERS = [
-  {
-    tier: "Certificate of Distinction",
-    hex: "#C9993A",
-    eligibility: "Exceptional academic performance at the Global Onsite Assessment",
-    desc: "Recognizes participants demonstrating mastery of advanced concepts and exceptional problem-solving abilities. The Certificate of Distinction represents the highest level of academic achievement in G.A.T.E.",
-  },
-  {
-    tier: "Certificate of High Achievement",
-    hex: "#8A9BB0",
-    eligibility: "Outstanding academic performance at the onsite final",
-    desc: "Recognizes participants demonstrating strong theoretical understanding and advanced problem-solving skills across the assessment.",
-  },
-  {
-    tier: "Certificate of Merit",
-    hex: "#A07040",
-    eligibility: "Strong academic performance at the onsite final",
-    desc: "Recognizes participants whose performance reflects solid academic preparation and consistent understanding across subject areas.",
-  },
-  {
-    tier: "Honorable Mention",
-    hex: "#2B5591",
-    eligibility: "Notable performance — onsite final participants",
-    desc: "Recognizes participants who demonstrate particular strength in specific areas or show commendable effort and academic growth.",
-  },
-];
+export default async function AwardsPage() {
+  const locale = await getLocale();
+  const t = T[locale];
+  const current = localizeEdition(getCurrentEdition(), locale);
 
-const CERTIFICATES = [
-  { title: "Certificate of Excellence", desc: "Issued to all distinction and Honorable Mention recipients at the Global Final. Includes recognition tier, subject, and academic year." },
-  { title: "Certificate of Participation", desc: "Issued to all participants who complete the Preliminary Round. Verifiable and suitable for academic portfolios and university applications." },
-  { title: "Certificate of Qualification", desc: "Issued to participants who qualify for Round II. Confirms successful completion of the global qualification stage." },
-];
-
-export default function AwardsPage() {
   return (
     <>
-      <section className="py-24 px-6 border-b border-gate-fog/60 bg-gate-fog/35">
-        <div className="mx-auto max-w-7xl flex flex-col gap-4">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Recognition</span>
-          <h1 className="font-serif text-5xl md:text-6xl font-light text-gate-800">Awards &amp; Certificates</h1>
-          <p className="text-base font-light text-gate-800/70 mt-2 max-w-2xl">Academic achievement formally recognized — certificates of distinction, merit recognition, and verifiable documentation for all participants.</p>
-        </div>
-      </section>
+      <PageHero eyebrow={t.heroEyebrow} title={t.heroTitle} lead={t.heroLead} />
 
-      <section className="py-24 px-6 bg-gate-white">
-        <div className="mx-auto max-w-7xl flex flex-col gap-12">
-          <div className="flex flex-col gap-4">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Onsite Assessment Recognition</span>
-            <h2 className="font-serif text-4xl font-light text-gate-800">Recognition Tiers</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {RECOGNITION_TIERS.map((tier) => (
-              <div key={tier.tier} className="flex gap-6 border border-gate-fog p-8">
-                <div className="flex flex-col items-center gap-2 shrink-0">
-                  <div className="w-12 h-12 rounded-full border-2 flex items-center justify-center" style={{ borderColor: tier.hex }}>
-                    <div className="w-5 h-5 rounded-full" style={{ background: tier.hex, opacity: 0.75 }} />
+      <Section tone="ivory">
+        <SectionHeader eyebrow={t.medalsEyebrow} title={t.medalsTitle} lead={t.medalsLead} />
+        <Stagger className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {t.places.map((p, i) => {
+            const c = MEDAL_COLORS[i];
+            return (
+              <StaggerItem key={p.place} className="h-full">
+                <TiltCard className="overflow-hidden rounded-[2rem] bg-white p-8 shadow-[0_40px_80px_-50px_rgba(11,31,58,0.5)] md:p-10">
+                  <div className="flex h-full flex-col gap-8" style={{ transform: "translateZ(30px)" }}>
+                    <div className="flex items-start justify-between">
+                      <div
+                        className="relative flex h-28 w-28 items-center justify-center rounded-full shadow-[inset_0_2px_6px_rgba(255,255,255,0.8),0_20px_40px_-15px_rgba(11,31,58,0.4)]"
+                        style={{ background: `radial-gradient(circle at 30% 25%, ${c.from}, ${c.to})` }}
+                      >
+                        <div className="absolute inset-2 rounded-full border border-white/50" />
+                        <span className="font-serif text-4xl font-medium text-white drop-shadow">{p.place}</span>
+                      </div>
+                      <span className="rounded-full bg-ivory-2 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-2">
+                        {p.label}
+                      </span>
+                    </div>
+                    <ul className="flex flex-col gap-3">
+                      {[p.medal, p.certificate, t.prizes].map((item) => (
+                        <li key={item} className="flex items-center gap-3 border-b border-line pb-3 text-[15px] font-medium text-ink last:border-0 last:pb-0">
+                          <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: c.to }} />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                </div>
-                <div className="flex flex-col gap-3">
-                  <div>
-                    <h3 className="text-base font-semibold tracking-[0.05em] text-gate-800">{tier.tier}</h3>
-                    <p className="text-[10px] font-light text-gate-gold mt-1">{tier.eligibility}</p>
-                  </div>
-                  <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{tier.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+                </TiltCard>
+              </StaggerItem>
+            );
+          })}
+        </Stagger>
+      </Section>
 
-      <section className="py-24 px-6 bg-gate-fog/40 border-y border-gate-fog/60">
-        <div className="mx-auto max-w-7xl flex flex-col gap-12">
-          <div className="flex flex-col gap-4">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Certificates</span>
-            <h2 className="font-serif text-4xl font-light text-gate-800">For Every Stage</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {CERTIFICATES.map((cert) => (
-              <div key={cert.title} className="flex flex-col gap-4 border border-gate-fog p-8">
-                <div className="flex flex-col gap-0">
-                  <div className="h-px w-12 bg-gate-gold/40 mb-4" />
-                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.25em] text-gate-800">{cert.title}</h3>
-                </div>
-                <p className="text-sm font-light text-gate-800/65 leading-[1.9]">{cert.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Section tone="ivory-2">
+        <SectionHeader eyebrow={t.everyoneEyebrow} title={t.everyoneTitle} />
+        <Stagger className="mx-auto grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-2">
+          {t.everyone.map((e) => (
+            <StaggerItem key={e.title} className="glass flex flex-col gap-5 rounded-[1.75rem] p-8">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-ink text-gate-gold-2">
+                <e.icon className="h-5 w-5" />
+              </span>
+              <h3 className="font-serif text-2xl font-medium text-ink">{e.title}</h3>
+              <p className="text-[14px] leading-[1.8] text-ink-2">{e.desc}</p>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </Section>
 
-      <section className="py-24 px-6 bg-gate-white">
-        <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      <Section tone="ivory">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="flex flex-col gap-6">
-            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">Certificate Standards</span>
-            <h2 className="font-serif text-4xl font-light text-gate-800 leading-tight">Verifiable and Internationally Recognized</h2>
-            <div className="flex flex-col gap-4 text-sm font-light text-gate-800/60 leading-[1.9]">
-              <p>All G.A.T.E. certificates are formally issued documents suitable for inclusion in academic portfolios, university applications, and professional CVs.</p>
-              <p>Each certificate includes a unique verification code, participant details, discipline, award level, and official G.A.T.E. seal.</p>
-            </div>
+            <SectionHeader align="left" eyebrow={t.standardsEyebrow} title={t.standardsTitle} lead={t.standardsLead} className="mb-0 md:mb-0" />
+            <Reveal delay={0.2}>
+              <ButtonLink href="/verify">{t.verify}</ButtonLink>
+            </Reveal>
           </div>
-          <div className="flex flex-col gap-0">
-            {["Unique certificate verification code per recipient","Includes participant name, discipline, and academic year","Official G.A.T.E. seal and authorized signature","Available in both digital and printable format","Suitable for university applications and scholarship programs"].map((pt) => (
-              <div key={pt} className="flex items-start gap-4 py-4 border-b border-gate-fog/70 last:border-0">
-                <span className="mt-2 h-px w-5 shrink-0 bg-gate-gold/50" />
-                <span className="text-sm font-light text-gate-800/65 leading-relaxed">{pt}</span>
-              </div>
-            ))}
-          </div>
+          <Reveal className="glass relative overflow-hidden rounded-[2rem] p-8 md:p-10">
+            <QrCode className="absolute -right-6 -top-6 h-40 w-40 text-gate-gold/10" />
+            <ul className="relative flex flex-col">
+              {t.standards.map((s) => (
+                <li key={s} className="flex items-center gap-4 border-b border-line py-4 text-[15px] text-ink last:border-0">
+                  <BadgeCheck className="h-5 w-5 shrink-0 text-gate-gold" />
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
-      </section>
+      </Section>
 
-      <section className="py-20 px-6 bg-gate-fog/40 border-t border-gate-fog/60">
-        <div className="mx-auto max-w-3xl flex flex-col items-center gap-6 text-center">
-          <h2 className="font-serif text-4xl font-light text-gate-800">Begin Your Path to Recognition</h2>
-          <p className="text-sm font-light text-gate-800/65 leading-[1.9]">Apply for the G.A.T.E. Assessment. Every participant receives a certificate. Outstanding participants earn distinction-level recognition at the invitation-only Global Final.</p>
-          <Button variant="gold" size="md" asChild><Link href="/register">Apply Now</Link></Button>
-        </div>
-      </section>
+      <Section tone="ivory-2">
+        <Reveal className="flex flex-col items-center gap-6 text-center">
+          <h2 className="max-w-3xl font-serif text-4xl font-medium leading-[1.05] text-ink md:text-6xl">{t.ctaTitle}</h2>
+          <p className="max-w-xl text-base leading-[1.8] text-ink-2">{t.ctaLead}</p>
+          <ButtonLink href={`/${current.slug}`}>{t.see(current.name)}</ButtonLink>
+        </Reveal>
+      </Section>
     </>
   );
 }
-

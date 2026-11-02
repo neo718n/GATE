@@ -127,6 +127,13 @@
       "when": 1789489793171,
       "tag": "0017_event_badge_appreciations",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1793623210223,
+      "tag": "0018_applications_and_representatives",
+      "breakpoints": true
     }
   ]
 }

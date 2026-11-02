@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Link } from "@/lib/i18n/client";
+import { getLocale } from "@/lib/i18n/server";
 import { headers } from "next/headers";
 import { ArrowLeft } from "lucide-react";
 import { ResultCard } from "@/components/verify/result-card";
@@ -25,10 +26,13 @@ import {
 import { lookupExamResultsForBadge, sanitizeResult } from "@/lib/badges/results";
 import { isBadgeVerifyEnabled } from "@/lib/badges/verify-flow";
 
-export const metadata: Metadata = {
-  title: "Verify Certificate · G.A.T.E.",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const ru = (await getLocale()) === "ru";
+  return {
+    title: ru ? "Проверка сертификата · G.A.T.E." : "Verify Certificate · G.A.T.E.",
+    robots: { index: false, follow: false },
+  };
+}
 
 export default async function VerifyResultPage({
   params,
@@ -36,6 +40,7 @@ export default async function VerifyResultPage({
   params: Promise<{ code: string }>;
 }) {
   const { code } = await params;
+  const ru = (await getLocale()) === "ru";
   const decoded = decodeURIComponent(code);
   const h = await headers();
   const ip = ipFromHeaders(h);
@@ -56,7 +61,7 @@ export default async function VerifyResultPage({
             className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50 hover:text-gate-gold transition-colors mb-6 print:hidden"
           >
             <ArrowLeft className="h-3 w-3" aria-hidden />
-            Main Page
+            {ru ? "На главную" : "Main Page"}
           </Link>
           <BadgeResultCard status="disabled" attemptedCode={canonical} />
         </div>
@@ -83,7 +88,7 @@ export default async function VerifyResultPage({
           className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50 hover:text-gate-gold transition-colors mb-6 print:hidden"
         >
           <ArrowLeft className="h-3 w-3" aria-hidden />
-          Main Page
+          {ru ? "На главную" : "Main Page"}
         </Link>
         <BadgeResultCard
           status={status}
@@ -126,7 +131,7 @@ export default async function VerifyResultPage({
         className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/50 hover:text-gate-gold transition-colors mb-6 print:hidden"
       >
         <ArrowLeft className="h-3 w-3" aria-hidden />
-        Back to verify
+        {ru ? "К проверке" : "Back to verify"}
       </Link>
       <ResultCard
         status={status}

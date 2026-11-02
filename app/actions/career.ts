@@ -1,9 +1,18 @@
-﻿"use server";
+"use server";
 
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { careerApplications } from "@/lib/db/schema";
+import { getLocale } from "@/lib/i18n/server";
+
+const RU_FIELD_ERRORS: Record<string, string> = {
+  positionTitle: "Выберите вакансию.",
+  fullName: "Укажите имя и фамилию.",
+  email: "Проверьте адрес электронной почты.",
+  country: "Укажите страну.",
+  motivationText: "Сопроводительное письмо должно быть не короче 50 символов.",
+};
 
 const schema = z.object({
   positionTitle: z.string().min(2, "Position is required"),
@@ -24,6 +33,7 @@ export async function submitCareerApplication(
   _prev: CareerFormState,
   formData: FormData,
 ): Promise<CareerFormState> {
+  const ru = (await getLocale()) === "ru";
   const turnstileToken = formData.get("cf-turnstile-response");
   const tokenOk = await verifyTurnstileToken(
     typeof turnstileToken === "string" ? turnstileToken : null,
@@ -31,7 +41,9 @@ export async function submitCareerApplication(
   if (!tokenOk) {
     return {
       success: false,
-      error: "Human verification failed. Please refresh and try again.",
+      error: ru
+        ? "Не удалось подтвердить, что вы не робот. Обновите страницу и попробуйте ещё раз."
+        : "Human verification failed. Please refresh and try again.",
       fieldErrors: {},
     };
   }
@@ -42,7 +54,7 @@ export async function submitCareerApplication(
   if (!parsed.success) {
     const fieldErrors: CareerFormState["fieldErrors"] = {};
     for (const [k, v] of Object.entries(parsed.error.flatten().fieldErrors)) {
-      (fieldErrors as Record<string, string>)[k] = v?.[0] ?? "";
+      (fieldErrors as Record<string, string>)[k] = (ru && RU_FIELD_ERRORS[k]) || (v?.[0] ?? "");
     }
     return { success: false, error: null, fieldErrors };
   }
@@ -57,6 +69,10 @@ export async function submitCareerApplication(
     });
     return { success: true, error: null, fieldErrors: {} };
   } catch {
-    return { success: false, error: "Submission failed. Please try again.", fieldErrors: {} };
+    return {
+      success: false,
+      error: ru ? "Не удалось отправить отклик. Попробуйте ещё раз." : "Submission failed. Please try again.",
+      fieldErrors: {},
+    };
   }
 }

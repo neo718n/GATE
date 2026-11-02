@@ -9,6 +9,42 @@ import { AWARD_LABELS, AWARD_CLASSES } from "@/lib/awards";
 import { ThemeAwareLogo } from "@/components/brand/theme-aware-logo";
 import { PrintButton } from "./print-button";
 import { DownloadReportButton } from "./download-report-button";
+import { getLocale } from "@/lib/i18n/server";
+
+const T = {
+  en: {
+    performance: "Contest Performance",
+    official: "Official Diagnostic Report",
+    officialLead: "A personal PDF with your skill profile, every question reviewed, a 4-week study plan and hand-picked learning resources.",
+    correctOf: (c: number, n: number) => `${c}/${n} correct`,
+    math: "Mathematics",
+    english: "English",
+    allQuestions: (n: number) => `All ${n} Questions`,
+    byDifficulty: "By Difficulty",
+    bySkill: "By Skill Area",
+    bySection: "By Section",
+    pts: "pts",
+    review: "Questions To Review",
+    picked: (g: string, c: string) => `picked ${g} · correct ${c}`,
+  },
+  ru: {
+    performance: "Результаты диагностики",
+    official: "Официальный диагностический отчёт",
+    officialLead: "Персональный PDF: профиль навыков, разбор каждого вопроса, план занятий на 4 недели и подобранные материалы для подготовки (на английском языке).",
+    correctOf: (c: number, n: number) => `Верно: ${c} из ${n}`,
+    math: "Математика",
+    english: "Английский язык",
+    allQuestions: (n: number) => `Все вопросы (${n})`,
+    byDifficulty: "По сложности",
+    bySkill: "По темам",
+    bySection: "По разделам",
+    pts: "б.",
+    review: "Вопросы для разбора",
+    picked: (g: string, c: string) => `ответ ${g} · верно ${c}`,
+  },
+};
+
+type Dict = (typeof T)["en"];
 
 const STATUS_DOT: Record<QuestionStatus, string> = {
   correct: "bg-emerald-500",
@@ -30,13 +66,14 @@ interface Props {
   results: PublicEventBadgeResult[];
 }
 
-export function PerformanceReport({ fullName, country, cardNo, results }: Props) {
+export async function PerformanceReport({ fullName, country, cardNo, results }: Props) {
+  const t = T[await getLocale()];
   return (
     <article className="space-y-8">
       <header className="flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/50">
-            Contest Performance
+            {t.performance}
           </p>
           <h1 className="mt-1 font-serif text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
             {fullName}
@@ -61,11 +98,10 @@ export function PerformanceReport({ fullName, country, cardNo, results }: Props)
           </div>
           <div>
             <p className="font-serif text-lg font-semibold text-foreground leading-tight">
-              Official Diagnostic Report
+              {t.official}
             </p>
             <p className="mt-1 text-sm text-foreground/60 max-w-md">
-              A personal PDF with your skill profile, every question reviewed, a 4-week study plan and hand-picked
-              learning resources.
+              {t.officialLead}
             </p>
           </div>
         </div>
@@ -74,9 +110,9 @@ export function PerformanceReport({ fullName, country, cardNo, results }: Props)
 
       {results.map((r) =>
         r.subject === "math" ? (
-          <MathSection key={r.subject} result={r} />
+          <MathSection key={r.subject} result={r} t={t} />
         ) : (
-          <EnglishSection key={r.subject} result={r} />
+          <EnglishSection key={r.subject} result={r} t={t} />
         ),
       )}
 
@@ -87,7 +123,7 @@ export function PerformanceReport({ fullName, country, cardNo, results }: Props)
   );
 }
 
-function ScoreBadge({ result }: { result: PublicEventBadgeResult }) {
+function ScoreBadge({ result, t }: { result: PublicEventBadgeResult; t: Dict }) {
   return (
     <div className="flex items-center gap-4">
       <div className="text-right">
@@ -99,7 +135,7 @@ function ScoreBadge({ result }: { result: PublicEventBadgeResult }) {
           </span>
         </div>
         <p className="mt-1 text-[11px] text-foreground/50">
-          {result.correctCount}/{result.totalQuestions} correct
+          {t.correctOf(result.correctCount, result.totalQuestions)}
         </p>
       </div>
       <span
@@ -150,7 +186,7 @@ function QuestionGrid({ statuses }: { statuses: QuestionStatus[] }) {
   );
 }
 
-function MathSection({ result }: { result: PublicEventBadgeResult }) {
+function MathSection({ result, t }: { result: PublicEventBadgeResult; t: Dict }) {
   const diag = computeMathDiagnostics(result);
   if (!diag) return null;
   const misses = diag.perQuestion.filter((q) => q.status !== "correct");
@@ -160,24 +196,24 @@ function MathSection({ result }: { result: PublicEventBadgeResult }) {
       <div className="px-6 sm:px-8 py-5 border-b border-border bg-foreground/[0.015] flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gate-gold">
-            Mathematics
+            {t.math}
           </p>
           <p className="mt-0.5 text-sm text-foreground/60">{diag.categoryLabel}</p>
         </div>
-        <ScoreBadge result={result} />
+        <ScoreBadge result={result} t={t} />
       </div>
 
       <div className="px-6 sm:px-8 py-6 space-y-6">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-            All 25 Questions
+            {t.allQuestions(25)}
           </p>
           <QuestionGrid statuses={diag.perQuestion.map((q) => q.status)} />
         </div>
 
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-            By Difficulty
+            {t.byDifficulty}
           </p>
           <div className="space-y-3">
             {diag.difficultyBreakdown.map((d) => (
@@ -188,7 +224,7 @@ function MathSection({ result }: { result: PublicEventBadgeResult }) {
 
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-            By Skill Area
+            {t.bySkill}
           </p>
           <div className="space-y-3">
             {diag.domainBreakdown.map((d) => (
@@ -200,7 +236,7 @@ function MathSection({ result }: { result: PublicEventBadgeResult }) {
         {misses.length > 0 && (
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-              Questions To Review
+              {t.review}
             </p>
             <div className="space-y-2">
               {misses.map((q) => (
@@ -212,7 +248,7 @@ function MathSection({ result }: { result: PublicEventBadgeResult }) {
                     <span className="font-mono font-semibold text-foreground/70">Q{q.q}</span>
                     <span className="text-foreground/40">{q.domainName}</span>
                     <span className="ml-auto font-mono text-foreground/50">
-                      picked {q.given || "—"} &middot; correct {q.correct}
+                      {t.picked(q.given || "—", String(q.correct))}
                     </span>
                   </div>
                   <p className="mt-1.5 text-foreground/70">{q.note}</p>
@@ -228,7 +264,7 @@ function MathSection({ result }: { result: PublicEventBadgeResult }) {
   );
 }
 
-function EnglishSection({ result }: { result: PublicEventBadgeResult }) {
+function EnglishSection({ result, t }: { result: PublicEventBadgeResult; t: Dict }) {
   const diag = computeEnglishDiagnostics(result);
   if (!diag) return null;
   const misses = diag.perQuestion.filter((q) => q.status !== "correct");
@@ -238,30 +274,30 @@ function EnglishSection({ result }: { result: PublicEventBadgeResult }) {
       <div className="px-6 sm:px-8 py-5 border-b border-border bg-foreground/[0.015] flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gate-gold">
-            English
+            {t.english}
           </p>
           <p className="mt-0.5 text-sm text-foreground/60">{diag.paperLabel}</p>
         </div>
-        <ScoreBadge result={result} />
+        <ScoreBadge result={result} t={t} />
       </div>
 
       <div className="px-6 sm:px-8 py-6 space-y-6">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-            All {diag.perQuestion.length} Questions
+            {t.allQuestions(diag.perQuestion.length)}
           </p>
           <QuestionGrid statuses={diag.perQuestion.map((q) => q.status)} />
         </div>
 
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-            By Section
+            {t.bySection}
           </p>
           <div className="space-y-3">
             {diag.sectionBreakdown.map((s) => (
               <Bar
                 key={s.section}
-                label={`${s.skillLabel} (${s.pointsEarned}/${s.pointsMax} pts)`}
+                label={`${s.skillLabel} (${s.pointsEarned}/${s.pointsMax} ${t.pts})`}
                 correct={s.correct}
                 total={s.total}
               />
@@ -272,7 +308,7 @@ function EnglishSection({ result }: { result: PublicEventBadgeResult }) {
         {misses.length > 0 && (
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/50 mb-3">
-              Questions To Review
+              {t.review}
             </p>
             <div className="space-y-2">
               {misses.map((q) => (
@@ -284,7 +320,7 @@ function EnglishSection({ result }: { result: PublicEventBadgeResult }) {
                     <span className="font-mono font-semibold text-foreground/70">Q{q.q}</span>
                     <span className="text-foreground/40">{q.subskill}</span>
                     <span className="ml-auto font-mono text-foreground/50">
-                      picked {q.given || "—"} &middot; correct {q.correct}
+                      {t.picked(q.given || "—", String(q.correct))}
                     </span>
                   </div>
                   <p className="mt-1.5 text-foreground/70">{q.note}</p>

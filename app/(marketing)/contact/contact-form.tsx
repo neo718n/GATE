@@ -7,22 +7,46 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { submitContact, type ContactFormState } from "@/app/actions/contact";
 import { TurnstileWidget } from "@/components/turnstile-widget";
+import { useLocale } from "@/lib/i18n/client";
 
 const INITIAL: ContactFormState = { success: false };
 
+const T = {
+  en: {
+    sent: "Message Sent",
+    thanks: "Thank you for reaching out. We will get back to you as soon as possible.",
+    name: "Full Name",
+    email: "Email Address",
+    subject: "Subject",
+    subjectPh: "Registration inquiry, partnership, etc.",
+    message: "Message",
+    messagePh: "Write your message here...",
+    sending: "Sending…",
+    send: "Send Message",
+  },
+  ru: {
+    sent: "Сообщение отправлено",
+    thanks: "Спасибо, что написали! Мы ответим вам в ближайшее время.",
+    name: "Имя и фамилия",
+    email: "Электронная почта",
+    subject: "Тема",
+    subjectPh: "Регистрация, партнёрство и т. д.",
+    message: "Сообщение",
+    messagePh: "Напишите ваш вопрос…",
+    sending: "Отправляем…",
+    send: "Отправить",
+  },
+};
+
 export function ContactForm() {
+  const t = T[useLocale()];
   const [state, action, pending] = useActionState(submitContact, INITIAL);
 
   if (state.success) {
     return (
       <div className="flex flex-col items-start gap-4 border border-gate-gold/30 bg-gate-gold/5 p-8">
-        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">
-          Message Sent
-        </span>
-        <p className="text-sm font-light text-gate-800/65">
-          Thank you for reaching out. We will get back to you as soon as
-          possible.
-        </p>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-gate-gold">{t.sent}</span>
+        <p className="text-sm font-light text-gate-800/65">{t.thanks}</p>
       </div>
     );
   }
@@ -37,67 +61,34 @@ export function ContactForm() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Full Name</Label>
-          <Input
-            id="name"
-            name="name"
-            placeholder="Jane Smith"
-            autoComplete="name"
-            required
-          />
-          {state.fieldErrors?.name && (
-            <p className="text-xs text-red-400">{state.fieldErrors.name}</p>
-          )}
+          <Label htmlFor="name">{t.name}</Label>
+          <Input id="name" name="name" placeholder="Jane Smith" autoComplete="name" required />
+          {state.fieldErrors?.name && <p className="text-xs text-red-400">{state.fieldErrors.name}</p>}
         </div>
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email Address</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="jane@example.com"
-            autoComplete="email"
-            required
-          />
-          {state.fieldErrors?.email && (
-            <p className="text-xs text-red-400">{state.fieldErrors.email}</p>
-          )}
+          <Label htmlFor="email">{t.email}</Label>
+          <Input id="email" name="email" type="email" placeholder="jane@example.com" autoComplete="email" required />
+          {state.fieldErrors?.email && <p className="text-xs text-red-400">{state.fieldErrors.email}</p>}
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="subject">Subject</Label>
-        <Input
-          id="subject"
-          name="subject"
-          placeholder="Registration inquiry, partnership, etc."
-          required
-        />
-        {state.fieldErrors?.subject && (
-          <p className="text-xs text-red-400">{state.fieldErrors.subject}</p>
-        )}
+        <Label htmlFor="subject">{t.subject}</Label>
+        <Input id="subject" name="subject" placeholder={t.subjectPh} required />
+        {state.fieldErrors?.subject && <p className="text-xs text-red-400">{state.fieldErrors.subject}</p>}
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="message">Message</Label>
-        <Textarea
-          id="message"
-          name="message"
-          placeholder="Write your message here..."
-          rows={6}
-          required
-        />
-        {state.fieldErrors?.message && (
-          <p className="text-xs text-red-400">{state.fieldErrors.message}</p>
-        )}
+        <Label htmlFor="message">{t.message}</Label>
+        <Textarea id="message" name="message" placeholder={t.messagePh} rows={6} required />
+        {state.fieldErrors?.message && <p className="text-xs text-red-400">{state.fieldErrors.message}</p>}
       </div>
 
       <TurnstileWidget />
 
       <Button type="submit" variant="gold" size="md" disabled={pending}>
-        {pending ? "Sending…" : "Send Message"}
+        {pending ? t.sending : t.send}
       </Button>
     </form>
   );
 }
-

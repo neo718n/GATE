@@ -6,6 +6,8 @@ import { ScanLine, ArrowRight, AlertCircle } from "lucide-react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { formatCode, isValidCodeShape } from "@/lib/certificates/code";
+import { useLocale } from "@/lib/i18n/client";
+import { localizePath } from "@/lib/i18n/config";
 
 const QrScannerDialog = dynamic(
   () => import("./qr-scanner-dialog").then((m) => m.QrScannerDialog),
@@ -14,6 +16,8 @@ const QrScannerDialog = dynamic(
 
 export function VerifyCodeForm() {
   const router = useRouter();
+  const locale = useLocale();
+  const ru = locale === "ru";
   const [code, setCode] = useState("");
   const [scanOpen, setScanOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,12 +27,14 @@ export function VerifyCodeForm() {
     setError(null);
     if (!isValidCodeShape(canonical)) {
       setError(
-        "That doesn't look like a valid G.A.T.E. verification code. Codes follow the pattern GATE-YYYY-SUBJECT-XXXXXX.",
+        ru
+          ? "Похоже, это не код проверки G.A.T.E. Коды выглядят так: GATE-ГГГГ-ПРЕДМЕТ-XXXXXX."
+          : "That doesn't look like a valid G.A.T.E. verification code. Codes follow the pattern GATE-YYYY-SUBJECT-XXXXXX.",
       );
       return;
     }
     startTransition(() => {
-      router.push(`/verify/${encodeURIComponent(canonical)}`);
+      router.push(localizePath(`/verify/${encodeURIComponent(canonical)}`, locale));
     });
   }
 
@@ -57,7 +63,7 @@ export function VerifyCodeForm() {
     <>
       <form onSubmit={handleSubmit} noValidate className="w-full">
         <label htmlFor="cert-code" className="sr-only">
-          Verification code
+          {ru ? "Код проверки" : "Verification code"}
         </label>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
           <input
@@ -68,7 +74,7 @@ export function VerifyCodeForm() {
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
-            aria-label="Verification code"
+            aria-label={ru ? "Код проверки" : "Verification code"}
             aria-invalid={error ? true : undefined}
             aria-describedby={error ? "code-error" : "code-hint"}
             placeholder="GATE-2026-MATH-A7K9X2"
@@ -83,7 +89,7 @@ export function VerifyCodeForm() {
             disabled={isPending || code.length === 0}
             className="h-14"
           >
-            {isPending ? "Verifying…" : "Verify"}
+            {isPending ? (ru ? "Проверяем…" : "Verifying…") : ru ? "Проверить" : "Verify"}
             <ArrowRight className="h-4 w-4" aria-hidden />
           </Button>
         </div>
@@ -92,7 +98,7 @@ export function VerifyCodeForm() {
             id="code-hint"
             className="text-xs text-foreground/50 font-sans"
           >
-            Found on every G.A.T.E. certificate, beneath the QR code.
+            {ru ? "Код указан на каждом сертификате G.A.T.E. под QR-кодом." : "Found on every G.A.T.E. certificate, beneath the QR code."}
           </p>
           <button
             type="button"
@@ -100,7 +106,7 @@ export function VerifyCodeForm() {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-foreground/60 hover:text-gate-gold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gate-gold/30 rounded px-1"
           >
             <ScanLine className="h-3.5 w-3.5" aria-hidden />
-            Scan QR
+            {ru ? "Сканировать QR" : "Scan QR"}
           </button>
         </div>
         {error && (

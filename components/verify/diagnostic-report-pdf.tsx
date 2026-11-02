@@ -704,7 +704,7 @@ export function DiagnosticReportPDF(props: DiagnosticReportPDFProps) {
   return (
     <Document
       title={`GATE Diagnostic Report — ${name} (${cardNo})`}
-      author="G.A.T.E. — Global Academic Talent Evaluation"
+      author="G.A.T.E. — Global Academic & Theoretical Excellence"
       subject="Official Diagnostic Report"
       creator="gate-assessment.org"
     >

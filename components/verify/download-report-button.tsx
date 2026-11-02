@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { AlertCircle, Check, FileDown, Loader2 } from "lucide-react";
+import { useLocale } from "@/lib/i18n/client";
 
 type State = "idle" | "loading" | "done" | "error";
 
 export function DownloadReportButton({ cardNo }: { cardNo: string }) {
   const [state, setState] = useState<State>("idle");
+  const ru = useLocale() === "ru";
 
   async function download() {
     if (state === "loading") return;
@@ -32,10 +34,10 @@ export function DownloadReportButton({ cardNo }: { cardNo: string }) {
   }
 
   const label = {
-    idle: "Download Diagnostic Report",
-    loading: "Preparing your report…",
-    done: "Downloaded",
-    error: "Couldn't generate — try again",
+    idle: ru ? "Скачать диагностический отчёт" : "Download Diagnostic Report",
+    loading: ru ? "Готовим отчёт…" : "Preparing your report…",
+    done: ru ? "Скачано" : "Downloaded",
+    error: ru ? "Не получилось — попробуйте ещё раз" : "Couldn't generate — try again",
   }[state];
 
   const Icon = { idle: FileDown, loading: Loader2, done: Check, error: AlertCircle }[state];
