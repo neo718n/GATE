@@ -133,7 +133,9 @@ export function SiteFooter() {
         <div className="pointer-events-none absolute -right-40 -top-40 h-[480px] w-[480px] rounded-full bg-gate-gold/15 blur-[120px]" />
         <div className="pointer-events-none absolute -left-32 bottom-20 h-[360px] w-[360px] rounded-full bg-gate-600/30 blur-[120px]" />
         {/* 3D backdrop: the dotted globe, half-sunk into the bottom-right corner. */}
-        <div className="pointer-events-none absolute -bottom-[38%] -right-[12%] w-[min(900px,95vw)] opacity-70 [mask-image:radial-gradient(circle_at_center,#000_45%,transparent_72%)]">
+        {/* Phones: a fixed offset, because the stacked footer is so tall that a
+            percentage would push the globe below the card. */}
+        <div className="pointer-events-none absolute -bottom-[45vw] -right-[35vw] w-[150vw] opacity-70 [mask-image:radial-gradient(circle_at_center,#000_45%,transparent_72%)] sm:-bottom-[38vw] sm:-right-[25vw] sm:w-[110vw] lg:-bottom-[38%] lg:-right-[12%] lg:w-[min(900px,95vw)]">
           <Globe tone="dark" />
         </div>
 
@@ -229,7 +231,7 @@ export function SiteFooter() {
 
           {/* Status bar */}
           <motion.div variants={rise} className="mt-12 flex flex-col gap-3 border-t border-white/10 py-5 text-[13px] sm:flex-row sm:items-center sm:justify-between">
-            <Link href={`/${current.slug}`} className="group flex items-center gap-2.5 text-white/70 hover:text-white">
+            <Link href={`/${current.slug}`} className="group flex flex-wrap items-center gap-x-2.5 gap-y-1 text-white/70 hover:text-white">
               <span className="relative flex h-2 w-2">
                 {!isPast(current) && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gate-gold opacity-70" />}
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-gate-gold" />
