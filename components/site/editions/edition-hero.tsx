@@ -142,7 +142,9 @@ export function UpcomingHero({ edition, headingLevel = "h1" }: { edition: Editio
 
         <motion.div
           style={{ y: globeY, scale: globeScale }}
-          className="relative -mx-16 w-[calc(100%+8rem)] max-w-[640px] sm:mx-auto sm:w-full lg:mt-0"
+          // Desktop: pinned to the top of the row so it sits beside the headline
+          // instead of being centred on the (much taller) text column.
+          className="relative -mx-16 w-[calc(100%+8rem)] max-w-[640px] sm:mx-auto sm:w-full lg:-mt-6 lg:self-start"
         >
           <div className="absolute inset-[12%] rounded-full bg-gate-gold/15 blur-3xl" />
           <Globe />
