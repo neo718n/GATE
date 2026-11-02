@@ -12,6 +12,11 @@ import { MAIN_URL } from "@/lib/portal-urls";
 // Accepting is remembered for a year in a cookie shared by every subdomain
 // (main site, apply., partners.). Declining only hides the banner for the
 // current browser session, so it comes back on the next visit.
+// Off for now: the site only sets essential cookies (sign-in, language), so
+// there is nothing to consent to. Flip to true if analytics or other
+// non-essential cookies are ever added.
+const ENABLED = false;
+
 const CONSENT_COOKIE = "gate_consent";
 const DISMISSED_KEY = "gate_consent_dismissed";
 
@@ -52,7 +57,7 @@ export function CookieConsent() {
   const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
-    if (hasAccepted() || dismissedThisSession()) return;
+    if (!ENABLED || hasAccepted() || dismissedThisSession()) return;
     // Let the page settle first so the banner doesn't compete with the hero.
     const id = setTimeout(() => setOpen(true), 1200);
     return () => clearTimeout(id);
