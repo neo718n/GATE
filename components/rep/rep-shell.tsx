@@ -3,6 +3,7 @@
 import { Link, useLocale } from "@/lib/i18n/client";
 import { localizePath } from "@/lib/i18n/config";
 import { LanguageSwitcher } from "@/components/site/language-switcher";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { motion } from "motion/react";
@@ -119,6 +120,7 @@ export function RepShell({
         <main className="flex-1 bg-ivory px-4 py-8 md:px-10 md:py-10">{children}</main>
       </div>
       <Toaster position="top-right" richColors closeButton />
+      <CookieConsent />
     </div>
   );
 }

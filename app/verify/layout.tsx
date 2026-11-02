@@ -1,4 +1,5 @@
 import { Logo } from "@/components/brand/logo";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { LanguageMenu } from "@/components/site/language-switcher";
 import { Link } from "@/lib/i18n/client";
 import { getLocale } from "@/lib/i18n/server";
@@ -35,6 +36,7 @@ export default async function VerifyLayout({
           </p>
         </div>
       </footer>
+      <CookieConsent />
     </div>
   );
 }

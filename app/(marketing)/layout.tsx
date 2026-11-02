@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { SiteNav } from "@/components/site/nav";
 import { SiteFooter } from "@/components/site/footer";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { SmoothScroll } from "@/components/site/motion/smooth-scroll";
 import { NotifyMeProvider } from "@/components/site/landing/notify-me";
 import { getCurrentSession } from "@/lib/authz";
@@ -31,6 +32,7 @@ export default async function MarketingLayout({
         <SiteNav session={session} />
         <main id="main-content" className="flex-1">{children}</main>
         <SiteFooter />
+        <CookieConsent />
       </NotifyMeProvider>
     </div>
   );

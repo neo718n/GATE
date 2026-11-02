@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PortalFooter, PortalHeader } from "@/components/apply/portal-chrome";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { getLocale } from "@/lib/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,6 +16,7 @@ export default function ApplyLayout({ children }: { children: React.ReactNode })
       <PortalHeader label={{ en: "Application", ru: "Заявка" }} />
       <main className="flex-1">{children}</main>
       <PortalFooter />
+      <CookieConsent />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { PortalFooter, PortalHeader } from "@/components/apply/portal-chrome";
+import { CookieConsent } from "@/components/site/cookie-consent";
 import { localizePath } from "@/lib/i18n/config";
 import { getLocale } from "@/lib/i18n/server";
 import { getRepSession } from "@/lib/reps/auth";
@@ -25,6 +26,7 @@ export default async function RepSignInPage() {
         </div>
       </main>
       <PortalFooter />
+      <CookieConsent />
     </div>
   );
 }
