@@ -21,8 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
       : `G.A.T.E. (GATE) — International Academic Programs · ${current.name}, ${current.city}`;
   const description =
     locale === "ru"
-      ? `G.A.T.E. (GATE Assessment) — международная академическая программа для школьников 1–12 классов. Ближайшая: ${current.name}, ${current.host}, ${current.dateLabel}.`
-      : `G.A.T.E. (GATE Assessment) is an international academic program for students in Grades 1–12. Next: ${current.name} at ${current.host}, ${current.dateLabel}.`;
+      ? `G.A.T.E. (Global Academic & Theoretical Excellence) — международная академическая программа для школьников 1–12 классов. Ближайшая: ${current.name}, ${current.host}, ${current.dateLabel}.`
+      : `G.A.T.E. (Global Academic & Theoretical Excellence) is an international academic program for students in Grades 1–12. Next: ${current.name} at ${current.host}, ${current.dateLabel}.`;
 
   return {
     title: { absolute: title },

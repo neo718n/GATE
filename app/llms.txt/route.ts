@@ -1,5 +1,5 @@
 import { getCurrentEdition, getEditions, isPast } from "@/lib/editions";
-import { BRAND, BRAND_ALIASES, NOT_TO_CONFUSE, OLYMPIAD_FAQ, SITE_URL } from "@/lib/site";
+import { BRAND, BRAND_ALIASES, NAME_MEANING, NOT_TO_CONFUSE, OLYMPIAD_FAQ, SITE_URL } from "@/lib/site";
 
 // llms.txt: a plain-text brief for AI assistants and answer engines.
 // Generated from the same config as the site so it never drifts.
@@ -20,6 +20,8 @@ export function GET() {
   const body = `# ${BRAND.name} (GATE)
 
 > ${BRAND.shortDescription}
+
+${NAME_MEANING}
 
 Official website: ${SITE_URL}
 Full name: ${BRAND.legalName}

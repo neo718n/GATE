@@ -23,7 +23,7 @@ const cormorant = Cormorant_Garamond({
 });
 
 const DESCRIPTION =
-  "G.A.T.E. (GATE) is an international academic program for students in Grades 1–12: a week at a Chinese university with an academic assessment graded by professors, lectures, campus life and cultural excursions.";
+  "G.A.T.E. (GATE, Global Academic & Theoretical Excellence) is an international academic program for students in Grades 1–12: a week at a Chinese university with an academic assessment graded by professors, lectures, campus life and cultural excursions.";
 
 export const metadata: Metadata = {
   title: {

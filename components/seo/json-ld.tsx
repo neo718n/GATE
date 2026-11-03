@@ -19,7 +19,7 @@ export function organizationJsonLd() {
     "@type": "EducationalOrganization",
     "@id": ORG_ID,
     name: BRAND.name,
-    alternateName: [...BRAND_ALIASES],
+    alternateName: [BRAND.expansion, ...BRAND_ALIASES],
     legalName: BRAND.legalName,
     url: SITE_URL,
     logo: `${SITE_URL}${BRAND.logo}`,
@@ -37,7 +37,7 @@ export function websiteJsonLd() {
     "@type": "WebSite",
     "@id": `${SITE_URL}/#website`,
     name: BRAND.name,
-    alternateName: ["GATE", "G.A.T.E", "GATE Assessment"],
+    alternateName: [BRAND.expansion, "GATE", "G.A.T.E", "GATE Assessment"],
     url: SITE_URL,
     publisher: { "@id": ORG_ID },
   };

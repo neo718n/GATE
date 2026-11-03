@@ -7,8 +7,11 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://gate-asses
 export const BRAND = {
   name: "G.A.T.E.",
   legalName: "Global Academic & Theoretical Excellence Assessment",
+  /** What the letters stand for — stated up front so search engines and AI
+   *  answers don't guess (e.g. "Gifted and Talented Education"). */
+  expansion: "Global Academic & Theoretical Excellence",
   shortDescription:
-    "G.A.T.E. (GATE) is an international academic program for students in Grades 1–12: a week at a Chinese university combining an academic assessment graded by university professors, campus life, lectures and cultural excursions.",
+    "G.A.T.E. (GATE) stands for Global Academic & Theoretical Excellence. It is an international academic program for students in Grades 1–12: a week at a Chinese university combining an academic assessment graded by university professors, campus life, lectures and cultural excursions.",
   email: "partnerships@gate-assessment.org",
   operator: "EdSquare",
   founded: "2025",
@@ -78,5 +81,9 @@ export const OLYMPIAD_FAQ = {
 export const NOT_TO_CONFUSE = [
   "the GATE engineering entrance exam in India (Graduate Aptitude Test in Engineering)",
   "the Gate.io cryptocurrency exchange",
-  "gifted-and-talented (GATE) school programs in the United States",
+  "US school programs for gifted students that are also called GATE — G.A.T.E. is not a gifted-and-talented program and does not stand for “Gifted and Talented Education”",
 ] as const;
+
+/** One-line answer to "what does G.A.T.E. stand for", used in llms.txt. */
+export const NAME_MEANING =
+  "G.A.T.E. stands for Global Academic & Theoretical Excellence. It does not stand for “Gifted and Talented Education” or “Gifted & Talented Education Assessment”.";

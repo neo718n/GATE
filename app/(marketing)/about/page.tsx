@@ -31,7 +31,7 @@ const T = {
       OLYMPIAD_FAQ,
       {
         q: "What does G.A.T.E. stand for?",
-        a: "Global Academic & Theoretical Excellence. The name is also written GATE, G.A.T.E or G.A.T.E. Assessment. The official website is gate-assessment.org.",
+        a: "Global Academic & Theoretical Excellence. It does not stand for “Gifted and Talented Education”. The name is also written GATE, G.A.T.E or G.A.T.E. Assessment. The official website is gate-assessment.org.",
       },
       {
         q: "What does every participant receive?",
@@ -59,7 +59,7 @@ const T = {
     operated: "Operated by",
     heroEyebrow: "About G.A.T.E.",
     heroLead:
-      "G.A.T.E. — often written GATE or G.A.T.E. Assessment — is an international academic program for students in Grades 1–12. Each program is one week at a partner university in China.",
+      "G.A.T.E. — Global Academic & Theoretical Excellence, often written GATE or G.A.T.E. Assessment — is an international academic program for students in Grades 1–12. Each program is one week at a partner university in China.",
     mission: "Mission",
     missionText:
       "We give school students a credible, transparent and rigorous way to measure their level internationally — and to experience university life while doing it. Assessments evaluate depth of understanding: reasoning and problem-solving, not memorized procedures.",
@@ -91,7 +91,7 @@ const T = {
       },
       {
         q: "Как расшифровывается G.A.T.E.?",
-        a: "Global Academic & Theoretical Excellence. Название также пишут как GATE, G.A.T.E или G.A.T.E. Assessment. Официальный сайт — gate-assessment.org.",
+        a: "Global Academic & Theoretical Excellence — «Глобальное академическое и теоретическое превосходство». Это не «Gifted and Talented Education» (программа для одарённых детей). Название также пишут как GATE, G.A.T.E или G.A.T.E. Assessment. Официальный сайт — gate-assessment.org.",
       },
       {
         q: "Что получает каждый участник?",
@@ -111,7 +111,7 @@ const T = {
     notToConfuse: [
       "Экзамен GATE для поступления в инженерные вузы Индии (Graduate Aptitude Test in Engineering)",
       "Криптобиржа Gate.io",
-      "Школьные программы для одарённых детей (GATE) в США",
+      "Школьные программы для одарённых детей в США, которые тоже называют GATE: G.A.T.E. — не программа для одарённых и не расшифровывается как «Gifted and Talented Education»",
     ],
     founded: "Основана",
     grades: "Классы",
