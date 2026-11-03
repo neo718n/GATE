@@ -54,6 +54,12 @@ export const metadata: Metadata = {
     description: DESCRIPTION,
     images: ["/brand/GATE-Logo-Primary-Dark@2x.png"],
   },
+  // Search Console / Yandex Webmaster ownership tags. Set the codes as Vercel
+  // env vars; a missing variable simply omits its tag.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    yandex: process.env.YANDEX_VERIFICATION || undefined,
+  },
 };
 
 export default async function RootLayout({
