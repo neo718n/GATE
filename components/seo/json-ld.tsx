@@ -68,7 +68,10 @@ export function editionJsonLd(edition: Edition) {
         addressCountry: edition.country,
       },
     },
-    organizer: { "@id": ORG_ID },
+    // Spelled out rather than an @id reference: the Organization block is only
+    // on the homepage, so edition pages would otherwise have a nameless organizer.
+    organizer: { "@type": "Organization", "@id": ORG_ID, name: BRAND.name, url: SITE_URL },
+    performer: { "@type": "Organization", name: edition.host },
     ...(isPast(edition)
       ? {}
       : {
@@ -76,7 +79,13 @@ export function editionJsonLd(edition: Edition) {
             "@type": "Offer",
             url: `${SITE_URL}/${edition.slug}`,
             availability: "https://schema.org/InStock",
-            ...(edition.price ? { price: String(edition.price.amount), priceCurrency: edition.price.currency } : {}),
+            ...(edition.price
+              ? {
+                  price: String(edition.price.amount),
+                  priceCurrency: edition.price.currency,
+                  ...(edition.price.validFrom ? { validFrom: edition.price.validFrom } : {}),
+                }
+              : {}),
           },
         }),
   };

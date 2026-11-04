@@ -65,7 +65,13 @@ export type Edition = {
   /** Use the Hangzhou footage instead of a still hero image. */
   heroVideo?: boolean;
   /** Published tuition per participant. */
-  price?: { amount: number; currency: "USD"; label: string };
+  price?: {
+    amount: number;
+    currency: "USD";
+    label: string;
+    /** Day online applications opened (ISO date); schema.org Offer validFrom. */
+    validFrom?: string;
+  };
   /** Host university logo (shown in the footer while this year is current). */
   hostLogo?: string;
   /** Places on the route, in visiting order, for the journey map. */
@@ -91,7 +97,7 @@ export const EDITIONS: Edition[] = [
     country: "China",
     host: "Shaoxing University",
     hostLogo: "/partners/shaoxing-university.png",
-    price: { amount: 1300, currency: "USD", label: "$1,300" },
+    price: { amount: 1300, currency: "USD", label: "$1,300", validFrom: "2026-11-02" },
     startDate: "2027-01-03",
     endDate: "2027-01-10",
     dateLabel: "3–10 January 2027",
