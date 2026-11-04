@@ -243,8 +243,9 @@ export const EDITIONS: Edition[] = [
       "Airport pick-up and drop-off, and all transport within the program",
       "Excursions: Shaoxing, Oriental Neverland, Shanghai and Yiwu",
       "Visa support if a visa is required",
+      "Travel accident and medical insurance in China for the program dates",
     ],
-    notIncluded: ["International airfare", "Visa fees", "Travel insurance", "Personal expenses"],
+    notIncluded: ["International airfare", "Visa fees", "Personal expenses"],
     stay: {
       name: "Yintai Hotel Shaoxing",
       body: "A comfortable, central 4-star hotel with spacious twin rooms and an on-site restaurant, so participants rest well between the assessment and excursions.",
@@ -275,11 +276,11 @@ export const EDITIONS: Edition[] = [
       },
       {
         q: "How much does it cost?",
-        a: "$1,300 per participant. This covers the assessment, accommodation, meals, transfers, excursions, visa support, the certificate and diagnostic report. International airfare, visa fees, travel insurance and personal expenses are not included.",
+        a: "$1,300 per participant. This covers the assessment, accommodation, meals, transfers, excursions, visa support, travel accident and medical insurance, the certificate and diagnostic report. International airfare, visa fees and personal expenses are not included.",
       },
       {
         q: "What is included?",
-        a: "The academic assessment and grading, a certificate and diagnostic report for everyone, medals and prizes for 1st–3rd place, 4-star hotel accommodation, daily meals, airport transfers, all program transport, excursions to Shaoxing, Oriental Neverland, Shanghai and Yiwu, and visa support. International airfare, visa fees and travel insurance are not included.",
+        a: "The academic assessment and grading, a certificate and diagnostic report for everyone, medals and prizes for 1st–3rd place, 4-star hotel accommodation, daily meals, airport transfers, all program transport, excursions to Shaoxing, Oriental Neverland, Shanghai and Yiwu, visa support, and travel accident and medical insurance in China. International airfare and visa fees are not included.",
       },
       {
         q: "Who grades the papers?",
@@ -357,8 +358,9 @@ export const EDITIONS: Edition[] = [
       "Certificate of Completion + Experience certificate",
       "Hangzhou cultural excursion",
       "Local airport transfer (arrival & departure)",
+      "Travel accident and medical insurance in China for the program dates",
     ],
-    notIncluded: ["International airfare to Hangzhou", "Visa application fees", "Travel insurance", "Personal expenses"],
+    notIncluded: ["International airfare to Hangzhou", "Visa application fees", "Personal expenses"],
     stay: {
       name: "On-campus accommodation",
       body: "Participants lived on the Xidian University campus: 4-person dormitory rooms with study areas, the main canteen, modern bathrooms and on-site laundry.",

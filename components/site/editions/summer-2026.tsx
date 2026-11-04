@@ -21,7 +21,7 @@ export function summer2026Faqs(locale: Locale = "en") {
       },
       {
         q: "Что входило в стоимость программы 2026 года?",
-        a: "Участие в августовской программе 2026 года стоило 1 000 $ и включало проживание в общежитии, трёхразовое питание, все лекции и материалы, полный доступ к кампусу, диагностическую оценку, сертификат об участии и культурную программу в Ханчжоу. Международный перелёт, визовый сбор и страховка оплачивались отдельно.",
+        a: "Участие в августовской программе 2026 года стоило 1 000 $ и включало проживание в общежитии, трёхразовое питание, все лекции и материалы, полный доступ к кампусу, диагностическую оценку, сертификат об участии, культурную программу в Ханчжоу и страховку на время программы в Китае. Международный перелёт и визовый сбор оплачивались отдельно.",
       },
       {
         q: "На каком языке шли занятия?",
@@ -48,7 +48,7 @@ export function summer2026Faqs(locale: Locale = "en") {
     },
     {
       q: "What did the 2026 tuition cover?",
-      a: "The August 2026 edition cost $1,000 per participant, all-inclusive of: dormitory accommodation, three meals daily, all lectures and learning materials, full campus access, the diagnostic assessment, certificate of completion, and the Hangzhou cultural program. International airfare, visa fees and travel insurance were not included.",
+      a: "The August 2026 edition cost $1,000 per participant, all-inclusive of: dormitory accommodation, three meals daily, all lectures and learning materials, full campus access, the diagnostic assessment, certificate of completion, the Hangzhou cultural program, and travel accident and medical insurance in China. International airfare and visa fees were not included.",
     },
     {
       q: "What language was the program taught in?",

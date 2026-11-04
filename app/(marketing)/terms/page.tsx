@@ -41,7 +41,7 @@ const SECTIONS = [
     content: [
       "You agree to provide accurate, complete, and truthful information at the time of registration and throughout your participation. Knowingly providing false or misleading information — including regarding your identity, age, enrollment status, or institutional affiliation — constitutes a material breach of these Terms and grounds for immediate disqualification.",
       "You are responsible for arriving at the host university on the published program dates and for following the program schedule, the instructions of G.A.T.E. staff and the rules of the host institution throughout your stay.",
-      "The program fee covers only the items listed as included on the program's page. You are solely responsible for all other costs, including international airfare, visa fees and travel insurance. G.A.T.E. may issue supporting documentation letters upon request but provides no financial assistance for travel.",
+      "The program fee covers only the items listed as included on the program's page. You are solely responsible for all other costs, including international airfare, visa fees and any insurance beyond the cover stated on the program's page. G.A.T.E. may issue supporting documentation letters upon request but provides no financial assistance for travel.",
       "You agree to comply with all applicable examination rules, instructions, and the G.A.T.E. Code of Conduct at all times.",
     ],
   },
@@ -155,7 +155,7 @@ const SECTIONS_RU = [
     content: [
       "Вы обязуетесь предоставлять точные, полные и достоверные сведения при регистрации и на протяжении всего участия. Сознательное предоставление ложных или вводящих в заблуждение сведений — в том числе о личности, возрасте, месте учёбы или принадлежности к учебному заведению — является существенным нарушением настоящих Условий и основанием для немедленной дисквалификации.",
       "Вы обязуетесь прибыть в принимающий университет в объявленные даты программы, а на протяжении всего пребывания — соблюдать расписание, указания сотрудников G.A.T.E. и правила принимающего учреждения.",
-      "Стоимость участия покрывает только то, что указано как включённое на странице программы. Все остальные расходы — в том числе международный перелёт, визовый сбор и страховку — вы несёте самостоятельно. По запросу G.A.T.E. может выдать подтверждающие письма, но не оказывает финансовой помощи с поездкой.",
+      "Стоимость участия покрывает только то, что указано как включённое на странице программы. Все остальные расходы — в том числе международный перелёт, визовый сбор и любое страхование сверх покрытия, указанного на странице программы, — вы несёте самостоятельно. По запросу G.A.T.E. может выдать подтверждающие письма, но не оказывает финансовой помощи с поездкой.",
       "Вы обязуетесь всегда соблюдать правила проведения диагностики, инструкции и Кодекс поведения G.A.T.E.",
     ],
   },
